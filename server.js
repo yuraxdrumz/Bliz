@@ -6,6 +6,27 @@ const http = require('http')
 // TODO add func for list all routes
 // TODO add func for list all middlewares
 
+class Request extends http.IncomingMessage{
+  constructor(){
+    super()
+  }
+  test(){
+    console.log('yeaaaaaaaah')
+  }
+}
+class Response extends http.ServerResponse{
+  constructor(){
+    super()
+  }
+  json(data){
+    this.writeHead(200, {'Content-Type': 'application/json'})
+    this.write(JSON.stringify(data))
+    this.end()
+  }
+}
+http.IncomingMessage.prototype = Request.prototype
+http.ServerResponse.prototype = Response.prototype
+
 class App{
   constructor(){
     this.routes = {}
@@ -85,16 +106,8 @@ app.use((req,res)=>{
   console.log(`${Date.now()}, ${req.headers.host}, ${req.url}`)
 })
 
-app.use((req, res)=>{
-  res.json = function(data){
-    this.writeHead(200, {'Content-Type': 'application/json'})
-    this.write(JSON.stringify(data))
-    this.end()
-  }
-})
 
 app.get('/',(req, res, next)=>{
-  console.log(res.json)
   res.json({
     bla: 'blabla',
     int:1
