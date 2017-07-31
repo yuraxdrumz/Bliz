@@ -2,6 +2,10 @@ const http = require('http')
 
 // TODO figure out how to pass req and res and attach methods to them
 // TODO figure out how to add next for middlewares
+// TODO maybe make middlewares with async await and add compatability for express middlewares?
+// TODO add func for list all routes
+// TODO add func for list all middlewares
+
 class App{
   constructor(){
     this.routes = {}
