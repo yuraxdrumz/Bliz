@@ -4,7 +4,24 @@ const http = require('http')
 // TODO maybe make middlewares with async await and add compatability for express middlewares?
 // TODO add func for list all routes
 // TODO add func for list all middlewares
-
+// TODO prioritize middlewares and routes, for example:
+  // app.use(md1)
+  // app.get('/)
+  // app.use(md2)
+  // app.get('/md2)
+// TODO see how to apply middlewares only to those routes that werte defined after middlewares
+// TODO try and build like in express, request and response should be on a class or functions prototype and be passed
+// TODO as a handler to http.createServer
+// TODO handler must be a function with req and res on prototype, and the handle itself should pass to a handler on the prototype as well
+// for exmaple
+/*
+* let app = function(req, res){
+*   this.handle(req, res)
+* }
+* app.handle = ...
+* app.request = prototype of http.request modified
+* app.response = prototype of http.response modified
+* */
 class Request extends http.IncomingMessage{
   constructor(){
     super()
