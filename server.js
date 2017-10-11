@@ -1,140 +1,116 @@
 const http = require('http')
 
-// TODO figure out how to add next for middlewares
-// TODO maybe make middlewares with async await and add compatability for express middlewares?
-// TODO add func for list all routes
-// TODO add func for list all middlewares
-// TODO prioritize middlewares and routes, for example:
-  // app.use(md1)
-  // app.get('/)
-  // app.use(md2)
-  // app.get('/md2)
-// TODO see how to apply middlewares only to those routes that werte defined after middlewares
-// TODO try and build like in express, request and response should be on a class or functions prototype and be passed
-// TODO as a handler to http.createServer
-// TODO handler must be a function with req and res on prototype, and the handle itself should pass to a handler on the prototype as well
-// for exmaple
-/*
-* let app = function(req, res){
-*   this.handle(req, res)
-* }
-* app.handle = ...
-* app.request = prototype of http.request modified
-* app.response = prototype of http.response modified
-* */
-class Request extends http.IncomingMessage{
-  constructor(){
-    super()
+const Listen = (http, handler) => ({
+  listen:(...args)=>{
+    const server = http.createServer(handler)
+    return server.listen.apply(server, args)
   }
-  test(){
-    console.log('yeaaaaaaaah')
-  }
-}
-class Response extends http.ServerResponse{
-  constructor(){
-    super()
-  }
-  json(data){
-    this.writeHead(200, {'Content-Type': 'application/json'})
-    this.write(JSON.stringify(data))
-    this.end()
-  }
-}
-http.IncomingMessage.prototype = Request.prototype
-http.ServerResponse.prototype = Response.prototype
+})
 
-class App{
-  constructor(){
-    this.routes = {}
-    this.middlewares = []
-  }
-  // middlewares handler, recursively execute each middleware until complete, then return with req and res
-  middleWaresHandler(middleWares, req, res, currentMiddleWare = 0){
-    try{
-      if(currentMiddleWare === middleWares.length) return {req, res}
-      let currMid = middleWares[currentMiddleWare]
-      currMid(req, res)
-      return this.middleWaresHandler(middleWares, req, res, currentMiddleWare+=1)
-
-    }catch(error){
-      console.error(error)
-    }
-  }
-  // handler for http server
-  handler(req, res){
-    try{
-      let completeMds = this.middleWaresHandler(this.middlewares, req, res)
-      req = completeMds.req
-      res = completeMds.res
-      if(this.routes[req.url] && this.routes[req.url].method === req.method){
-        return this.routes[req.url].fn(req,res)
+const Router = basePath => {
+  let getPaths = {}
+  let postPaths = {}
+  return {
+    get: route => {
+      getPaths[route.path] = route
+    },
+    post: route => {
+      postPaths[route.path] = route
+    },
+    listRoutes:()=>{
+      return {
+        basePath,
+        getPaths,
+        postPaths
       }
-      return this.routeNotFound(req, res)
-    }catch(error){
-      console.error(error)
-      // next(error)
-    }
-  }
-  // final handler
-  routeNotFound(req, res, next){
-    try{
-      res.writeHead(404)
-      res.write('Route Not Found')
-      res.end()
-    }catch (error){
-      console.error(error)
-    }
-  }
-  get(route,fn){
-    try{
-      this.routes[route] = {
-        fn,
-        method:'GET'
+    },
+    register:()=>{
+      return {
+        getPaths,
+        postPaths
       }
-    }catch(error){
-      throw error
     }
-  }
-  // write middleware func
-  use(fn){
-    this.middlewares.push(fn)
-  }
-  post(route,fn){
-    try{
-      this.routes[route] = {
-        fn,
-        method:'POST'
-      }
-    }catch(error){
-      throw error
-    }
-  }
-
-  listen(){
-    const server = http.createServer(this.handler.bind(this))
-    return server.listen.apply(server, arguments)
   }
 }
 
-let app = new App()
+const createRouter = Router => ({
+  Router: basePath =>{
+    return Object.assign(
+      {},
+      Router(basePath)
+    )
+  }
 
-app.use((req,res)=>{
-  console.log(`${Date.now()}, ${req.headers.host}, ${req.url}`)
+})
+
+const makeRoutesReadyForHandler = router =>{
+  const getPaths = Object.keys(router.getPaths)
+  const postPaths = Object.keys(router.postPaths)
+  const basePath = `${router.basePath}`
+  const availableGetPaths = getPaths.map(path=>({method:'GET',path:`${basePath}${path}`,handler:router.getPaths[path].handler}))
+  const availablePostPaths = postPaths.map(path=>({method:'POST',path:`${basePath}${path}`,handler:router.postPaths[path].handler}))
+  const allRoutes = availableGetPaths.concat(availablePostPaths)
+  return allRoutes
+}
+
+const RegisterHandlers = (http, Listen) => ({
+  registerHandlers:(...routers)=>{
+    const routersList = routers
+      .map(router=>router.listRoutes())
+      .map(makeRoutesReadyForHandler)
+      .reduce((prev, curr)=>prev.concat(curr))
+
+    const handler = function(req,res){
+      let handled = false
+      routersList.forEach(route=>{
+        if(req.url === route.path && req.method.toLowerCase() === route.method.toLowerCase()){
+          route.handler(req,res)
+          handled = true
+        }
+      })
+      if(!handled){
+        res.writeHead(404)
+        res.write('Route not found')
+        res.end()
+      }
+
+    }
+    return Listen(http, handler)
+  }
 })
 
 
-app.get('/',(req, res, next)=>{
-  res.json({
-    bla: 'blabla',
-    int:1
-  })
-})
-app.post('/post',(req, res, next)=>{
-  res.json('yeahh boi')
-})
+const createInstanceFactory = (http) => {
+  return Object.assign(
+    {},
+    createRouter(Router),
+    RegisterHandlers(http, Listen)
+  )
+}
 
-app.listen(3000,()=>{
-  console.log('listening on port 3000')
-})
+let exp = createInstanceFactory(http, function(req,res){})
+
+const apiRouter = exp.Router('/api')
+const authRouter = exp.Router('/auth')
+const apiMainRoute = {
+  path:'/getData',
+  handler:(req,res)=>{
+    res.write('this is api main route')
+    res.end()
+  }
+}
+const authMainRoute = {
+  path:'/login',
+  handler:(req,res)=>{
+    res.write('this is auth main route')
+    res.end()
+  }
+}
+apiRouter.get(apiMainRoute)
+authRouter.post(authMainRoute)
+exp
+  .registerHandlers(apiRouter, authRouter)
+  .listen(3000, ()=>console.log(`listening on port 3000`))
+
 
 

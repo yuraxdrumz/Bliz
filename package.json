@@ -13,11 +13,15 @@
     "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
+    "export-loader": "^1.0.34",
     "source-map-support": "^0.4.15",
     "webpack": "^3.0.0",
     "webpack-node-server-plugin": "^0.2.1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3"
+  }
 }
