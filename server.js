@@ -1,5 +1,6 @@
 const http = require('http')
-
+const fs = require('fs')
+const Promise = require('bluebird')
 // receive an http and a handler and return a listen func
 const Listen = (http, handler) => ({
   listen:(...args)=>{
@@ -71,17 +72,23 @@ const urlUtil = (req) => {
   }
 }
 
-const RegisterRouters = (http, Listen, urlUtil, defaultHandler) => ({
+const RegisterRouters = (http, Listen, urlUtil, defaultHandler, middleWares,midHandler) => ({
   registerRouters:(...routers)=>{
     const routes = {}
     routers.forEach(router=>{let list = router.listRoutes();routes[list.base] = list})
-    console.log(routes)
-    const handler = function(req,res){
+    const handler = async function(req,res){
       const { baseOfRequest, method, rest } = urlUtil(req)
+      try{
+        await midHandler(req,res,middleWares,0)
+      }catch(middleWareError){
+        console.log(middleWareError)
+        return defaultHandler(req,res)
+      }
       if(!routes[baseOfRequest]) return defaultHandler(req ,res)
       else if(!routes[baseOfRequest])return defaultHandler(req ,res)
       else if(!routes[baseOfRequest][method])return defaultHandler(req ,res)
       else if(!routes[baseOfRequest][method][rest]) return defaultHandler(req ,res)
+
       try{
         routes[baseOfRequest][method][rest].handler(req,res)
       }catch(errorFromHandler){
@@ -99,19 +106,42 @@ const RegisterRouters = (http, Listen, urlUtil, defaultHandler) => ({
     return Listen(http, handler)
   }
 })
+
+function next(resolve, reject, ...args){
+  if(args.length > 0) return reject(args[0])
+  return resolve()
+}
+
+// test handler for express middlewares...
+function midHandler(req, res, arr){
+  return Promise.mapSeries(arr, item=>{
+    return new Promise((resolve, reject)=>{
+      item(req,res,next.bind(this,resolve, reject))
+    })
+  })
+}
+
+const CreateMiddleWare = (chainLink, middleWareArr) => ({
+  middleware:fn=>{middleWareArr.push(fn);return chainLink}
+})
+
+
 // main instance creator, returns a func which expects an http object and creates an instance
-const ExpAppCreator = (Router, Listen, urlUtil, defaultHandler) => {
+const ExpAppCreator = (Router, Listen, urlUtil, defaultHandler, midHandler) => {
   return createInstanceFactory = (http) => {
+    const Instance = {}
+    const middleWares = []
     return Object.assign(
-      {},
+      Instance,
       CreateRouter(Router),
-      RegisterRouters(http, Listen,urlUtil, defaultHandler)
+      RegisterRouters(http, Listen,urlUtil, defaultHandler, middleWares, midHandler),
+      CreateMiddleWare(Instance,middleWares)
     )
   }
 }
 
 
-let exp = ExpAppCreator(Router, Listen, urlUtil, defaultHandler)(http)
+let exp = ExpAppCreator(Router, Listen, urlUtil, defaultHandler, midHandler)(http)
 
 const apiRouter = exp.createRouter('/api')
 const authRouter = exp.createRouter('/auth')
@@ -128,7 +158,7 @@ const apiGetAA = {
   handler:(req,res)=>{
     res.write('this is AA')
     res.end()
-  }
+  },
 }
 const authMainRoute = {
   path:'/login',
@@ -150,9 +180,18 @@ apiRouter
   .delete(apiGetAA)
   .routerErrorHandler(errHandlerForAPi)
 
-authRouter.post(authMainRoute).routerErrorHandler(errHandlerForAPi)
+authRouter
+  .post(authMainRoute)
+  .routerErrorHandler(errHandlerForAPi)
 
 exp
+  .middleware((req,res,next)=>{console.log(`url is: ${req.url}`);next()})
+  .middleware((req,res,next)=>{fs.readFile('./package.json','utf-8',(err,data)=>{
+    setTimeout(()=>{
+      req.bla = 'this works'
+      next()
+    },3000)
+  })})
   .registerRouters(apiRouter, authRouter)
   .listen(3000, ()=>console.log(`listening on port 3000`))
 
