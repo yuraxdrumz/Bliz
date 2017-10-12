@@ -7,25 +7,42 @@ const Listen = (http, handler) => ({
     return server.listen.apply(server, args)
   }
 })
+// method creator for router, name, chainlink for chaining and mem to store it to
+const Method = (name, chainLink, mem) => ({
+  [name]:route=>{mem[route.path] = route;return chainLink}
+})
+// router error handler creator, chainlink is the router name to chin and mem is where to store it to
+const RouterErrorHandler = (chainLink, mem) =>({
+  routerErrorHandler:func=>{mem = func;return chainLink}
+})
+// router list routes creator
+const ListRoutes = (get, post, put, deleted, routerErrorHandler, base) =>({
+  listRoutes:()=>({get, post, put, deleted, routerErrorHandler, base})
+})
 
 // receive a basepath for the router and return router funcs like get post and list
 const Router = base => {
-  let get = {}
-  let post = {}
+  let get                = {}
+  let post               = {}
+  let put                = {}
+  let deleted            = {}
   let routerErrorHandler = null
-  const RouterReturn = {
-    get: route => {get[route.path] = route;return RouterReturn},
-    post: route => {post[route.path] = route;return RouterReturn},
-    routerErrorHandler: func => {routerErrorHandler = func;return RouterReturn},
-    listRoutes:()=>({base, get, post, routerErrorHandler})
-  }
-  return RouterReturn
+  const RouterReturn     = {}
+
+  return Object.assign(RouterReturn,
+    Method('get', RouterReturn, get),
+    Method('post', RouterReturn, post),
+    Method('put', RouterReturn, put),
+    Method('delete', RouterReturn, deleted),
+    RouterErrorHandler(RouterReturn, routerErrorHandler),
+    ListRoutes(get, post, put, deleted, routerErrorHandler, base)
+  )
 }
 
 // when called, receives a router type
 // returns a Router func which allows to create routers with Router and basepath provided
-const createRouter = Router => ({
-  Router: basePath =>{
+const CreateRouter = Router => ({
+  createRouter: basePath =>{
     return Object.assign(
       {},
       Router(basePath)
@@ -43,7 +60,8 @@ const defaultHandler = function(req ,res){
 const urlUtil = (req) => {
   const dividedUrl = req.url.split('/');
   const baseOfRequest = `/${dividedUrl[1]}`
-  const method = req.method.toLowerCase()
+  let method = req.method.toLowerCase()
+  if(method === 'delete') method = 'deleted'
   let rest = `/${dividedUrl.slice(2).join('/')}`
   if(rest[rest.length - 1] === '/') rest = rest.slice(0,rest.length -1)
   return {
@@ -57,11 +75,12 @@ const RegisterRouters = (http, Listen, urlUtil, defaultHandler) => ({
   registerRouters:(...routers)=>{
     const routes = {}
     routers.forEach(router=>{let list = router.listRoutes();routes[list.base] = list})
-
+    console.log(routes)
     const handler = function(req,res){
       const { baseOfRequest, method, rest } = urlUtil(req)
       if(!routes[baseOfRequest]) return defaultHandler(req ,res)
       else if(!routes[baseOfRequest])return defaultHandler(req ,res)
+      else if(!routes[baseOfRequest][method])return defaultHandler(req ,res)
       else if(!routes[baseOfRequest][method][rest]) return defaultHandler(req ,res)
       try{
         routes[baseOfRequest][method][rest].handler(req,res)
@@ -80,12 +99,12 @@ const RegisterRouters = (http, Listen, urlUtil, defaultHandler) => ({
     return Listen(http, handler)
   }
 })
-
+// main instance creator, returns a func which expects an http object and creates an instance
 const ExpAppCreator = (Router, Listen, urlUtil, defaultHandler) => {
   return createInstanceFactory = (http) => {
     return Object.assign(
       {},
-      createRouter(Router),
+      CreateRouter(Router),
       RegisterRouters(http, Listen,urlUtil, defaultHandler)
     )
   }
@@ -94,8 +113,8 @@ const ExpAppCreator = (Router, Listen, urlUtil, defaultHandler) => {
 
 let exp = ExpAppCreator(Router, Listen, urlUtil, defaultHandler)(http)
 
-const apiRouter = exp.Router('/api')
-const authRouter = exp.Router('/auth')
+const apiRouter = exp.createRouter('/api')
+const authRouter = exp.createRouter('/auth')
 const apiMainRoute = {
   path: '/getData',
   handler: (req, res) => {
@@ -128,7 +147,7 @@ const errHandlerForAPi = function(req,res,e1,e2){
 
 apiRouter
   .get(apiMainRoute)
-  .get(apiGetAA)
+  .delete(apiGetAA)
   .routerErrorHandler(errHandlerForAPi)
 
 authRouter.post(authMainRoute).routerErrorHandler(errHandlerForAPi)
