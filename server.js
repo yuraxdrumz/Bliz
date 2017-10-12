@@ -1,6 +1,6 @@
 const http = require('http')
-const fs = require('fs')
 const Promise = require('bluebird')
+
 // receive an http and a handler and return a listen func
 const Listen = (http, handler) => ({
   listen:(...args)=>{
@@ -13,33 +13,72 @@ const Method = (name, mem,chainLink) => ({
   [name]:route=>{mem[route.path] = route;return chainLink}
 })
 // router error handler creator, chainlink is the router name to chin and mem is where to store it to
-const RouterErrorHandler = (mem, chainLink) =>({
-  routerErrorHandler:func=>{mem = func;return chainLink}
+const CreateHandler = (name, mem, chainLink) =>({
+  [name]:func=>{mem[name] = func;return chainLink}
 })
 // router list routes creator
-const ListRoutes = (get, post, put, deleted, routerErrorHandler, base, middleWareArr) =>({
-  listRoutes:()=>({get, post, put, deleted, routerErrorHandler, base, middleWareArr})
+const GetObjProps = obj =>({
+  getObjProps:()=>(obj)
 })
 
 // receive a basepath for the router and return router funcs like get post and list
+// const Router = base => {
+//   let get                = {}
+//   let post               = {}
+//   let put                = {}
+//   let deleted            = {}
+//   let middleWareArr      = []
+//   let routerErrorHandler = null
+//   const RouterReturn     = {}
+//
+//   return Object.assign(RouterReturn,
+//     Method('get', get, RouterReturn),
+//     Method('post', post, RouterReturn),
+//     Method('put', put, RouterReturn),
+//     Method('delete', deleted, RouterReturn),
+//     CreateMiddleWare(middleWareArr, RouterReturn),
+//     CreateHandler(routerErrorHandler, RouterReturn),
+//     ListRoutes(get, post, put, deleted, routerErrorHandler, base, middleWareArr)
+//   )
+// }
 const Router = base => {
-  let get                = {}
-  let post               = {}
-  let put                = {}
-  let deleted            = {}
-  let middleWareArr      = []
-  let routerErrorHandler = null
-  const RouterReturn     = {}
-
+  const RouterReturn = {}
+  const routerData = {
+    get: {},
+    post: {},
+    put : {},
+    deleted :{},
+    middleWareArr :[],
+    routerErrorHandler: null
+  }
   return Object.assign(RouterReturn,
-    Method('get', get, RouterReturn),
-    Method('post', post, RouterReturn),
-    Method('put', put, RouterReturn),
-    Method('delete', deleted, RouterReturn),
-    CreateMiddleWare(middleWareArr, RouterReturn),
-    RouterErrorHandler(routerErrorHandler, RouterReturn),
-    ListRoutes(get, post, put, deleted, routerErrorHandler, base, middleWareArr)
+    CreateHandler('get', routerData, RouterReturn),
+    CreateHandler('post', routerData, RouterReturn),
+    CreateHandler('put', routerData, RouterReturn),
+    CreateHandler('delete', routerData, RouterReturn),
+    CreateHandler('routerErrorHandler',routerData, RouterReturn),
+    CreateMiddleWare(routerData.middleWareArr, RouterReturn),
+    GetObjProps(routerData)
   )
+}
+const CreatePath = () => {
+  const PathReturn = {}
+  const pathData = {
+    middleWareArr:[],
+    path:null,
+    handler:null,
+    errHandler:null
+  }
+  return {
+    createPath:()=> Object.assign(
+      PathReturn,
+      CreateMiddleWare(pathData.middleWareArr, PathReturn),
+      CreateHandler('handler', pathData, PathReturn),
+      CreateHandler('path', pathData, PathReturn),
+      CreateHandler('errHandler', pathData, PathReturn),
+      GetObjProps(pathData)
+    )
+  }
 }
 
 // when called, receives a router type
@@ -82,7 +121,8 @@ const urlUtil = (req) => {
 const RegisterRouters = (http, Listen, urlUtil, defaultHandler, middleWares,midHandler) => ({
   registerRouters:(...routers)=>{
     const routes = {}
-    routers.forEach(router=>{let list = router.listRoutes();routes[list.base] = list})
+    // routers.forEach(router=>{let list = router.getObjProps();routes[list.path] = list})
+    routers.forEach(router=>console.log(router.getObjProps()))
     const handler = async function(req,res){
       const { baseOfRequest, method, rest } = urlUtil(req)
       try{
@@ -146,7 +186,8 @@ const ExpAppCreator = (Router, Listen, urlUtil, defaultHandler, midHandler) => {
       Instance,
       CreateRouter(Router),
       RegisterRouters(http, Listen,urlUtil, defaultHandler, middleWares, midHandler),
-      CreateMiddleWare(middleWares, Instance)
+      CreateMiddleWare(middleWares, Instance),
+      CreatePath()
     )
   }
 }
@@ -156,31 +197,7 @@ let exp = ExpAppCreator(Router, Listen, urlUtil, defaultHandler, midHandler)(htt
 
 const apiRouter = exp.createRouter('/api')
 const authRouter = exp.createRouter('/auth')
-const apiMainRoute = {
-  path: '/getData',
-  handler: (req, res) => {
-    res.write('this is api main route')
-    res.end()
-  }
-}
 
-const apiGetAA = {
-  path:'/getAA',
-  handler:(req,res)=>{
-    res.write('this is AA')
-    res.end()
-  },
-  middlewares:[function(req,res,next){console.log('specific route middleware!');next()}],
-}
-const authMainRoute = {
-  path:'/login',
-  handler:(req,res)=>{
-    res.write('this is auth main route')
-    res.end()
-  },
-  middlewares:[function(req,res,next){console.log('specific route middleware!');next()}],
-  errHandler:function(req,res,e1){res.writeHead(500);res.write(e1.toString());res.end()}
-}
 const errHandlerForAPi = function(req,res,e1,e2){
   res.writeHead(404)
   res.write(e1.toString())
@@ -188,13 +205,47 @@ const errHandlerForAPi = function(req,res,e1,e2){
   res.end()
 }
 
+const getLogin = exp.createPath()
+const getLogin2 = exp.createPath()
+
+getLogin
+  .path('/login')
+  .middleware((req,res,next)=>{console.log('middleware1');next()})
+  .middleware((req,res,next)=>{console.log('middleware2');next()})
+  .handler((req,res)=>{
+    res.writeHead(200)
+    res.write('this is from loginnn')
+    res.end()
+  })
+  .errHandler((req,res,err)=>{
+    console.log('err from login')
+    res.end()
+  })
+
+
+getLogin2
+  .path('/login2')
+  .middleware((req,res,next)=>{console.log('middleware1');next()})
+  .middleware((req,res,next)=>{console.log('middleware2');next()})
+  .handler((req,res)=>{
+    res.writeHead(200)
+    res.write('this is from loginnn')
+    res.end()
+  })
+  .errHandler((req,res,err)=>{
+    console.log('err from login')
+    res.end()
+  })
+
+
+
+
 apiRouter
-  .get(apiMainRoute)
-  .delete(apiGetAA)
+  .get(getLogin)
+  .get(getLogin2)
   .routerErrorHandler(errHandlerForAPi)
 
 authRouter
-  .post(authMainRoute)
   .routerErrorHandler(errHandlerForAPi)
   .middleware(function(req,res,next){console.log('auth router middleware');next()})
 
@@ -202,6 +253,5 @@ exp
   .middleware((req,res,next)=>{console.log(`global middleware`);next()})
   .registerRouters(apiRouter, authRouter)
   .listen(3000, ()=>console.log(`listening on port 3000`))
-
 
 
