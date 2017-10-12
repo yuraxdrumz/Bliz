@@ -81,7 +81,7 @@ const RegisterRouters = (http, Listen, urlUtil, defaultHandler) => ({
   }
 })
 
-const ExpAppCreator = (Router, Listen) => {
+const ExpAppCreator = (Router, Listen, urlUtil, defaultHandler) => {
   return createInstanceFactory = (http) => {
     return Object.assign(
       {},
