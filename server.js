@@ -9,16 +9,16 @@ const Listen = (http, handler) => ({
   }
 })
 // method creator for router, name, chainlink for chaining and mem to store it to
-const Method = (name, chainLink, mem) => ({
+const Method = (name, mem,chainLink) => ({
   [name]:route=>{mem[route.path] = route;return chainLink}
 })
 // router error handler creator, chainlink is the router name to chin and mem is where to store it to
-const RouterErrorHandler = (chainLink, mem) =>({
+const RouterErrorHandler = (mem, chainLink) =>({
   routerErrorHandler:func=>{mem = func;return chainLink}
 })
 // router list routes creator
-const ListRoutes = (get, post, put, deleted, routerErrorHandler, base) =>({
-  listRoutes:()=>({get, post, put, deleted, routerErrorHandler, base})
+const ListRoutes = (get, post, put, deleted, routerErrorHandler, base, middleWareArr) =>({
+  listRoutes:()=>({get, post, put, deleted, routerErrorHandler, base, middleWareArr})
 })
 
 // receive a basepath for the router and return router funcs like get post and list
@@ -27,16 +27,18 @@ const Router = base => {
   let post               = {}
   let put                = {}
   let deleted            = {}
+  let middleWareArr      = []
   let routerErrorHandler = null
   const RouterReturn     = {}
 
   return Object.assign(RouterReturn,
-    Method('get', RouterReturn, get),
-    Method('post', RouterReturn, post),
-    Method('put', RouterReturn, put),
-    Method('delete', RouterReturn, deleted),
-    RouterErrorHandler(RouterReturn, routerErrorHandler),
-    ListRoutes(get, post, put, deleted, routerErrorHandler, base)
+    Method('get', get, RouterReturn),
+    Method('post', post, RouterReturn),
+    Method('put', put, RouterReturn),
+    Method('delete', deleted, RouterReturn),
+    CreateMiddleWare(middleWareArr, RouterReturn),
+    RouterErrorHandler(routerErrorHandler, RouterReturn),
+    ListRoutes(get, post, put, deleted, routerErrorHandler, base, middleWareArr)
   )
 }
 
@@ -52,9 +54,14 @@ const CreateRouter = Router => ({
 
 })
 
-const defaultHandler = function(req ,res){
+const defaultHandler = function(req ,res, ...errs){
   res.writeHead(404)
-  res.write('Default Error handler, route not found')
+  if(errs.length > 0){
+    errs.map(err=>res.write(err.toString()))
+  }else{
+    res.write(`url:${req.url} not found...`)
+  }
+
   res.end()
 }
 
@@ -79,10 +86,9 @@ const RegisterRouters = (http, Listen, urlUtil, defaultHandler, middleWares,midH
     const handler = async function(req,res){
       const { baseOfRequest, method, rest } = urlUtil(req)
       try{
-        await midHandler(req,res,middleWares,0)
+        if(middleWares) await midHandler(req,res,middleWares)
       }catch(middleWareError){
-        console.log(middleWareError)
-        return defaultHandler(req,res)
+        return defaultHandler(req,res,middleWareError)
       }
       if(!routes[baseOfRequest]) return defaultHandler(req ,res)
       else if(!routes[baseOfRequest])return defaultHandler(req ,res)
@@ -90,6 +96,10 @@ const RegisterRouters = (http, Listen, urlUtil, defaultHandler, middleWares,midH
       else if(!routes[baseOfRequest][method][rest]) return defaultHandler(req ,res)
 
       try{
+        const routerMiddlewares = routes[baseOfRequest].middleWareArr
+        if(routerMiddlewares) await midHandler(req,res, routerMiddlewares)
+        const specificRouteMiddlewares = routes[baseOfRequest][method][rest].middlewares
+        if(specificRouteMiddlewares) await midHandler(req,res, specificRouteMiddlewares)
         routes[baseOfRequest][method][rest].handler(req,res)
       }catch(errorFromHandler){
         try{
@@ -97,8 +107,8 @@ const RegisterRouters = (http, Listen, urlUtil, defaultHandler, middleWares,midH
         }catch(errorFromErrHandler){
           try{
             routes[baseOfRequest].routerErrorHandler(req,res,errorFromHandler, errorFromErrHandler)
-          }catch(e){
-            defaultHandler(req,res)
+          }catch(errFromRouterErrorHandler){
+            defaultHandler(req,res, errorFromHandler, errorFromErrHandler, errFromRouterErrorHandler)
           }
         }
       }
@@ -107,13 +117,14 @@ const RegisterRouters = (http, Listen, urlUtil, defaultHandler, middleWares,midH
   }
 })
 
-function next(resolve, reject, ...args){
-  if(args.length > 0) return reject(args[0])
-  return resolve()
-}
+
 
 // test handler for express middlewares...
 function midHandler(req, res, arr){
+  function next(resolve, reject, ...args){
+    if(args.length > 0) return reject(args[0])
+    return resolve()
+  }
   return Promise.mapSeries(arr, item=>{
     return new Promise((resolve, reject)=>{
       item(req,res,next.bind(this,resolve, reject))
@@ -121,7 +132,7 @@ function midHandler(req, res, arr){
   })
 }
 
-const CreateMiddleWare = (chainLink, middleWareArr) => ({
+const CreateMiddleWare = (middleWareArr, chainLink) => ({
   middleware:fn=>{middleWareArr.push(fn);return chainLink}
 })
 
@@ -135,7 +146,7 @@ const ExpAppCreator = (Router, Listen, urlUtil, defaultHandler, midHandler) => {
       Instance,
       CreateRouter(Router),
       RegisterRouters(http, Listen,urlUtil, defaultHandler, middleWares, midHandler),
-      CreateMiddleWare(Instance,middleWares)
+      CreateMiddleWare(middleWares, Instance)
     )
   }
 }
@@ -159,6 +170,7 @@ const apiGetAA = {
     res.write('this is AA')
     res.end()
   },
+  middlewares:[function(req,res,next){console.log('specific route middleware!');next()}],
 }
 const authMainRoute = {
   path:'/login',
@@ -166,6 +178,7 @@ const authMainRoute = {
     res.write('this is auth main route')
     res.end()
   },
+  middlewares:[function(req,res,next){console.log('specific route middleware!');next()}],
   errHandler:function(req,res,e1){res.writeHead(500);res.write(e1.toString());res.end()}
 }
 const errHandlerForAPi = function(req,res,e1,e2){
@@ -183,15 +196,10 @@ apiRouter
 authRouter
   .post(authMainRoute)
   .routerErrorHandler(errHandlerForAPi)
+  .middleware(function(req,res,next){console.log('auth router middleware');next()})
 
 exp
-  .middleware((req,res,next)=>{console.log(`url is: ${req.url}`);next()})
-  .middleware((req,res,next)=>{fs.readFile('./package.json','utf-8',(err,data)=>{
-    setTimeout(()=>{
-      req.bla = 'this works'
-      next()
-    },3000)
-  })})
+  .middleware((req,res,next)=>{console.log(`global middleware`);next()})
   .registerRouters(apiRouter, authRouter)
   .listen(3000, ()=>console.log(`listening on port 3000`))
 
