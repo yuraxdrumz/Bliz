@@ -1,5 +1,5 @@
 import {
-  CreateMiddleWare,
+  CreateArray,
   CreateHandler,
   GetObjProps
 } from './objectFactories'
@@ -14,7 +14,7 @@ const PathCreator = path => {
   }
   return Object.assign(
     PathReturn,
-    CreateMiddleWare(pathData.middleWareArr, PathReturn),
+    CreateArray('middleware',pathData.middleWareArr, PathReturn),
     CreateHandler('handler', pathData, PathReturn),
     CreateHandler('path', pathData, PathReturn),
     CreateHandler('errHandler', pathData, PathReturn),

@@ -1,6 +1,6 @@
 import RouterCreator from './router'
 import PathCreator from './path'
-import { Listen, CreateMiddleWare, CreateNewObjOf } from './objectFactories'
+import { Listen, CreateArray, CreateNewObjOf } from './objectFactories'
 import { urlUtil } from './utils'
 import defaultHandler from './defaultHandler'
 import midHandler from './middlewareHandler'
@@ -16,7 +16,7 @@ const BlizAppCreator = (RouterCreator, Listen, urlUtil, defaultHandler, midHandl
     Instance,
     CreateNewObjOf('Router', RouterCreator),
     RegisterRouters(http, Listen, urlUtil, defaultHandler, midHandler, middleWares),
-    CreateMiddleWare(middleWares, Instance),
+    CreateArray('middleware',middleWares, Instance),
     CreateNewObjOf('Path', PathCreator)
   )
 }

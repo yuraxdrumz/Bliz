@@ -2,7 +2,7 @@ import exp from './src/main'
 
 const apiRouter = exp.createRouter('/api')
 const authRouter = exp.createRouter('/auth')
-const ds = exp.createRouter('/ds')
+const apiInnerRouter = exp.createRouter('/ds')
 
 const errHandlerForAPi = function(req,res,e1,e2){
   res.writeHead(404)
@@ -29,29 +29,27 @@ getLogin
 
 getLogin2
   .handler((req,res)=>{
-    // console.log(req.bll)
-    res.write('blaa')
-    res.end()
+  console.log(res.json)
+    // res.json({ds:'sss'})
   })
   .errHandler((req,res,err)=>{
+  console.log(err)
     console.log('err from login2')
     res.end()
-  })
+  }).middleware(function(req,res,next){console.log('route router middleware');next()})
 
 apiRouter
+  .subRouter(apiInnerRouter)
   .get(getLogin2)
-  .get(getLogin)
-  .post(getLogin2)
-  .put(getLogin2)
-  .del(getLogin2)
   .routerErrorHandler(errHandlerForAPi)
+  .middleware(function(req,res,next){console.log('api router middleware');next()})
 
 authRouter
   .routerErrorHandler(errHandlerForAPi)
   .middleware(function(req,res,next){console.log('auth router middleware');next()})
 
 exp
-  .registerRouters(apiRouter, authRouter, ds)
+  .middleware(function(req,res,next){console.log('global router middleware');next()})
+  .registerRouters(apiRouter, authRouter)
   .listen(3000, ()=>console.log(`listening on port 3000`))
-
 

@@ -2,8 +2,11 @@ const RegisterRouters = (http, Listen, urlUtil, defaultHandler,midHandler, middl
   registerRouters:(...routers)=>{
     // main routes object container
     const routes = {}
-    // get pops fro meach router
-    routers.forEach(router=>{let list = router.getObjProps();routes[list.base] = list})
+    // get props from each router
+    routers.map(router=>{
+      let list = router.getObjProps()
+      routes[list.base] = list
+    })
     // handler func for http server
     async function handler(req,res){
       // get url parts

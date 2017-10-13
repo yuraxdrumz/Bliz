@@ -1,5 +1,4 @@
 // receive an http and a handler and return a listen func
-
 const Listen = (http, handler) => ({
   listen:(...args)=>{
     const server = http.createServer(handler)
@@ -35,13 +34,13 @@ const CreateNewObjOf = (name, obj) => ({
   }
 })
 
-const CreateMiddleWare = (middleWareArr, chainLink) => ({
-  middleware:fn=>{middleWareArr.push(fn);return chainLink}
+const CreateArray = (name, arr, chainLink) => ({
+  [name]:data=>{arr.push(data);return chainLink}
 })
 
 export {
   CreateHandler,
-  CreateMiddleWare,
+  CreateArray,
   CreateNewObjOf,
   Method,
   GetObjProps,

@@ -1,8 +1,9 @@
 import {
-  CreateMiddleWare,
+  CreateArray,
   CreateHandler,
   GetObjProps,
-  Method
+  Method,
+  CreateNewObjOf
 } from './objectFactories'
 
 const RouterCreator = base => {
@@ -14,6 +15,7 @@ const RouterCreator = base => {
     put : {},
     del :{},
     middleWareArr :[],
+    subRouters:[],
     routerErrorHandler: null,
   }
   return Object.assign(
@@ -23,7 +25,8 @@ const RouterCreator = base => {
     Method('put', routerData, RouterReturn),
     Method('del', routerData, RouterReturn),
     CreateHandler('routerErrorHandler',routerData, RouterReturn),
-    CreateMiddleWare(routerData.middleWareArr, RouterReturn),
+    CreateArray('middleware',routerData.middleWareArr, RouterReturn),
+    CreateArray('subRouter',routerData.subRouters, RouterReturn),
     GetObjProps(routerData)
   )
 }
