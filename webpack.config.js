@@ -14,16 +14,15 @@ fs.readdirSync('node_modules')
 
 module.exports = {
   devtool: 'source-map',
-  entry: ['babel-polyfill','./test.js'],
+  entry: ['babel-polyfill','./server.js'],
   target: 'node',
   output: {
-    path: process.env.NODE_ENV === 'production' ? path.join(__dirname, 'dist') : path.join(__dirname, 'build'),
+    path: path.join(__dirname, 'dist'),
     filename: 'backend.js',
     libraryTarget: 'commonjs2'
   },
   externals: nodeModules,
   plugins: [
-    new webpack.IgnorePlugin(/\.(css|less)$/),
     new WebpackNodeServerPlugin({retries: 0}),
     new webpack.BannerPlugin({
       banner: 'require("source-map-support").install();',
@@ -33,12 +32,6 @@ module.exports = {
   ],
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'export-loader',
-
-      },
       {
         test: /\.js$/,
         exclude: /node_modules/,
