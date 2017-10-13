@@ -1,4 +1,5 @@
 // receive an http and a handler and return a listen func
+
 const Listen = (http, handler) => ({
   listen:(...args)=>{
     const server = http.createServer(handler)
@@ -8,7 +9,7 @@ const Listen = (http, handler) => ({
 
 // method creator for router
 const Method = (name, mem,chainLink) => ({
-  [name]:route=>{console.log(name, mem, chainLink);mem[name][route.getObjProps().path] = route;return chainLink}
+  [name]:route=>{mem[name][route.getObjProps().path] = route;return chainLink}
 })
 
 

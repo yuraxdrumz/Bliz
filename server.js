@@ -1,6 +1,5 @@
 import exp from './src/main'
 
-
 const apiRouter = exp.createRouter('/api')
 const authRouter = exp.createRouter('/auth')
 const ds = exp.createRouter('/ds')
@@ -29,10 +28,10 @@ getLogin
   })
 
 getLogin2
-  .middleware((req,res,next)=>{console.log('sadsa');next()})
-  .middleware((req,res,next)=>{console.log('middsdadsaleware2');next()})
   .handler((req,res)=>{
-    res.json('blaa')
+    // console.log(req.bll)
+    res.write('blaa')
+    res.end()
   })
   .errHandler((req,res,err)=>{
     console.log('err from login2')
@@ -46,14 +45,12 @@ apiRouter
   .put(getLogin2)
   .del(getLogin2)
   .routerErrorHandler(errHandlerForAPi)
-  .middleware(function(req,res,next){console.log('api router middleware');next()})
 
 authRouter
   .routerErrorHandler(errHandlerForAPi)
   .middleware(function(req,res,next){console.log('auth router middleware');next()})
 
 exp
-  .middleware((req,res,next)=>{console.log(`global middleware`);next()})
   .registerRouters(apiRouter, authRouter, ds)
   .listen(3000, ()=>console.log(`listening on port 3000`))
 
