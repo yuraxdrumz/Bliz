@@ -1,5 +1,5 @@
-import exp from './src/main'
-
+import bliz from './src/main'
+const exp = bliz()
 const apiRouter = exp.createRouter('/api')
 const authRouter = exp.createRouter('/auth')
 const apiInnerRouter = exp.createRouter('/ds')

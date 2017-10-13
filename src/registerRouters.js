@@ -1,4 +1,5 @@
-
+//TODO add sub router implementation
+//TODO remove listen to bliz object and allow multiple register routers
 const RegisterRouters = (http, Listen, urlUtil, defaultHandler, midHandler, middleWares) => ({
   registerRouters:(...routers)=>{
 

@@ -9,7 +9,7 @@ import RegisterRouters from './registerRouters'
 
 
 // main instance creator, returns a func which expects an http object and creates an instance
-const BlizAppCreator = (RouterCreator, Listen, urlUtil, defaultHandler, midHandler, PathCreator, http) => {
+const BlizApp = (RouterCreator, Listen, urlUtil, defaultHandler, midHandler, PathCreator, http) => {
   const Instance = {}
   const middleWares = []
   return Object.assign(
@@ -21,4 +21,11 @@ const BlizAppCreator = (RouterCreator, Listen, urlUtil, defaultHandler, midHandl
   )
 }
 
-export default BlizAppCreator(RouterCreator, Listen, urlUtil, defaultHandler, midHandler, PathCreator, http)
+const BlizCreator = () => {
+  return Object.assign(
+    {},
+    BlizApp(RouterCreator, Listen, urlUtil, defaultHandler, midHandler, PathCreator, http)
+  )
+}
+
+export default BlizCreator
