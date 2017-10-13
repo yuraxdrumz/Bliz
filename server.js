@@ -40,8 +40,11 @@ getLogin2
   })
 
 apiRouter
-  .get(getLogin)
   .get(getLogin2)
+  .get(getLogin)
+  .post(getLogin2)
+  .put(getLogin2)
+  .del(getLogin2)
   .routerErrorHandler(errHandlerForAPi)
   .middleware(function(req,res,next){console.log('api router middleware');next()})
 

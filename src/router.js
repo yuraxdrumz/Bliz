@@ -12,7 +12,7 @@ const RouterCreator = base => {
     get: {},
     post: {},
     put : {},
-    deleted :{},
+    del :{},
     middleWareArr :[],
     routerErrorHandler: null,
   }
@@ -21,7 +21,7 @@ const RouterCreator = base => {
     Method('get', routerData, RouterReturn),
     Method('post', routerData, RouterReturn),
     Method('put', routerData, RouterReturn),
-    Method('delete', routerData, RouterReturn),
+    Method('del', routerData, RouterReturn),
     CreateHandler('routerErrorHandler',routerData, RouterReturn),
     CreateMiddleWare(routerData.middleWareArr, RouterReturn),
     GetObjProps(routerData)

@@ -8,7 +8,7 @@ const Listen = (http, handler) => ({
 
 // method creator for router
 const Method = (name, mem,chainLink) => ({
-  [name]:route=>{mem[name][route.getObjProps().path] = route;return chainLink}
+  [name]:route=>{console.log(name, mem, chainLink);mem[name][route.getObjProps().path] = route;return chainLink}
 })
 
 
@@ -26,10 +26,10 @@ const GetObjProps = obj =>({
 // when called, receives a router type
 // returns a Router func which allows to create routers with Router and basepath provided
 const CreateNewObjOf = (name, obj) => ({
-  [`create${name}`]: (...args) =>{
+  [`create${name}`]: path =>{
     return Object.assign(
       {},
-      obj(args)
+      obj(path)
     )
   }
 })
