@@ -1,20 +1,15 @@
-//TODO add sub router implementation
 //TODO remove listen to bliz object and allow multiple register routers
-const RegisterRouters = (http, Listen, urlUtil, defaultHandler, midHandler, middleWares) => ({
+//TODO add sub app implementation
+const RegisterRouters = (http, Listen, defaultHandler, midHandler, middleWares, urlUtil, populateRoutersUtil, handleNestedRoutersUtil, populateUrlOptions) => ({
   registerRouters:(...routers)=>{
-
     // main routes object container
     const routes = {}
-    // get props from each router
-    routers.map(router=>{
-      let list = router.getObjProps()
-      routes[list.base] = list
-    })
+    // populate nested routers with routes
+    populateRoutersUtil(routes, routers)
     // handler func for http server
     async function handler(req,res){
       // get url parts
-      const { baseOfRequest, method, rest } = urlUtil(req)
-      console.log(baseOfRequest, method, rest)
+      const { method, splitRest } = urlUtil(req)
       let routerMiddlewareHandled = false
       // global middleware, if exists work with it, if throws error go to global handler
       try{
@@ -22,22 +17,28 @@ const RegisterRouters = (http, Listen, urlUtil, defaultHandler, midHandler, midd
       }catch(middleWareError){
         return defaultHandler(req,res,middleWareError)
       }
-      // if routes dont have entire url in routes object throw default handler, route not found
-      // router middleware is used when url base is found, for example: /api/bla, we have /api,
-      // so /api middleware will activate
-      if(!routes[baseOfRequest]) return defaultHandler(req ,res)
-      else {
-        const routerMiddlewares = routes[baseOfRequest].middleWareArr
-        if(routerMiddlewares){
-          await midHandler(Promise, req, res, routerMiddlewares)
-          routerMiddlewareHandled = true
-        }
+
+      // check all url combinations possible
+      const urlCombinationOptions = populateUrlOptions(splitRest)
+      // get last possible route on routes object and get last url part diff,
+      // get all middlewares collected on routers existing hit on request
+      const {
+        baseOfRequest,
+        rest,
+        nestedRoutersMiddlewaresCombined
+      } = handleNestedRoutersUtil(urlCombinationOptions, routes, nestedRoutersMiddlewaresCombined)
+      // check routers middleware
+      if(nestedRoutersMiddlewaresCombined){
+        await midHandler(Promise, req, res, nestedRoutersMiddlewaresCombined)
+        routerMiddlewareHandled = true
       }
+      // something is not defined go to default handler
       if(!routes[baseOfRequest])return defaultHandler(req ,res)
       if(!routes[baseOfRequest][method])return defaultHandler(req ,res)
       if(!routes[baseOfRequest][method][rest]) return defaultHandler(req ,res)
       // current route after all checks
       const currentRoute = routes[baseOfRequest][method][rest].getObjProps()
+
       // try router middleware => route middleware=>route handler=>if err check route err handler=>
       // if err in err handler or err handler not exists => router err handler => if not go to global handler
       try{

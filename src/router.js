@@ -2,8 +2,7 @@ import {
   CreateArray,
   CreateHandler,
   GetObjProps,
-  Method,
-  CreateNewObjOf
+  Method
 } from './objectFactories'
 
 const RouterCreator = base => {

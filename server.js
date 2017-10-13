@@ -7,6 +7,7 @@ const apiInner2Router = exp.createRouter('/inner2')
 
 const errHandlerForAPi = function(req,res,e1,e2){
   res.writeHead(404)
+  res.write('router middleware')
   res.write(e1.toString())
   res.write(e2.toString())
   res.end()
@@ -18,9 +19,10 @@ const getLogin2 = exp.createPath('/login2')
 apiInner2Router
   .get(getLogin)
   .middleware((req,res,next)=>{console.log('api inner inner router middleware');next()})
+  .routerErrorHandler(errHandlerForAPi)
 
 apiInnerRouter
-  .subRouter(apiInner2Router)
+  .get(getLogin)
   .middleware((req,res,next)=>{console.log('api inner router middleware');next()})
 
 getLogin
@@ -31,11 +33,6 @@ getLogin
     res.write('this is from loginnn')
     res.end()
   })
-  .errHandler((req,res,err)=>{
-    console.log('err from login')
-    res.end()
-  })
-
 getLogin2
   .handler((req,res)=>{
   res.write('dsaasdads')
@@ -50,11 +47,14 @@ getLogin2
 
 apiRouter
   .subRouter(apiInnerRouter)
+  .subRouter(apiInner2Router)
+
   .get(getLogin2)
   .routerErrorHandler(errHandlerForAPi)
   .middleware(function(req,res,next){console.log('api router middleware');next()})
 
 authRouter
+
   .routerErrorHandler(errHandlerForAPi)
   .middleware(function(req,res,next){console.log('auth router middleware');next()})
 
