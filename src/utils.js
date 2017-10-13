@@ -13,5 +13,5 @@ const urlUtil = req => {
 }
 
 export {
-  urlUtil
+  urlUtil,
 }

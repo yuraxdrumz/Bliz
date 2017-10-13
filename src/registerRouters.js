@@ -1,5 +1,7 @@
-const RegisterRouters = (http, Listen, urlUtil, defaultHandler,midHandler, middleWares) => ({
+
+const RegisterRouters = (http, Listen, urlUtil, defaultHandler, midHandler, middleWares) => ({
   registerRouters:(...routers)=>{
+
     // main routes object container
     const routes = {}
     // get props from each router
@@ -11,6 +13,7 @@ const RegisterRouters = (http, Listen, urlUtil, defaultHandler,midHandler, middl
     async function handler(req,res){
       // get url parts
       const { baseOfRequest, method, rest } = urlUtil(req)
+      console.log(baseOfRequest, method, rest)
       let routerMiddlewareHandled = false
       // global middleware, if exists work with it, if throws error go to global handler
       try{

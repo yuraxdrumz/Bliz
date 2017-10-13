@@ -3,6 +3,7 @@ import exp from './src/main'
 const apiRouter = exp.createRouter('/api')
 const authRouter = exp.createRouter('/auth')
 const apiInnerRouter = exp.createRouter('/ds')
+const apiInner2Router = exp.createRouter('/inner2')
 
 const errHandlerForAPi = function(req,res,e1,e2){
   res.writeHead(404)
@@ -13,6 +14,14 @@ const errHandlerForAPi = function(req,res,e1,e2){
 
 const getLogin = exp.createPath('/login')
 const getLogin2 = exp.createPath('/login2')
+
+apiInner2Router
+  .get(getLogin)
+  .middleware((req,res,next)=>{console.log('api inner inner router middleware');next()})
+
+apiInnerRouter
+  .subRouter(apiInner2Router)
+  .middleware((req,res,next)=>{console.log('api inner router middleware');next()})
 
 getLogin
   .middleware((req,res,next)=>{console.log('middleware1');next()})
@@ -29,7 +38,8 @@ getLogin
 
 getLogin2
   .handler((req,res)=>{
-  console.log(res.json)
+  res.write('dsaasdads')
+    res.end()
     // res.json({ds:'sss'})
   })
   .errHandler((req,res,err)=>{

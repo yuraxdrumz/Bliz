@@ -1,6 +1,6 @@
 {
-  "name": "express-test",
-  "version": "1.0.0",
+  "name": "Bliz",
+  "version": "0.0.1",
   "description": "",
   "main": "server.js",
   "scripts": {
