@@ -22,7 +22,6 @@ function createHandler (defaultHandler, midHandler, urlUtil, handleNestedRouters
     if (nestedRoutersMiddlewaresCombined) {
       await midHandler(Promise, req, res, nestedRoutersMiddlewaresCombined)
     }
-
     // something is not defined go to default handler
     if (!routes[baseOfRequest])return defaultHandler(req, res)
     if (!routes[baseOfRequest][method])return defaultHandler(req, res)
