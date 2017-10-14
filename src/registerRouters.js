@@ -1,4 +1,3 @@
-//TODO add sub app implementation
 const RegisterRouters = (populateRoutersUtil, globalRoutesObject, chainLink) => ({
   registerRouters:(...routers)=>{
     // populate globalRoutesObject with routers passed
