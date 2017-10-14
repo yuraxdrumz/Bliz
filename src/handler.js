@@ -28,13 +28,11 @@ const createHandler =  (defaultHandler, midHandler, middleWares, urlUtil, handle
     if (!routes[baseOfRequest][method][rest]) return defaultHandler(req, res)
     // current route after all checks
     const currentRoute = routes[baseOfRequest][method][rest].getObjProps()
-
     // try router middleware => route middleware=>route handler=>if err check route err handler=>
     // if err in err handler or err handler not exists => router err handler => if not go to global handler
     try {
       const specificRouteMiddlewares = currentRoute.middleWareArr
-      if (specificRouteMiddlewares) await
-      midHandler(Promise, req, res, specificRouteMiddlewares)
+      if (specificRouteMiddlewares) await midHandler(Promise, req, res, specificRouteMiddlewares)
       currentRoute.handler(req, res)
     } catch (errorFromHandler) {
       try {

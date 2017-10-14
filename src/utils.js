@@ -51,7 +51,7 @@ function handleNestedRoutersUtil(splitUrl, routesObject, nestedRoutersMiddleware
     }else{
       // if not exists go back one route string
       // check request
-      baseOfRequest = splitUrl[i-1]
+      baseOfRequest = splitUrl[i-1] || splitUrl[i]
       rest = splitUrl[i].substr(baseOfRequest.length)
     }
   }

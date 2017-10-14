@@ -1,65 +1,38 @@
 import bliz from './src/main'
 const exp = bliz()
-const apiRouter = exp.createRouter('/api')
-const authRouter = exp.createRouter('/auth')
-const apiInnerRouter = exp.createRouter('/ds')
-const apiInner2Router = exp.createRouter('/inner2')
 
-const errHandlerForAPi = function(req,res,e1,e2){
-  res.writeHead(404)
-  res.write('router middleware')
-  res.write(e1.toString())
-  res.write(e2.toString())
-  res.end()
-}
 
-const getLogin = exp.createPath('/login')
-const getLogin2 = exp.createPath('/login2')
+const getData = exp
+  .createPath('/getData')
+  .handler((req,res)=>{res.write('data insside news');res.end()})
+  .middleware((req,res,next)=>{console.log('data middleware');next()})
 
-apiInner2Router
-  .get(getLogin)
-  .middleware((req,res,next)=>{console.log('api inner inner router middleware');next()})
-  .routerErrorHandler(errHandlerForAPi)
+const getNews = exp
+  .createPath('/getNews')
+  .middleware((req,res,next)=>{console.log('news array');next()})
+  .handler((req,res)=>{throw  22222;res.end()})
+  .errHandler((req,res,e)=>{res.write(`get news  err handler: `+e.toString());res.end()})
 
-apiInnerRouter
-  .get(getLogin)
-  .middleware((req,res,next)=>{console.log('api inner router middleware');next()})
+const dataRouter = exp
+  .createRouter('/data')
+  .get(getData)
+  .middleware((req,res,next)=>{console.log('data router...');next()})
 
-getLogin
-  .middleware((req,res,next)=>{console.log('middleware1');next()})
-  .middleware((req,res,next)=>{console.log('middleware2');next()})
-  .handler((req,res)=>{
-    res.writeHead(200)
-    res.write('this is from loginnn')
-    res.end()
-  })
-getLogin2
-  .handler((req,res)=>{
-  res.write('dsaasdads')
-    res.end()
-    // res.json({ds:'sss'})
-  })
-  .errHandler((req,res,err)=>{
-  console.log(err)
-    console.log('err from login2')
-    res.end()
-  }).middleware(function(req,res,next){console.log('route router middleware');next()})
+const newsRouter = exp
+  .createRouter('/news')
+  .subRouter(dataRouter)
+  .get(getNews)
+  .middleware((req,res,next)=>{console.log('news router...');next()})
+  .routerErrorHandler((req,res,e)=>{res.write(`router err handler: `+e.toString());res.end()})
 
-apiRouter
-  .subRouter(apiInnerRouter)
-  .subRouter(apiInner2Router)
-
-  .get(getLogin2)
-  .routerErrorHandler(errHandlerForAPi)
-  .middleware(function(req,res,next){console.log('api router middleware');next()})
-
-authRouter
-  .get(getLogin2)
-  .routerErrorHandler(errHandlerForAPi)
-  .middleware(function(req,res,next){console.log('auth router middleware');next()})
 
 exp
-  .middleware(function(req,res,next){console.log('global router middleware');next()})
-  .registerRouters(apiRouter, authRouter)
-  .listen(3000,()=>console.log('listening on bliz server on port 3000'))
+  .registerRouters(newsRouter)
+  .registerRouters(dataRouter)
+  .listen(3000,()=>{
+  console.log('listening on bliz server on port 3000')
+})
+
+
+
 
