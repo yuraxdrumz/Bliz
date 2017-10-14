@@ -23,28 +23,50 @@ const newsRouter = exp
   .get(getNews)
   .middleware((req,res,next)=>{console.log('news router...');next()})
 
+const blaRouter = exp
+  .createRouter('/thirdNested')
+  .subRouter(dataRouter)
+  .get(getNews)
+  .middleware((req,res,next)=>{console.log('news router...');next()})
 
-exp
-  .middleware(function(req,res,next){console.log('global router middleware');next()})
-  .registerRouters(newsRouter)
-  .listen(3000,()=>{
-  console.log('listening on bliz server on port 3000')
-})
 
 
 const subAppData = expSub
   .createPath('/data')
   .handler((req,res)=>{res.write('sdddasdas');res.end()})
+  .middleware((req,res,next)=>{console.log('sub app router...');next()})
 
 const getOtherData = expSub
   .createRouter('/other')
   .get(subAppData)
+  .middleware((req,res,next)=>{console.log('other middleware...');next()})
+const anotherSubApp = bliz()
+const another3SubApp = bliz()
+const otherBranchSubApp = bliz()
+anotherSubApp
+  .subApp(another3SubApp)
+  .registerRouters(blaRouter)
+  .middleware((req,res,next)=>{console.log('3rd sub app router...');next()})
+another3SubApp
+  .registerRouters(blaRouter)
+  .middleware((req,res,next)=>{console.log('4th sub app router...');next()})
 
-expSub.registerRouters(getOtherData)
+expSub
+  .registerRouters(getOtherData)
+  .subApp(anotherSubApp)
+  .middleware((req,res,next)=>{console.log('sub router...');next()})
 
-console.log(exp.getObjProps())
-console.log(expSub.getObjProps())
+otherBranchSubApp.registerRouters(getOtherData).middleware((req,res,next)=>{console.log('completely other sub app...');next()})
 
+
+exp
+  .subApp(expSub)
+  .subApp(otherBranchSubApp)
+  // .middleware(function(req,res,next){console.log('global router middleware');next()})
+  .registerRouters(newsRouter)
+  .listen(3000,()=>{
+    console.log('listening on bliz server on port 3000')
+  })
 
 
 

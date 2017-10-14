@@ -1,4 +1,4 @@
-function createHandler (defaultHandler, midHandler, middleWares, urlUtil, handleNestedRoutersUtil, populateUrlOptions, routes) {
+function createHandler (defaultHandler, midHandler, urlUtil, handleNestedRoutersUtil, populateUrlOptions, middleWares, routes) {
   async function handler(req,res){
     // get url parts
     const { method, splitRest } = urlUtil(req.url, req.method)

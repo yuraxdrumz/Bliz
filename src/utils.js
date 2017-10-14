@@ -23,6 +23,21 @@ function populateRoutersUtil(obj, routers, parent = null){
   Object.assign(obj, innerRouterObj)
 }
 
+function populateSubAppsUtil(mds, routes, subApps){
+  subApps.map(subApp=>{
+    const data = subApp.getObjProps()
+    const middlewares = data.middleWares
+    const routersObject = data.routersObject
+    Object.assign(routes, routersObject)
+    mds.push(middlewares)
+    const innerSubApps = data.subApps
+    if(innerSubApps.length > 0){
+      return populateSubAppsUtil(mds, routes, innerSubApps)
+    }
+  })
+
+}
+
 // nested routers handle test
 function populateUrlOptions(arr){
   let startStr = ''
@@ -60,5 +75,6 @@ export {
   urlUtil,
   populateRoutersUtil,
   populateUrlOptions,
-  handleNestedRoutersUtil
+  handleNestedRoutersUtil,
+  populateSubAppsUtil
 }
