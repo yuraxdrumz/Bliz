@@ -54,12 +54,12 @@ apiRouter
   .middleware(function(req,res,next){console.log('api router middleware');next()})
 
 authRouter
-
+  .get(getLogin2)
   .routerErrorHandler(errHandlerForAPi)
   .middleware(function(req,res,next){console.log('auth router middleware');next()})
 
 exp
   .middleware(function(req,res,next){console.log('global router middleware');next()})
   .registerRouters(apiRouter, authRouter)
-  .listen(3000, ()=>console.log(`listening on port 3000`))
+  .listen(3000,()=>console.log('listening on bliz server on port 3000'))
 

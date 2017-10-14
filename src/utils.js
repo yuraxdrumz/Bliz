@@ -26,7 +26,6 @@ function populateRoutersUtil(obj, routers, parent = null){
       }else{
         return populateRoutersUtil(obj, list.subRouters, list.base)
       }
-
     }
   })
   Object.assign(obj, innerRouterObj)
@@ -56,7 +55,7 @@ function handleNestedRoutersUtil(splitUrl, routesObject, nestedRoutersMiddleware
       rest = splitUrl[i].substr(baseOfRequest.length)
     }
   }
-  nestedRoutersMiddlewaresCombined = nestedRoutersMiddlewaresCombined.reduce((prev,curr)=>prev.concat(curr))
+  nestedRoutersMiddlewaresCombined = nestedRoutersMiddlewaresCombined.reduce((prev,curr)=>prev.concat(curr), [])
   return {
     baseOfRequest,
     rest,

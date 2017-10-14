@@ -1,6 +1,7 @@
 // receive an http and a handler and return a listen func
-const Listen = (http, handler) => ({
+const Listen = (http, createHandler, routers) => ({
   listen:(...args)=>{
+    const handler = createHandler(routers)
     const server = http.createServer(handler)
     return server.listen.apply(server, args)
   }
