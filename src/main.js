@@ -19,6 +19,7 @@ const BlizApp = (RouterCreator, Listen, defaultHandler, midHandler, PathCreator,
     RegisterRouters(populateRoutersUtil, routersObject, Instance),
     CreateArray('middleware',middleWares, Instance),
     CreateNewObjOf('Path', PathCreator),
+    GetObjProps({middleWares, routersObject}),
     Listen(http, createHandler.bind(this, defaultHandler, midHandler, middleWares, urlUtil, handleNestedRoutersUtil, populateUrlOptions), routersObject)
   )
 }

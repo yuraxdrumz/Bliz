@@ -1,21 +1,27 @@
 // receive an http and a handler and return a listen func
-const Listen = (http, createHandler, routers) => ({
+const Listen = (http, handler, routes) => ({
   listen:(...args)=>{
-    const handler = createHandler(routers)
-    const server = http.createServer(handler)
+    const handlerWithRoutes = handler(routes)
+    const server = http.createServer(handlerWithRoutes)
     return server.listen.apply(server, args)
   }
 })
 
 // method creator for router
-const Method = (name, mem,chainLink) => ({
-  [name]:route=>{mem[name][route.getObjProps().path] = route;return chainLink}
+const Method = (name, object,chainLink) => ({
+  [name]: data =>{
+    object[name][data.getObjProps().path] = data
+    return chainLink
+  }
 })
 
 
 // assign creator
-const CreateHandler = (name, mem, chainLink) =>({
-  [name]:func=>{mem[name] = func;return chainLink}
+const AssignHandler = (name, object, chainLink) =>({
+  [name]:data =>{
+    object[name] = data
+    return chainLink
+  }
 })
 
 
@@ -24,23 +30,26 @@ const GetObjProps = obj =>({
   getObjProps:()=>(obj)
 })
 
-// when called, receives a router type
-// returns a Router func which allows to create routers with Router and basepath provided
+// when called, receives an object
+// returns new object
 const CreateNewObjOf = (name, obj) => ({
-  [`create${name}`]: path =>{
+  [`create${name}`]: data =>{
     return Object.assign(
       {},
-      obj(path)
+      obj(data)
     )
   }
 })
-
+// pushes data to array
 const CreateArray = (name, arr, chainLink) => ({
-  [name]:data=>{arr.push(data);return chainLink}
+  [name]:data=>{
+    arr.push(data)
+    return chainLink
+  }
 })
 
 export {
-  CreateHandler,
+  AssignHandler,
   CreateArray,
   CreateNewObjOf,
   Method,

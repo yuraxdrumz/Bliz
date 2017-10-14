@@ -1,6 +1,6 @@
 import bliz from './src/main'
 const exp = bliz()
-
+const expSub = bliz()
 
 const getData = exp
   .createPath('/getData')
@@ -11,7 +11,6 @@ const getNews = exp
   .createPath('/getNews')
   .middleware((req,res,next)=>{console.log('news array');next()})
   .handler((req,res)=>{throw  22222;res.end()})
-  .errHandler((req,res,e)=>{res.write(`get news  err handler: `+e.toString());res.end()})
 
 const dataRouter = exp
   .createRouter('/data')
@@ -19,19 +18,33 @@ const dataRouter = exp
   .middleware((req,res,next)=>{console.log('data router...');next()})
 
 const newsRouter = exp
-  .createRouter('/news')
+  .createRouter('/')
   .subRouter(dataRouter)
   .get(getNews)
   .middleware((req,res,next)=>{console.log('news router...');next()})
-  .routerErrorHandler((req,res,e)=>{res.write(`router err handler: `+e.toString());res.end()})
 
 
 exp
+  .middleware(function(req,res,next){console.log('global router middleware');next()})
   .registerRouters(newsRouter)
-  .registerRouters(dataRouter)
   .listen(3000,()=>{
   console.log('listening on bliz server on port 3000')
 })
+
+
+const subAppData = expSub
+  .createPath('/data')
+  .handler((req,res)=>{res.write('sdddasdas');res.end()})
+
+const getOtherData = expSub
+  .createRouter('/other')
+  .get(subAppData)
+
+expSub.registerRouters(getOtherData)
+
+console.log(exp.getObjProps())
+console.log(expSub.getObjProps())
+
 
 
 

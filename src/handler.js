@@ -1,7 +1,7 @@
-const createHandler =  (defaultHandler, midHandler, middleWares, urlUtil, handleNestedRoutersUtil, populateUrlOptions, routes) => {
+function createHandler (defaultHandler, midHandler, middleWares, urlUtil, handleNestedRoutersUtil, populateUrlOptions, routes) {
   async function handler(req,res){
     // get url parts
-    const {method, splitRest} = urlUtil(req)
+    const { method, splitRest } = urlUtil(req.url, req.method)
     // global middleware, if exists work with it, if throws error go to global handler
     try {
       if (middleWares) await midHandler(Promise, req, res, middleWares)
