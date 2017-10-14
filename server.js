@@ -3,18 +3,20 @@ const exp = bliz()
 
 const getData = exp
   .createPath('/')
-  .handler((req,res)=>{res.write('data insside news');res.end()})
-  .middleware((req,res,next)=>{console.log('data middleware');next()})
+  .handler((req,res)=>{
+    res.setHeader('Connection', 'close');
+    res.end('Hello World!');
+    })
 
 const apiRouter = exp
-  .createRouter('/')
+  .createRouter('/api')
   .get(getData)
+.middleware((req,res,next)=>{console.log('data middleware');next()})
 
 exp
   .registerRouters(apiRouter)
   .listen(3000,()=>{
     console.log('listening on bliz server on port 3000')
   })
-
 
 

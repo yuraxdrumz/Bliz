@@ -61,6 +61,16 @@ function handleNestedRoutersUtil(splitUrl, routesObject, nestedRoutersMiddleware
       // check request
       baseOfRequest = splitUrl[i-1] || splitUrl[i]
       rest = splitUrl[i].substr(baseOfRequest.length)
+
+      if(i === 0) {
+        baseOfRequest = splitUrl[i+1]
+        if(!rest){
+          rest = '/'
+        }
+      }
+      if(baseOfRequest === '/'){
+        rest = '/' + rest
+      }
     }
   }
   if(splitUrl.length === 1){
