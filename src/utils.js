@@ -47,7 +47,7 @@ function populateUrlOptions(arr){
     return startStr
   })
 }
-
+//TODO fix handle nested routers object for different use cases...
 function handleNestedRoutersUtil(splitUrl, routesObject, nestedRoutersMiddlewaresCombined = []){
   let baseOfRequest = null
   let rest = null

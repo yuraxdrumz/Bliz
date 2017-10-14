@@ -9,7 +9,7 @@ const getData = exp
     })
 
 const apiRouter = exp
-  .createRouter('/api')
+  .createRouter('/api/ggg')
   .get(getData)
 .middleware((req,res,next)=>{console.log('data middleware');next()})
 
