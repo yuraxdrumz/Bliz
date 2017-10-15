@@ -1,6 +1,8 @@
 //TODO add regex support
-function createHandler (defaultHandler, midHandler, urlUtil, handleNestedRoutersUtil, populateUrlOptions, middleWares, routes) {
+function createHandler (request, response, defaultHandler, midHandler, urlUtil, handleNestedRoutersUtil, populateUrlOptions, middleWares, routes) {
   async function handler(req,res){
+    req.__proto__ = request
+    res.__proto__ = response
     if(!req.params) req.params = {}
     // get url parts
     const { method, splitRest } = urlUtil(req.url, req.method)
@@ -24,24 +26,27 @@ function createHandler (defaultHandler, midHandler, urlUtil, handleNestedRouters
     if (nestedRoutersMiddlewaresCombined) {
       await midHandler(Promise, req, res, nestedRoutersMiddlewaresCombined)
     }
+
+    // handle params
     let canSkipBecauseParams = false
     let param
     try{
       param = Object.keys(routes[baseOfRequest][method])[0]
-    }catch(e){}
-    if(param && param.includes(':')){
-      let splitParam = param.split('/')
-      let splitRestAfter = rest.split('/')
-      // console.log(`PARAM:${splitParam},RESTAFTER:${splitRestAfter}`)
-      if(splitParam.length === splitRestAfter.length){
-        for(let i=0,len=splitParam.length;i<len;i++){
-          if(splitParam[i].includes(':')){
-            req.params[ splitParam[i].replace(':','') ] = splitRestAfter[i]
-            canSkipBecauseParams = true
+      if(param && param.includes(':')){
+        let splitParam = param.split('/')
+        let splitRestAfter = rest.substr(0,rest.indexOf('?')).split('/')
+        // console.log(`PARAM:${splitParam},RESTAFTER:${splitRestAfter}`)
+        if(splitParam.length === splitRestAfter.length){
+          for(let i=0,len=splitParam.length;i<len;i++){
+            if(splitParam[i].includes(':')){
+              req.params[ splitParam[i].replace(':','') ] = splitRestAfter[i]
+              canSkipBecauseParams = true
+            }
           }
         }
       }
-    }
+    }catch(e){}
+
     // console.log(splitParam, splitRestAfter)
     // something is not defined go to default handler
     if(!canSkipBecauseParams){

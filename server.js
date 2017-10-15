@@ -1,33 +1,12 @@
 import bliz from './src/main'
-const exp = bliz()
+const app = bliz()
 
-const getData = exp
-  .createPath('/:firstParam/data/:otherParam')
-  .handler((req,res)=>{
-    console.log(req.params)
-    res.setHeader('Connection', 'close');
-    res.end('Hello World!');
-    })
+const getData = app
+  .createPath('/data')
+  .handler((req,res)=>res.json(req.params))
 
-const getDat2a = exp
-  .createPath('/')
-  .handler((req,res)=>{
-    console.log(req.params)
-    res.setHeader('Connection', 'close');
-    res.end('Hello World!');
-  })
-
-const simple = exp
-  .createRouter('/ddd')
+const slashRouter = app
+  .createRouter('/')
   .get(getData)
-  .get(getDat2a)
-  .middleware((req,res,next)=>{console.log('/ middleware');next()})
 
-
-exp
-  .registerRouters(simple)
-  .listen(3000,()=>{
-    console.log('listening on bliz server on port 3000')
-  })
-
-
+app.registerRouters(slashRouter).listen(3000,()=>console.log('listening on bliz server on port 3000'))

@@ -7,9 +7,10 @@ import midHandler from './middlewareHandler'
 import http from 'http'
 import RegisterRouters from './registerRouters'
 import createHandler from './handler'
-
+import request from './request'
+import response from './response'
 // main instance creator, returns an instance of bliz app
-const BlizApp = (RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil) => {
+const BlizApp = (request, response, RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil) => {
   const Instance = {}
   const middleWares = []
   const routersObject = {}
@@ -22,14 +23,14 @@ const BlizApp = (RouterCreator, Listen, defaultHandler, midHandler, PathCreator,
     CreateArray('subApp', subApps, Instance),
     CreateNewObjOf('Path', PathCreator),
     GetObjProps({middleWares, routersObject, subApps}),
-    Listen(http, createHandler.bind(this, defaultHandler, midHandler, urlUtil, handleNestedRoutersUtil, populateUrlOptions), middleWares, routersObject, subApps, populateSubAppsUtil)
+    Listen(http, createHandler.bind(this,request, response ,defaultHandler, midHandler, urlUtil, handleNestedRoutersUtil, populateUrlOptions), middleWares, routersObject, subApps, populateSubAppsUtil)
   )
 }
 
 const BlizCreator = () => {
   return Object.assign(
     {},
-    BlizApp(RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil)
+    BlizApp(request, response, RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil)
   )
 }
 

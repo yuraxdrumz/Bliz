@@ -48,7 +48,7 @@ function populateUrlOptions(arr){
   })
 }
 function handleNestedRoutersUtil(splitUrl, routesObject, nestedRoutersMiddlewaresCombined = []){
-  let baseOfRequest = null
+  let baseOfRequest
   let rest = null
   let lastDefinedRoute = null
   // check each url in routes obj
