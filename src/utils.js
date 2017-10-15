@@ -47,38 +47,37 @@ function populateUrlOptions(arr){
     return startStr
   })
 }
-//TODO handle url route matching
-//TODO add regex matching url
-//TODO add req.params /:param1/:param2
 function handleNestedRoutersUtil(splitUrl, routesObject, nestedRoutersMiddlewaresCombined = []){
   let baseOfRequest = null
   let rest = null
+  let lastDefinedRoute = null
   // check each url in routes obj
-  for(let i=0,len=splitUrl.length;i<len;i++){
+  for(let url of splitUrl){
     // if exists, get middleware
-    if(routesObject[splitUrl[i]]){
-      nestedRoutersMiddlewaresCombined.push(routesObject[splitUrl[i]].middleWareArr)
-    }else{
-      // if not exists go back one route string
-      // check request
-      baseOfRequest = splitUrl[i-1] || splitUrl[i]
-      rest = splitUrl[i].substr(baseOfRequest.length)
-
-      if(i === 0) {
-        baseOfRequest = splitUrl[i+1]
-        if(!rest){
-          rest = '/'
-        }
-      }
-      if(baseOfRequest === '/'){
-        rest = '/' + rest
-      }
+    if(routesObject[url]){
+      lastDefinedRoute = url
+      nestedRoutersMiddlewaresCombined.push(routesObject[url].middleWareArr)
     }
   }
-  if(splitUrl.length === 1){
+  const indexOfLastRoute = splitUrl.indexOf(lastDefinedRoute)
+  baseOfRequest = lastDefinedRoute
+  if(baseOfRequest){
+    if(indexOfLastRoute === splitUrl.length -1){
+      rest = '/'
+    }else{
+      rest = splitUrl[splitUrl.length - 1]
+      rest = rest.substr(baseOfRequest.length)
+    }
+    if(baseOfRequest === '/'){
+      rest = `/${rest}`
+    }
+    rest = rest.replace('//','/')
+  }else{
     baseOfRequest = '/'
     rest = '/'
   }
+  // console.log(`BASE:${baseOfRequest},REST:${rest},LASTURI:${lastDefinedRoute}`)
+  // console.log(rest)
   nestedRoutersMiddlewaresCombined = nestedRoutersMiddlewaresCombined.reduce((prev,curr)=>prev.concat(curr), [])
   return {
     baseOfRequest,

@@ -1,5 +1,6 @@
 function createHandler (defaultHandler, midHandler, urlUtil, handleNestedRoutersUtil, populateUrlOptions, middleWares, routes) {
   async function handler(req,res){
+    if(!req.params) req.params = {}
     // get url parts
     const { method, splitRest } = urlUtil(req.url, req.method)
     // global middleware, if exists work with it, if throws error go to global handler
@@ -22,12 +23,33 @@ function createHandler (defaultHandler, midHandler, urlUtil, handleNestedRouters
     if (nestedRoutersMiddlewaresCombined) {
       await midHandler(Promise, req, res, nestedRoutersMiddlewaresCombined)
     }
+    let canSkipBecauseParams = false
+    let param
+    try{
+      param = Object.keys(routes[baseOfRequest][method])[0]
+    }catch(e){}
+    if(param && param.includes(':')){
+      let splitParam = param.split('/')
+      let splitRestAfter = rest.split('/')
+      // console.log(`PARAM:${splitParam},RESTAFTER:${splitRestAfter}`)
+      if(splitParam.length === splitRestAfter.length){
+        for(let i=0,len=splitParam.length;i<len;i++){
+          if(splitParam[i].includes(':')){
+            req.params[ splitParam[i].replace(':','') ] = splitRestAfter[i]
+            canSkipBecauseParams = true
+          }
+        }
+      }
+    }
+    // console.log(splitParam, splitRestAfter)
     // something is not defined go to default handler
-    if (!routes[baseOfRequest])return defaultHandler(req, res)
-    if (!routes[baseOfRequest][method])return defaultHandler(req, res)
-    if (!routes[baseOfRequest][method][rest]) return defaultHandler(req, res)
+    if(!canSkipBecauseParams){
+      if (!routes[baseOfRequest])return defaultHandler(req, res)
+      if (!routes[baseOfRequest][method])return defaultHandler(req, res)
+      if (!routes[baseOfRequest][method][rest]) return defaultHandler(req, res)
+    }
     // current route after all checks
-    const currentRoute = routes[baseOfRequest][method][rest].getObjProps()
+    const currentRoute = routes[baseOfRequest][method][!canSkipBecauseParams ? rest : param ].getObjProps()
     // try router middleware => route middleware=>route handler=>if err check route err handler=>
     // if err in err handler or err handler not exists => router err handler => if not go to global handler
     try {
