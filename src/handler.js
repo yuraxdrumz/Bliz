@@ -1,3 +1,4 @@
+//TODO add regex support
 function createHandler (defaultHandler, midHandler, urlUtil, handleNestedRoutersUtil, populateUrlOptions, middleWares, routes) {
   async function handler(req,res){
     if(!req.params) req.params = {}
