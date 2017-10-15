@@ -47,7 +47,9 @@ function populateUrlOptions(arr){
     return startStr
   })
 }
-//TODO fix handle nested routers object for different use cases...
+//TODO handle url route matching
+//TODO add regex matching url
+//TODO add req.params /:param1/:param2
 function handleNestedRoutersUtil(splitUrl, routesObject, nestedRoutersMiddlewaresCombined = []){
   let baseOfRequest = null
   let rest = null
