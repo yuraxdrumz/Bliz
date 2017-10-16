@@ -34,7 +34,7 @@ function createHandler (request, response, defaultHandler, midHandler, urlUtil, 
       param = Object.keys(routes[baseOfRequest][method])[0]
       if(param && param.includes(':')){
         let splitParam = param.split('/')
-        let splitRestAfter = rest.substr(0,rest.indexOf('?')).split('/')
+        let splitRestAfter = rest.split('/')
         // console.log(`PARAM:${splitParam},RESTAFTER:${splitRestAfter}`)
         if(splitParam.length === splitRestAfter.length){
           for(let i=0,len=splitParam.length;i<len;i++){
