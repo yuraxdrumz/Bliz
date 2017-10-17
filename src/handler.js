@@ -1,4 +1,6 @@
-//TODO add regex support
+// TODO check path to regex
+// TODO add cluster support
+// TODO add auto generated swagger from routes support
 function createHandler (request, response, defaultHandler, midHandler, urlUtil, handleNestedRoutersUtil, populateUrlOptions, middleWares, routes) {
   async function handler(req,res){
     req.__proto__ = request
@@ -46,7 +48,7 @@ function createHandler (request, response, defaultHandler, midHandler, urlUtil, 
         }
       }
     }catch(e){console.error(e)}
-    console.log(req.params)
+    // console.log(req.params)
     // console.log(splitParam, splitRestAfter)
     // something is not defined go to default handler
     if(!canSkipBecauseParams){

@@ -76,7 +76,7 @@ function handleNestedRoutersUtil(splitUrl, routesObject, nestedRoutersMiddleware
     baseOfRequest = '/'
     rest = '/'
   }
-  console.log(`BASE:${baseOfRequest},REST:${rest},LASTURI:${lastDefinedRoute}`)
+  // console.log(`BASE:${baseOfRequest},REST:${rest},LASTURI:${lastDefinedRoute}`)
   // console.log(rest)
   nestedRoutersMiddlewaresCombined = nestedRoutersMiddlewaresCombined.reduce((prev,curr)=>prev.concat(curr), [])
   return {
