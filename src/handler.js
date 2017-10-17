@@ -34,8 +34,8 @@ function createHandler (request, response, defaultHandler, midHandler, urlUtil, 
       param = Object.keys(routes[baseOfRequest][method])[0]
       if(param && param.includes(':')){
         let splitParam = param.split('/')
-        let splitRestAfter = rest.substr(0,rest.indexOf('?')).split('/')
-        // console.log(`PARAM:${splitParam},RESTAFTER:${splitRestAfter}`)
+        let splitRestAfter = rest.split('/')
+        console.log(`PARAM:${splitParam},RESTAFTER:${splitRestAfter}`)
         if(splitParam.length === splitRestAfter.length){
           for(let i=0,len=splitParam.length;i<len;i++){
             if(splitParam[i].includes(':')){
@@ -45,8 +45,8 @@ function createHandler (request, response, defaultHandler, midHandler, urlUtil, 
           }
         }
       }
-    }catch(e){}
-
+    }catch(e){console.error(e)}
+    console.log(req.params)
     // console.log(splitParam, splitRestAfter)
     // something is not defined go to default handler
     if(!canSkipBecauseParams){
