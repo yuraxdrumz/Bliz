@@ -2,37 +2,41 @@
 // TODO add cluster support
 // TODO add auto generated swagger from routes support
 // TODO add JOI validation
+import Joi from 'joi'
 function createHandler (request, response, defaultHandler, midHandler, urlUtil, handleNestedRoutersUtil, populateUrlOptions, middleWares, routes) {
   async function handler(req,res){
     req.__proto__ = request
     res.__proto__ = response
     if(!req.params) req.params = {}
+    if(!req.query) req.query = {}
     // get url parts
     const { method, splitRest } = urlUtil(req.url, req.method)
-    // global middleware, if exists work with it, if throws error go to global handler
-    try {
-      if (middleWares) await midHandler(Promise, req, res, middleWares)
-    } catch (middleWareError) {
-      return defaultHandler(req, res, middleWareError)
-    }
-
     // check all url combinations possible
     const urlCombinationOptions = populateUrlOptions(splitRest)
     // get last possible route on routes object and get last url part diff,
     // get all middlewares collected on routers existing hit on request
-    const {
+    let {
       baseOfRequest,
       rest,
       nestedRoutersMiddlewaresCombined
     } = handleNestedRoutersUtil(urlCombinationOptions, routes, nestedRoutersMiddlewaresCombined)
-    // check routers middleware
-    if (nestedRoutersMiddlewaresCombined) {
-      await midHandler(Promise, req, res, nestedRoutersMiddlewaresCombined)
-    }
+
 
     // handle params
     let canSkipBecauseParams = false
     let param
+    if(rest.includes('?')){
+      rest
+        .substring(rest.indexOf('?') +1)
+        .split('&')
+        .map(query=>{
+          const keyValue = query.split('=')
+          req.query[keyValue[0]] = keyValue[1]
+        })
+
+      rest = rest.substring(0, rest.indexOf('?'))
+    }
+
     try{
       param = Object.keys(routes[baseOfRequest][method])[0]
       if(param && param.includes(':')){
@@ -49,6 +53,16 @@ function createHandler (request, response, defaultHandler, midHandler, urlUtil, 
         }
       }
     }catch(e){console.error(e)}
+    // global middleware, if exists work with it, if throws error go to global handler
+    try {
+      if (middleWares) await midHandler(Promise, req, res, middleWares)
+    } catch (middleWareError) {
+      return defaultHandler(req, res, middleWareError)
+    }
+    // check routers middleware
+    if (nestedRoutersMiddlewaresCombined) {
+      await midHandler(Promise, req, res, nestedRoutersMiddlewaresCombined)
+    }
     // console.log(req.params)
     // console.log(splitParam, splitRestAfter)
     // something is not defined go to default handler
@@ -64,17 +78,24 @@ function createHandler (request, response, defaultHandler, midHandler, urlUtil, 
     try {
       const specificRouteMiddlewares = currentRoute.middleWareArr
       if (specificRouteMiddlewares) await midHandler(Promise, req, res, specificRouteMiddlewares)
+      if(currentRoute.validationSchema){
+        const {error, value} = Joi.validate({...req.query,...req.params,...req.body, ...req.headers}, currentRoute.validationSchema);
+        if(error) throw error
+      }
       currentRoute.handler(req, res)
     } catch (errorFromHandler) {
-      try {
-        currentRoute.errHandler(req, res, errorFromHandler)
-      } catch (errorFromErrHandler) {
-        try {
-          routes[baseOfRequest].routerErrorHandler(req, res, errorFromHandler, errorFromErrHandler)
-        } catch (errFromRouterErrorHandler) {
-          defaultHandler(req, res, errorFromHandler, errorFromErrHandler, errFromRouterErrorHandler)
+      try{
+        if(currentRoute.errHandler){
+          currentRoute.errHandler(req, res, errorFromHandler)
+        }else if( routes[baseOfRequest].routerErrorHandler){
+          routes[baseOfRequest].routerErrorHandler(req, res, errorFromHandler)
+        }else{
+          defaultHandler(req, res, errorFromHandler)
         }
+      }catch(errorFromErrorHandlers){
+        defaultHandler(req, res, errorFromErrorHandlers)
       }
+
     }
   }
   return handler

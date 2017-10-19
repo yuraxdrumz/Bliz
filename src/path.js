@@ -10,10 +10,12 @@ const PathCreator = path => {
     middleWareArr:[],
     path,
     handler:null,
-    errHandler:null
+    errHandler:null,
+    validationSchema:null
   }
   return Object.assign(
     PathReturn,
+    AssignHandler('validationSchema', pathData, PathReturn),
     CreateArray('middleware',pathData.middleWareArr, PathReturn),
     AssignHandler('handler', pathData, PathReturn),
     AssignHandler('errHandler', pathData, PathReturn),

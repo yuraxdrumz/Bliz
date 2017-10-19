@@ -1,15 +1,12 @@
-const defaultHandler = function(req ,res, ...errs){
-  res.writeHead(404)
-  res.write('default handler...')
-  if(errs.length > 0){
-    errs.map(err=>{
-      res.write(err.toString())
-      res.write('\n')
-    })
+const defaultHandler = function(req ,res, err){
+  if(err){
+    res.statusCode = err.status || 500
+    res.json({error:err.toString()})
+
   }else{
-    res.write(`url:${req.url} not found...`)
+    res.statusCode = 404
+    res.json({error:`url:${req.url} not found...`})
   }
-  res.end()
 }
 
 export default defaultHandler
