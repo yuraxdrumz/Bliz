@@ -2,7 +2,6 @@ import Bliz, { request, response, Joi } from './src/main'
 import bodyParser from 'body-parser'
 
 const app = Bliz()
-const app2 = Bliz()
 
 const getDataValidationSchema = Joi.object().keys({
   data: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/),
@@ -27,7 +26,7 @@ const boom = app
   })
 
 
-const getData3 = app2
+const getData3 = app
   .createPath('/:data/:boom/wok')
   .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
   .middleware((req,res,next)=>{

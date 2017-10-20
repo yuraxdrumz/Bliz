@@ -27,14 +27,32 @@ const BlizApp = (request, response, Joi, RouterCreator, Listen, defaultHandler, 
     CreateArray('subApp', _subApps, _Instance),
     CreateNewObjOf('Path', PathCreator, treeify),
     GetObjProps({_middleWares, _routersObject, _subApps}),
-    Listen(http, createHandler.bind(this,request, response ,defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil, populateUrlOptions), _middleWares, _routersObject, _subApps, populateSubAppsUtil)
+    Listen(http, createHandler.bind(this,request, response ,defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil, populateUrlOptions), _middleWares, _routersObject, _subApps)
   )
 }
 
 const BlizCreator = () => {
   return Object.assign(
     {},
-    BlizApp(request, response,Joi, RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil, treeify)
+    BlizApp(
+      request,
+      response,
+      Joi,
+      RouterCreator,
+      Listen,
+      defaultHandler,
+      midHandler,
+      PathCreator,
+      http,
+      urlUtil,
+      populateRoutersUtil,
+      handleNestedRoutersUtil,
+      populateUrlOptions,
+      createHandler,
+      GetObjProps,
+      populateSubAppsUtil,
+      treeify,
+    )
   )
 }
 
