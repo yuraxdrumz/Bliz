@@ -9,6 +9,28 @@ const Listen = (http, handler, middleWares, routes, subApps, populateSubAppsUtil
   }
 })
 
+const PrettyPrint = (treeifyDep, entity) =>({
+  prettyPrint:()=>{
+    let shortEntity = {}
+    if(Object.keys(entity).length > 0){
+      for(let i=0,len=Object.keys(entity).length;i<len;i++){
+        let obj = {}
+        let key = Object.keys(entity)[i]
+        shortEntity[key] = obj
+        let options = ['get','post','put','del']
+        options.forEach(option=>{
+          let val = Object.keys(entity[key][option])
+          if(val.length > 0){
+            Object.assign(obj, {[option.toUpperCase()]:{[val[0]]:''}})
+          }
+        })
+        // Object.assign(shortEntity, obj)
+      }
+    }
+    return treeifyDep.asTree(shortEntity)
+  }
+})
+
 // method creator for router
 const Method = (name, object,chainLink) => ({
   [name]: data =>{
@@ -34,11 +56,11 @@ const GetObjProps = obj =>({
 
 // when called, receives an object
 // returns new object
-const CreateNewObjOf = (name, obj) => ({
+const CreateNewObjOf = (name, obj, ...deps) => ({
   [`create${name}`]: data =>{
     return Object.assign(
       {},
-      obj(data)
+      obj(data, deps)
     )
   }
 })
@@ -50,11 +72,13 @@ const CreateArray = (name, arr, chainLink) => ({
   }
 })
 
+
 export {
   AssignHandler,
   CreateArray,
   CreateNewObjOf,
   Method,
   GetObjProps,
-  Listen
+  Listen,
+  PrettyPrint
 }

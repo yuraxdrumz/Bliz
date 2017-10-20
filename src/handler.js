@@ -21,7 +21,6 @@ function createHandler (request, response, defaultHandler, midHandler, urlUtil, 
       nestedRoutersMiddlewaresCombined
     } = handleNestedRoutersUtil(urlCombinationOptions, routes, nestedRoutersMiddlewaresCombined)
 
-
     // handle params
     let canSkipBecauseParams = false
     let param
@@ -78,16 +77,20 @@ function createHandler (request, response, defaultHandler, midHandler, urlUtil, 
     try {
       const specificRouteMiddlewares = currentRoute.middleWareArr
       if (specificRouteMiddlewares) await midHandler(Promise, req, res, specificRouteMiddlewares)
-      if(currentRoute.validationSchema){
-        const {error, value} = Joi.validate({...req.query,...req.params,...req.body, ...req.headers}, currentRoute.validationSchema);
-        if(error) throw error
+      if(currentRoute.validationSchemas.length>0){
+        for(let i=0,len=currentRoute.validationSchemas.length;i<len;i++){
+          const currentTest = req[currentRoute.validationSchemas[i].name]
+          const {error, value} = Joi.validate({...currentTest}, currentRoute.validationSchemas[i].schema);
+          if(error) throw error
+        }
+
       }
       currentRoute.handler(req, res)
     } catch (errorFromHandler) {
       try{
         if(currentRoute.errHandler){
           currentRoute.errHandler(req, res, errorFromHandler)
-        }else if( routes[baseOfRequest].routerErrorHandler){
+        }else if(routes[baseOfRequest].routerErrorHandler){
           routes[baseOfRequest].routerErrorHandler(req, res, errorFromHandler)
         }else{
           defaultHandler(req, res, errorFromHandler)

@@ -1,21 +1,22 @@
 import {
   CreateArray,
   AssignHandler,
-  GetObjProps
+  GetObjProps,
+  PrettyPrint
 } from './objectFactories'
 
-const PathCreator = path => {
+const PathCreator = (path) => {
   const PathReturn = {}
   const pathData = {
     middleWareArr:[],
     path,
     handler:null,
     errHandler:null,
-    validationSchema:null
+    validationSchemas:[]
   }
   return Object.assign(
     PathReturn,
-    AssignHandler('validationSchema', pathData, PathReturn),
+    CreateArray('validationSchema', pathData.validationSchemas, PathReturn),
     CreateArray('middleware',pathData.middleWareArr, PathReturn),
     AssignHandler('handler', pathData, PathReturn),
     AssignHandler('errHandler', pathData, PathReturn),

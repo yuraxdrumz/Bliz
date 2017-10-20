@@ -2,10 +2,11 @@ import {
   CreateArray,
   AssignHandler,
   GetObjProps,
-  Method
+  Method,
+  PrettyPrint
 } from './objectFactories'
 
-const RouterCreator = base => {
+const RouterCreator = (base, deps) => {
   if(base[base.length - 1] === '/' && base.length > 1){
     base = base.slice(0,base.length -1)
   }
@@ -22,6 +23,7 @@ const RouterCreator = base => {
   }
   return Object.assign(
     RouterReturn,
+    PrettyPrint(deps[0], routerData),
     Method('get', routerData, RouterReturn),
     Method('post', routerData, RouterReturn),
     Method('put', routerData, RouterReturn),

@@ -24,6 +24,7 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.2",
-    "joi": "^13.0.1"
+    "joi": "^13.0.1",
+    "treeify": "^1.0.1"
   }
 }
