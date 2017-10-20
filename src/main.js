@@ -14,20 +14,20 @@ import Joi from 'joi'
 
 // main instance creator, returns an instance of bliz app
 const BlizApp = (request, response, Joi, RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil, treeify) => {
-  const Instance = {}
-  const middleWares = []
-  const routersObject = {}
-  const subApps = []
+  const _Instance = {}
+  const _middleWares = []
+  const _routersObject = {}
+  const _subApps = []
   return Object.assign(
-    Instance,
-    PrettyPrint(treeify, routersObject, Instance),
+    _Instance,
+    PrettyPrint(treeify, _routersObject, _Instance),
     CreateNewObjOf('Router', RouterCreator, treeify),
-    RegisterRouters(populateRoutersUtil, populateSubAppsUtil, middleWares, routersObject, subApps, Instance),
-    CreateArray('middleware',middleWares, Instance),
-    CreateArray('subApp', subApps, Instance),
+    RegisterRouters(populateRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _subApps, _Instance),
+    CreateArray('middleware',_middleWares, _Instance),
+    CreateArray('subApp', _subApps, _Instance),
     CreateNewObjOf('Path', PathCreator, treeify),
-    GetObjProps({middleWares, routersObject, subApps}),
-    Listen(http, createHandler.bind(this,request, response ,defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil, populateUrlOptions), middleWares, routersObject, subApps, populateSubAppsUtil)
+    GetObjProps({_middleWares, _routersObject, _subApps}),
+    Listen(http, createHandler.bind(this,request, response ,defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil, populateUrlOptions), _middleWares, _routersObject, _subApps, populateSubAppsUtil)
   )
 }
 

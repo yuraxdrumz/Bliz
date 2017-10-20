@@ -3,25 +3,24 @@ import {
   AssignHandler,
   GetObjProps,
 } from './objectFactories'
+import { checkBaseUtil } from './utils'
 
-const PathCreator = (path) => {
-  if(path[path.length - 1] === '/' && path.length > 1){
-    path = path.slice(0,path.length -1)
-  }
-  const PathReturn = {}
+const PathCreator = path => {
+  const _checkedPath = checkBaseUtil(path)
+  const _PathReturn = {}
   const pathData = {
     middleWareArr:[],
-    path,
+    path:_checkedPath,
     handler:null,
     errHandler:null,
     validationSchemas:[]
   }
   return Object.assign(
-    PathReturn,
-    CreateArray('validationSchema', pathData.validationSchemas, PathReturn),
-    CreateArray('middleware',pathData.middleWareArr, PathReturn),
-    AssignHandler('handler', pathData, PathReturn),
-    AssignHandler('errHandler', pathData, PathReturn),
+    _PathReturn,
+    CreateArray('validationSchema', pathData.validationSchemas, _PathReturn),
+    CreateArray('middleware',pathData.middleWareArr, _PathReturn),
+    AssignHandler('handler', pathData, _PathReturn),
+    AssignHandler('errHandler', pathData, _PathReturn),
     GetObjProps(pathData)
   )
 }
