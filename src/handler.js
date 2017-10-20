@@ -1,6 +1,7 @@
 // TODO check path to regex
 // TODO add cluster support
 // TODO add auto generated swagger from routes support
+// TODO add default middleware ???
 function createHandler (request, response, defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil, populateUrlOptions, middleWares, routes) {
   async function handler(req,res){
     req.__proto__ = request

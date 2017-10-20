@@ -2,7 +2,6 @@ import {
   CreateArray,
   AssignHandler,
   GetObjProps,
-  PrettyPrint
 } from './objectFactories'
 
 const PathCreator = (path) => {
