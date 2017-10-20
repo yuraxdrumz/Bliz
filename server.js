@@ -15,6 +15,13 @@ const getData = app
   .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
   .validationSchema({name:'params',schema:getDataValidationSchema})
 
+const boom = app
+  .createPath('/:data/boom/')
+  .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
+  .validationSchema({name:'body',schema:getDataValidationSchema})
+
+
+
 const getData2 = app2
   .createPath('/:datdsaa')
   .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
@@ -28,14 +35,14 @@ const slashRouter2 = app2
 
 const slashRouter = app
   .createRouter('/api')
+  .get(boom)
   .get(getData)
-  .post(getData)
+  .del(getData)
   .middleware(bodyParser.json())
 
 
 app
-  .subApp(app2.registerRouters(slashRouter2))
-  .registerRouters(slashRouter)
+  .registerRouters(slashRouter, slashRouter2)
   .prettyPrint()
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
 

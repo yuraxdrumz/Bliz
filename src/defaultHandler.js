@@ -1,4 +1,4 @@
-let defaultHandler = function(req ,res, err){
+const defaultHandler = function(req ,res, err){
   if(err){
     res.statusCode = err.status || 500
     res.json({error:err.toString()})

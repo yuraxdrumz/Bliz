@@ -22,9 +22,16 @@ const PrettyPrint = (treeifyDep, entity, chainLink) =>({
         shortEntity[key] = obj
         let options = ['get','post','put','del']
         options.forEach(option=>{
-          let val = Object.keys(entity[key][option])
-          if(val.length > 0){
-            Object.assign(obj, {[option.toUpperCase()]:{[val[0]]:''}})
+          let routeValues = Object.keys(entity[key][option])
+          if(routeValues.length > 0){
+            let routeKey = option.toUpperCase()
+            let value = {}
+            for(let route of routeValues){
+              value[route] = ''
+              const assignedOption = {[routeKey]:value}
+              Object.assign(obj,assignedOption )
+            }
+
           }
         })
         // Object.assign(shortEntity, obj)
