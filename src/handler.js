@@ -34,17 +34,29 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
       rest = rest.substring(0, rest.indexOf('?'))
     }
     try{
-      param = Object.keys(routes[baseOfRequest][method])[0]
-      if(param && param.includes(':')){
-        let splitParam = param.split('/')
-        let splitRestAfter = rest.split('/')
-        // console.log(`PARAM:${splitParam},RESTAFTER:${splitRestAfter}`)
-        if(splitParam.length === splitRestAfter.length){
-          for(let i=0,len=splitParam.length;i<len;i++){
-            if(splitParam[i].includes(':')){
-              req.params[ splitParam[i].replace(':','') ] = splitRestAfter[i]
-              canSkipBecauseParams = true
+      let arr = Object.keys(routes[baseOfRequest][method])
+      for(let path of arr){
+        let splitArr = path.split('/')
+        let splitUrl = rest.split('/')
+        if(splitArr.length === splitUrl.length){
+          let counter = splitArr.length
+          let toBeCounted = 0
+          for(let i=0,len=splitArr.length;i<len;i++){
+            if(splitArr[i].includes(':')){
+              toBeCounted+=1
+            }else if(!splitArr[i].includes(':') && splitArr[i] === splitUrl[i]){
+              toBeCounted+=1
             }
+          }
+          if(toBeCounted === counter){
+            for(let i=0,len=splitArr.length;i<len;i++){
+              if(splitArr[i].includes(':')){
+                req.params[ splitArr[i].replace(':','') ] = splitUrl[i]
+                canSkipBecauseParams = true
+              }
+            }
+
+            param = path
           }
         }
       }

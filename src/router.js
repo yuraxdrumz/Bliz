@@ -5,14 +5,12 @@ import {
   Method,
   PrettyPrint
 } from './objectFactories'
-
-const RouterCreator = (base, deps) => {
-  if(base[base.length - 1] === '/' && base.length > 1){
-    base = base.slice(0,base.length -1)
-  }
+import { checkBaseUtil } from './utils'
+const RouterCreator = (base, dependencies) => {
+  const checkedBase = checkBaseUtil(base)
   const RouterReturn = {}
   const routerData = {
-    base,
+    base:checkedBase,
     get: {},
     post: {},
     put : {},
@@ -23,7 +21,7 @@ const RouterCreator = (base, deps) => {
   }
   return Object.assign(
     RouterReturn,
-    PrettyPrint(deps[0], routerData),
+    PrettyPrint(dependencies[0], routerData),
     Method('get', routerData, RouterReturn),
     Method('post', routerData, RouterReturn),
     Method('put', routerData, RouterReturn),

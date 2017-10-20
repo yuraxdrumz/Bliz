@@ -14,35 +14,39 @@ const getData = app
   .createPath('/:data/')
   .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
   .validationSchema({name:'params',schema:getDataValidationSchema})
-
+  .middleware((req,res,next)=>{
+    console.log('hit getData1')
+    next()
+  })
 const boom = app
-  .createPath('/:data/boom/')
+  .createPath('/:data/boom')
   .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
-  .validationSchema({name:'body',schema:getDataValidationSchema})
+  .middleware((req,res,next)=>{
+    console.log('hit boom')
+    next()
+  })
 
 
-
-const getData2 = app2
-  .createPath('/:datdsaa')
+const getData3 = app2
+  .createPath('/:data/:boom/wok')
   .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
-  .validationSchema({name:'params',schema:getDataValidationSchema})
+  .middleware((req,res,next)=>{
+  console.log('hit getData3')
+    next()
+  })
 
-const slashRouter2 = app2
-  .createRouter('/dsaasd/ddd')
-  .get(getData2)
-  .del(getData2)
-  .middleware(bodyParser.json())
+
 
 const slashRouter = app
   .createRouter('/api')
   .get(boom)
   .get(getData)
-  .del(getData)
+  .get(getData3)
   .middleware(bodyParser.json())
 
 
 app
-  .registerRouters(slashRouter, slashRouter2)
+  .registerRouters(slashRouter)
   .prettyPrint()
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
 

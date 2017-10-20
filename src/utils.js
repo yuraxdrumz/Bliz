@@ -86,10 +86,21 @@ function handleNestedRoutersUtil(splitUrl, routesObject, nestedRoutersMiddleware
   }
 }
 
+function checkBaseUtil(base){
+  let newBase
+  if(base[base.length - 1] === '/' && base.length > 1) {
+    newBase = base.slice(0, base.length - 1)
+  }else{
+    newBase = base
+  }
+  return newBase
+}
+
 export {
   urlUtil,
   populateRoutersUtil,
   populateUrlOptions,
   handleNestedRoutersUtil,
-  populateSubAppsUtil
+  populateSubAppsUtil,
+  checkBaseUtil
 }
