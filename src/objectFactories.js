@@ -8,8 +8,12 @@ const Listen = (http, handler, middleWares, routes, subApps) => ({
   }
 })
 
-const PrettyPrint = (treeifyDep, entity) =>({
-  prettyPrint:()=>{
+const PrettyPrint = (treeifyDep, entity, chainLink) =>({
+  prettyPrint: log =>{
+    let logger = console.log
+    if(log && typeof log === 'function'){
+      logger = log
+    }
     let shortEntity = {}
     if(Object.keys(entity).length > 0){
       for(let i=0,len=Object.keys(entity).length;i<len;i++){
@@ -26,7 +30,8 @@ const PrettyPrint = (treeifyDep, entity) =>({
         // Object.assign(shortEntity, obj)
       }
     }
-    return treeifyDep.asTree(shortEntity)
+    logger(treeifyDep.asTree(shortEntity))
+    return chainLink
   }
 })
 

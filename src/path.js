@@ -6,6 +6,9 @@ import {
 } from './objectFactories'
 
 const PathCreator = (path) => {
+  if(path[path.length - 1] === '/' && path.length > 1){
+    path = path.slice(0,path.length -1)
+  }
   const PathReturn = {}
   const pathData = {
     middleWareArr:[],

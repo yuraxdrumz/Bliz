@@ -1,9 +1,7 @@
 // TODO check path to regex
 // TODO add cluster support
 // TODO add auto generated swagger from routes support
-// TODO add JOI validation
-import Joi from 'joi'
-function createHandler (request, response, defaultHandler, midHandler, urlUtil, handleNestedRoutersUtil, populateUrlOptions, middleWares, routes) {
+function createHandler (request, response, defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil, populateUrlOptions, middleWares, routes) {
   async function handler(req,res){
     req.__proto__ = request
     res.__proto__ = response
@@ -20,7 +18,6 @@ function createHandler (request, response, defaultHandler, midHandler, urlUtil, 
       rest,
       nestedRoutersMiddlewaresCombined
     } = handleNestedRoutersUtil(urlCombinationOptions, routes, nestedRoutersMiddlewaresCombined)
-
     // handle params
     let canSkipBecauseParams = false
     let param
@@ -35,7 +32,6 @@ function createHandler (request, response, defaultHandler, midHandler, urlUtil, 
 
       rest = rest.substring(0, rest.indexOf('?'))
     }
-
     try{
       param = Object.keys(routes[baseOfRequest][method])[0]
       if(param && param.includes(':')){
@@ -80,6 +76,7 @@ function createHandler (request, response, defaultHandler, midHandler, urlUtil, 
       if(currentRoute.validationSchemas.length>0){
         for(let i=0,len=currentRoute.validationSchemas.length;i<len;i++){
           const currentTest = req[currentRoute.validationSchemas[i].name]
+          if(!currentTest) throw new Error(`request object does not have a property: ${JSON.stringify(currentRoute.validationSchemas[i].name)}`)
           const {error, value} = Joi.validate({...currentTest}, currentRoute.validationSchemas[i].schema);
           if(error) throw error
         }
