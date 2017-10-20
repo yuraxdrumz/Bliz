@@ -1,7 +1,6 @@
 // receive an http and a handler and return a listen func
-const Listen = (http, handler, middleWares, routes, subApps, populateSubAppsUtil) => ({
+const Listen = (http, handler, middleWares, routes, subApps) => ({
   listen:(...args)=>{
-    populateSubAppsUtil(middleWares, routes, subApps)
     middleWares = middleWares.reduce((prev,curr)=>prev.concat(curr),[])
     const handlerWithRoutes = handler(middleWares, routes, subApps)
     const server = http.createServer(handlerWithRoutes)

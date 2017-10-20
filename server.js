@@ -34,3 +34,4 @@ const slashRouter = app
   .middleware(bodyParser.json())
 app2.registerRouters(slashRouter2)
 app.subApp(app2).registerRouters(slashRouter).listen(3000,()=>console.log('listening on bliz server on port 3000'))
+console.log(app.prettyPrint())

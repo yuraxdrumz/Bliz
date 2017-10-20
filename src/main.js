@@ -21,7 +21,7 @@ const BlizApp = (request, response, RouterCreator, Listen, defaultHandler, midHa
     Instance,
     PrettyPrint(treeify, routersObject),
     CreateNewObjOf('Router', RouterCreator, treeify),
-    RegisterRouters(populateRoutersUtil, routersObject, Instance),
+    RegisterRouters(populateRoutersUtil, populateSubAppsUtil, middleWares, routersObject, subApps, Instance),
     CreateArray('middleware',middleWares, Instance),
     CreateArray('subApp', subApps, Instance),
     CreateNewObjOf('Path', PathCreator, treeify),
