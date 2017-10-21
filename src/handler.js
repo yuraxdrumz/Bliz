@@ -3,6 +3,7 @@
 // TODO add default middleware ???
 // TODO clean handler and test for performance
 // TODO add tests
+// TODO merge events of subapps to main app
 function createHandler (request, response, defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, middleWares, routes, app) {
   async function handler(req,res){
     // set proto of req and res to point to our req and res

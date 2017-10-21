@@ -35,16 +35,15 @@ function populateRoutersUtil(obj, routers, parent = null){
 function populateSubAppsUtil(mds, routes, subApps){
   subApps.map(subApp=>{
     const data = subApp.getObjProps()
-    const middlewares = data.middleWares
-    const routersObject = data.routersObject
-    Object.assign(routes, routersObject)
-    mds.push(middlewares)
-    const innerSubApps = data.subApps
+    const _middlewares = data._middleWares
+    const _routersObject = data._routersObject
+    Object.assign(routes, _routersObject)
+    mds.push(_middlewares)
+    const innerSubApps = data._subApps
     if(innerSubApps.length > 0){
       return populateSubAppsUtil(mds, routes, innerSubApps)
     }
   })
-
 }
 
 // nested routers handle test
