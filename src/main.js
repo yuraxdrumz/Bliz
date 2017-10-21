@@ -1,7 +1,7 @@
 import RouterCreator from './router'
 import PathCreator from './path'
 import { Listen, CreateArray, CreateNewObjOf, GetObjProps, PrettyPrint } from './objectFactories'
-import { urlUtil, populateRoutersUtil, handleNestedRoutersUtil, populateUrlOptions, populateSubAppsUtil } from './utils'
+import { urlUtil, populateQueryUtil,populateRoutersUtil,populateParamsUtil, handleNestedRoutersUtil, populateUrlOptions, populateSubAppsUtil } from './utils'
 import defaultHandler from './defaultHandler'
 import midHandler from './middlewareHandler'
 import http from 'http'
@@ -13,7 +13,7 @@ import treeify from 'treeify'
 import Joi from 'joi'
 
 // main instance creator, returns an instance of bliz app
-const BlizApp = (request, response, Joi, RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil, treeify) => {
+const BlizApp = (request, response, Joi, RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil, treeify) => {
   const _Instance = {}
   const _middleWares = []
   const _routersObject = {}
@@ -27,7 +27,7 @@ const BlizApp = (request, response, Joi, RouterCreator, Listen, defaultHandler, 
     CreateArray('subApp', _subApps, _Instance),
     CreateNewObjOf('Path', PathCreator, treeify),
     GetObjProps({_middleWares, _routersObject, _subApps}),
-    Listen(http, createHandler.bind(this,request, response ,defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil, populateUrlOptions), _middleWares, _routersObject, _subApps)
+    Listen(http, createHandler.bind(this,request, response ,defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions), _middleWares, _routersObject, _subApps)
   )
 }
 
@@ -47,6 +47,8 @@ const BlizCreator = () => {
       urlUtil,
       populateRoutersUtil,
       handleNestedRoutersUtil,
+      populateParamsUtil,
+      populateQueryUtil,
       populateUrlOptions,
       createHandler,
       GetObjProps,

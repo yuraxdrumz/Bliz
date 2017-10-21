@@ -47,7 +47,7 @@ function populateUrlOptions(arr){
     return startStr
   })
 }
-function handleNestedRoutersUtil(splitUrl, routesObject, nestedRoutersMiddlewaresCombined = []){
+function handleNestedRoutersUtil(splitUrl, routesObject, combinedRoutersMids = []){
   let baseOfRequest
   let rest = null
   let lastDefinedRoute = null
@@ -56,7 +56,7 @@ function handleNestedRoutersUtil(splitUrl, routesObject, nestedRoutersMiddleware
     // if exists, get middleware
     if(routesObject[url]){
       lastDefinedRoute = url
-      nestedRoutersMiddlewaresCombined.push(routesObject[url].middleWareArr)
+      combinedRoutersMids.push(routesObject[url].middleWareArr)
     }
   }
   const indexOfLastRoute = splitUrl.indexOf(lastDefinedRoute)
@@ -78,11 +78,24 @@ function handleNestedRoutersUtil(splitUrl, routesObject, nestedRoutersMiddleware
   }
   // console.log(`BASE:${baseOfRequest},REST:${rest},LASTURI:${lastDefinedRoute}`)
   // console.log(rest)
-  nestedRoutersMiddlewaresCombined = nestedRoutersMiddlewaresCombined.reduce((prev,curr)=>prev.concat(curr), [])
+  combinedRoutersMids = combinedRoutersMids.reduce((prev,curr)=>prev.concat(curr), [])
   return {
     baseOfRequest,
     rest,
-    nestedRoutersMiddlewaresCombined
+    combinedRoutersMids
+  }
+}
+
+function populateQueryUtil(req, urlArray){
+  if(urlArray.includes('?')){
+    urlArray
+      .substring(urlArray.indexOf('?') +1)
+      .split('&')
+      .map(query=>{
+        const keyValue = query.split('=')
+        req.query[keyValue[0]] = keyValue[1]
+      })
+    return urlArray.substring(0, urlArray.indexOf('?'))
   }
 }
 
@@ -96,11 +109,53 @@ function checkBaseUtil(base){
   return newBase
 }
 
+function populateParamsUtil(req, routersObject, base, method, rest){
+  try{
+    let param
+    let canSkipBecauseParams = false
+    let arr = Object.keys(routersObject[base][method])
+    if(rest === '/'){
+      return { canSkipBecauseParams, param }
+    }else{
+      for(let path of arr){
+        let splitArr = path.split('/')
+        let splitUrl = rest.split('/')
+        if(splitArr.length === splitUrl.length){
+          let counter = splitArr.length
+          let toBeCounted = 0
+          for(let i=0,len=splitArr.length;i<len;i++){
+            if(splitArr[i].includes(':')){
+              toBeCounted+=1
+            }else if(!splitArr[i].includes(':') && splitArr[i] === splitUrl[i]){
+              toBeCounted+=1
+            }
+          }
+          if(toBeCounted === counter){
+            for(let i=0,len=splitArr.length;i<len;i++){
+              if(splitArr[i].includes(':')){
+                req.params[ splitArr[i].replace(':','') ] = splitUrl[i]
+                canSkipBecauseParams = true
+              }
+            }
+            param = path
+          }
+        }
+      }
+      return {
+        param,
+        canSkipBecauseParams
+      }
+    }
+  }catch(e){console.error(e)}
+}
+
 export {
   urlUtil,
   populateRoutersUtil,
   populateUrlOptions,
   handleNestedRoutersUtil,
   populateSubAppsUtil,
-  checkBaseUtil
+  checkBaseUtil,
+  populateQueryUtil,
+  populateParamsUtil
 }

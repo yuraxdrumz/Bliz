@@ -24,7 +24,13 @@ const boom = app
     console.log('hit boom')
     next()
   })
-
+const boom2 = app
+  .createPath('/')
+  .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
+  .middleware((req,res,next)=>{
+    console.log('hit /')
+    next()
+  })
 
 const getData3 = app
   .createPath('/:data/:boom/wok')
@@ -39,6 +45,7 @@ const getData3 = app
 const slashRouter = app
   .createRouter('/api')
   .get(boom)
+  .get(boom2)
   .get(getData)
   .get(getData3)
   .middleware(bodyParser.json())
