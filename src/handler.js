@@ -11,15 +11,6 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
     if(!req.params) req.params = {}
     if(!req.query) req.query = {}
     // get url parts
-    if(req.url.includes('?')){
-      let split = req.url.split(/(\?)/g)
-      for(let i=0,len=split.length;i<len;i++){
-        if(split[i].includes('?') && split[i-1][split[i-1].length -1] !== '/'){
-          split[i-1] = split[i-1] + '/'
-        }
-      }
-      req.url = split.join('')
-    }
     let { method, splitRest } = urlUtil(req.url, req.method)
     // check all url combinations possible
     const urlCombinationOptions = populateUrlOptions(splitRest)

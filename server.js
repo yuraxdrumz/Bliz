@@ -2,7 +2,6 @@ import Bliz, { request, response, Joi } from './src/main'
 import bodyParser from 'body-parser'
 
 const app = Bliz()
-const app2 = Bliz()
 const getDataValidationSchema = Joi.object().keys({
   data: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/),
   bookName: Joi.string(),
@@ -27,10 +26,7 @@ const boom = app
 const boom2 = app
   .createPath('/')
   .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
-  .middleware((req,res,next)=>{
-    console.log('hit /')
-    next()
-  })
+
 
 const getData3 = app
   .createPath('/:data/:boom/wok')
@@ -42,20 +38,21 @@ const getData3 = app
 
 
 const slashRouter = app
-  .createRouter('/api/booya/ok')
+  .createRouter('/api/')
   .get(boom)
   .get(boom2)
   .post(boom)
   .get(getData)
   .get(getData3)
-  .middleware(bodyParser.json())
+  // .middleware(bodyParser.json())
 
 
 app
   .registerRouters(slashRouter)
   .prettyPrint()
+  // .middleware(bodyParser.json())
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
 
-app.events.on('*',data=>{
-  console.log(`event fired: ${app.events.event}, data: ${data}`)
-})
+// app.events.on('*',data=>{
+//   console.log(`event fired: ${app.events.event}, data: ${data}`)
+// })

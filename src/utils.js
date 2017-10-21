@@ -1,4 +1,13 @@
 function urlUtil(url, methodUpperCase){
+  if(url.includes('?')){
+    let split = url.split(/(\?)/g)
+    for(let i=0,len=split.length;i<len;i++){
+      if(split[i].includes('?') && split[i-1][split[i-1].length -1] !== '/'){
+        split[i-1] = split[i-1] + '/'
+      }
+    }
+    url = split.join('')
+  }
   const dividedUrl = url.split('/');
   let method = methodUpperCase.toLowerCase()
   if(method === 'delete') method = 'del'
