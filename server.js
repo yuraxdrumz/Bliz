@@ -2,7 +2,7 @@ import Bliz, { request, response, Joi } from './src/main'
 import bodyParser from 'body-parser'
 
 const app = Bliz()
-
+const app2 = Bliz()
 const getDataValidationSchema = Joi.object().keys({
   data: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/),
   bookName: Joi.string(),
@@ -41,11 +41,11 @@ const getData3 = app
   })
 
 
-
 const slashRouter = app
-  .createRouter('/api')
+  .createRouter('/api/booya/ok')
   .get(boom)
   .get(boom2)
+  .post(boom)
   .get(getData)
   .get(getData3)
   .middleware(bodyParser.json())
@@ -56,3 +56,6 @@ app
   .prettyPrint()
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
 
+app.events.on('*',data=>{
+  console.log(`event fired: ${app.events.event}, data: ${data}`)
+})

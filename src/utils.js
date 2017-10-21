@@ -113,13 +113,13 @@ function populateParamsUtil(req, routersObject, base, method, rest){
   try{
     let param
     let canSkipBecauseParams = false
-    let arr = Object.keys(routersObject[base][method])
     if(rest === '/'){
       return { canSkipBecauseParams, param }
     }else{
+      let arr = Object.keys(routersObject[base][method])
       for(let path of arr){
         let splitArr = path.split('/')
-        let splitUrl = rest.split('/')
+        let splitUrl = checkBaseUtil(rest).split('/')
         if(splitArr.length === splitUrl.length){
           let counter = splitArr.length
           let toBeCounted = 0
@@ -146,7 +146,12 @@ function populateParamsUtil(req, routersObject, base, method, rest){
         canSkipBecauseParams
       }
     }
-  }catch(e){console.error(e)}
+  }catch(e){
+    return {
+      param:null,
+      canSkipBecauseParams:false
+    }
+  }
 }
 
 export {

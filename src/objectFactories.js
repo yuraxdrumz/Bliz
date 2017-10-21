@@ -1,8 +1,8 @@
 // receive an http and a handler and return a listen func
-const Listen = (http, handler, middleWares, routes, subApps) => ({
+const Listen = (http, handler, middleWares, routes, app) => ({
   listen:(...args)=>{
     middleWares = middleWares.reduce((prev,curr)=>prev.concat(curr),[])
-    const handlerWithRoutes = handler(middleWares, routes, subApps)
+    const handlerWithRoutes = handler(middleWares, routes, app)
     const server = http.createServer(handlerWithRoutes)
     return server.listen.apply(server, args)
   }
@@ -65,6 +65,10 @@ const GetObjProps = obj =>({
   getObjProps:()=>(obj)
 })
 
+const EventsCreator = eventEmitter =>({
+  events:new eventEmitter({wildcard:true})
+})
+
 // when called, receives an object
 // returns new object
 const CreateNewObjOf = (name, obj, ...deps) => ({
@@ -91,5 +95,6 @@ export {
   Method,
   GetObjProps,
   Listen,
-  PrettyPrint
+  PrettyPrint,
+  EventsCreator
 }

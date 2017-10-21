@@ -1,10 +1,9 @@
 // TODO check path to regex
-// TODO add cluster support
 // TODO add auto generated swagger from routes support
 // TODO add default middleware ???
 // TODO clean handler and test for performance
 // TODO add tests
-function createHandler (request, response, defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, middleWares, routes) {
+function createHandler (request, response, defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, middleWares, routes, app) {
   async function handler(req,res){
     // set proto of req and res to point to our req and res
     req.__proto__ = request
@@ -12,8 +11,17 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
     if(!req.params) req.params = {}
     if(!req.query) req.query = {}
     // get url parts
-    const { method, splitRest } = urlUtil(req.url, req.method)
-    // xheck all url combinations possible
+    if(req.url.includes('?')){
+      let split = req.url.split(/(\?)/g)
+      for(let i=0,len=split.length;i<len;i++){
+        if(split[i].includes('?') && split[i-1][split[i-1].length -1] !== '/'){
+          split[i-1] = split[i-1] + '/'
+        }
+      }
+      req.url = split.join('')
+    }
+    let { method, splitRest } = urlUtil(req.url, req.method)
+    // check all url combinations possible
     const urlCombinationOptions = populateUrlOptions(splitRest)
     // get all middlewares collected on routers existing hit on request
     const { baseOfRequest, rest, combinedRoutersMids } = handleNestedRoutersUtil(urlCombinationOptions, routes)
@@ -23,8 +31,16 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
     // global middleware, if exists work with it, if throws error go to global handler
     // check routers middleware
     try {
-      if (middleWares) await midHandler(Promise, req, res, middleWares)
-      if (combinedRoutersMids) await midHandler(Promise, req, res, combinedRoutersMids)
+      if (middleWares){
+        app.events.emit('global_middleware:start')
+        await midHandler(Promise, req, res, middleWares)
+        app.events.emit('global_middleware:finish')
+      }
+      if (combinedRoutersMids) {
+        app.events.emit(`router_middleware:start`, baseOfRequest)
+        await midHandler(Promise, req, res, combinedRoutersMids)
+        app.events.emit(`router_middleware:finish`, baseOfRequest)
+      }
     } catch (middleWareError) {
       return defaultHandler(req, res, middleWareError)
     }
@@ -41,16 +57,21 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
     // if err in err handler or err handler not exists => router err handler => if not go to global handler
     try {
       const { middleWareArr, validationSchemas, handler } = currentRoute
-      if (middleWareArr && middleWareArr.length > 0) await midHandler(Promise, req, res, middleWareArr)
+      if (middleWareArr && middleWareArr.length > 0){
+        app.events.emit(`path_middleware:start`, rest)
+        await midHandler(Promise, req, res, middleWareArr)
+        app.events.emit(`path_middleware:finish`, rest)
+      }
 
-      if( validationSchemas&& validationSchemas.length > 0 ){
+      if( validationSchemas && validationSchemas.length > 0 ){
+        app.events.emit(`validation_schemas:start`)
         for( let i = 0, len = validationSchemas.length; i<len; i++ ){
           const currentTest = req[validationSchemas[i].name]
           if(!currentTest) throw new Error(`request object does not have a property: ${JSON.stringify(validationSchemas[i].name)}`)
           const { error } = Joi.validate({...currentTest}, validationSchemas[i].schema);
           if(error) throw error
         }
-
+        app.events.emit(`validation_schemas:finish`)
       }
       handler(req, res)
     } catch (errorFromHandler) {
