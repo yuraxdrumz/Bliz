@@ -6,6 +6,7 @@
 // TODO merge events of subapps to main app
 function createHandler (request, response, defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, middleWares, routes, app) {
   async function handler(req,res){
+    middleWares = middleWares.reduce((prev, curr) => prev.concat(curr), [])
     // set proto of req and res to point to our req and res
     req.__proto__ = request
     res.__proto__ = response
@@ -81,7 +82,7 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
 
     }
   }
-  return handler
+  return { handler }
 }
 
 export default createHandler

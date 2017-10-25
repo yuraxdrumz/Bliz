@@ -1,12 +1,13 @@
 // receive an http and a handler and return a listen func
-const Listen = (http, handler, middleWares, routes, app) => ({
-  listen:(...args)=>{
-    middleWares = middleWares.reduce((prev,curr)=>prev.concat(curr),[])
-    const handlerWithRoutes = handler(middleWares, routes, app)
-    const server = http.createServer(handlerWithRoutes)
-    return server.listen.apply(server, args)
-  }
-})
+const Listen = (name, handlerFactory, middleWares, routes, app) => {
+  return http => ({
+    [name]: (...args) => {
+      const { handler } = handlerFactory(middleWares, routes, app)
+      const server = http.createServer(handler)
+      return server.listen.apply(server, args)
+    }
+  })
+}
 
 const PrettyPrint = (treeifyDep, entity, chainLink) =>({
   prettyPrint: log =>{

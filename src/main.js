@@ -6,7 +6,7 @@ import defaultHandler from './defaultHandler'
 import midHandler from './middlewareHandler'
 import http from 'http'
 import RegisterRouters from './registerRouters'
-import createHandler from './handler'
+import CreateHandler from './handler'
 import request from './request'
 import response from './response'
 import treeify from 'treeify'
@@ -18,6 +18,7 @@ const BlizApp = (request, response, Joi, RouterCreator, Listen, defaultHandler, 
   const _Instance = {}
   const _middleWares = []
   const _routersObject = {}
+  const _createHandler = CreateHandler.bind(this,request, response ,defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions)
   const _subApps = []
   return Object.assign(
     _Instance,
@@ -27,9 +28,10 @@ const BlizApp = (request, response, Joi, RouterCreator, Listen, defaultHandler, 
     CreateArray('middleware',_middleWares, _Instance),
     CreateArray('subApp', _subApps, _Instance),
     CreateNewObjOf('Path', PathCreator, treeify),
+    _createHandler(_middleWares, _routersObject, _Instance),
     EventsCreator(EventEmitter),
     GetObjProps({_middleWares, _routersObject, _subApps}),
-    Listen(http, createHandler.bind(this,request, response ,defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions), _middleWares, _routersObject, _Instance)
+    Listen('listen', _createHandler, _middleWares, _routersObject, _Instance)(http)
   )
 }
 
@@ -52,7 +54,7 @@ const BlizCreator = () => {
       populateParamsUtil,
       populateQueryUtil,
       populateUrlOptions,
-      createHandler,
+      CreateHandler,
       GetObjProps,
       populateSubAppsUtil,
       treeify,

@@ -1,4 +1,5 @@
 import Bliz, { request, response, Joi } from './src/main'
+import Unter from './src/tester'
 import bodyParser from 'body-parser'
 
 const app = Bliz()
@@ -66,5 +67,11 @@ app
   .registerRouters(slashRouter)
   .prettyPrint()
   // .middleware(bodyParser.json())
-  .listen(3000,()=>console.log('listening on bliz server on port 3000'))
+  // .listen(3000,()=>console.log('listening on bliz server on port 3000'))
 
+async function tester(){
+  const test = await Unter(app).url('/api').method('get').end()
+  console.log(test)
+}
+
+tester()
