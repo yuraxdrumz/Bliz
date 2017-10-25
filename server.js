@@ -66,12 +66,5 @@ app
   .subApp(app2)
   .registerRouters(slashRouter)
   .prettyPrint()
-  // .middleware(bodyParser.json())
-  // .listen(3000,()=>console.log('listening on bliz server on port 3000'))
-
-async function tester(){
-  const test = await Unter(app).url('/api').method('get').end()
-  console.log(test)
-}
-
-tester()
+  .middleware(bodyParser.json())
+  .listen(3000,()=>console.log('listening on bliz server on port 3000'))

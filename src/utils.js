@@ -1,3 +1,4 @@
+
 function urlUtil(url, methodUpperCase){
   if(url.includes('?')){
     let split = url.split(/(\?)/g)
