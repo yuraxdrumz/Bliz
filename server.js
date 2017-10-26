@@ -1,9 +1,9 @@
 import Bliz, { request, response, Joi } from './src/main'
-import Unter from './src/tester'
 import bodyParser from 'body-parser'
 
 const app = Bliz()
 const app2 = Bliz()
+
 const getDataValidationSchema = Joi.object().keys({
   data: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/),
   bookName: Joi.string(),
@@ -46,7 +46,7 @@ const slashRouter = app
   .post(boom)
   .get(getData)
   .get(getData3)
-  // .middleware(bodyParser.json())
+  .middleware(bodyParser.json())
 
 const slashRouter2 = app
   .createRouter('/lalala')
@@ -55,7 +55,7 @@ const slashRouter2 = app
   .post(boom)
   .get(getData)
   .get(getData3)
-// .middleware(bodyParser.json())
+.middleware(bodyParser.json())
 
 app2.registerRouters(slashRouter2)
 
@@ -68,3 +68,6 @@ app
   .prettyPrint()
   .middleware(bodyParser.json())
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
+
+
+
