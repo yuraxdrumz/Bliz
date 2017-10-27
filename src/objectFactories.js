@@ -1,13 +1,12 @@
 // receive an http and a handler and return a listen func
-const Listen = (name, handlerFactory) => {
-  return http => ({
-    [name]: (...args) => {
-      const { handler } = handlerFactory()
-      const server = http.createServer(handler)
-      return server.listen.apply(server, args)
-    }
-  })
-}
+const Listen = (name, handlerFactory, http) => ({
+  [name]: (...args) => {
+    const { handler } = handlerFactory()
+    const server = http.createServer(handler)
+    return server.listen.apply(server, args)
+  }
+})
+
 
 const PrettyPrint = (treeifyDep, entity, chainLink) =>({
   prettyPrint: log =>{
@@ -16,12 +15,14 @@ const PrettyPrint = (treeifyDep, entity, chainLink) =>({
       logger = log
     }
     let shortEntity = {}
-    if(Object.keys(entity).length > 0){
-      for(let i=0,len=Object.keys(entity).length;i<len;i++){
+    const keysOfEntity = Object.keys(entity)
+    if(keysOfEntity.length > 0){
+      for(let i=0,len=keysOfEntity.length;i<len;i++){
         let obj = {}
-        let key = Object.keys(entity)[i]
-        shortEntity[key] = obj
+        let key = keysOfEntity[i]
         let options = ['get','post','put','del']
+        shortEntity[key] = obj
+
         options.forEach(option=>{
           let routeValues = Object.keys(entity[key][option])
           if(routeValues.length > 0){
@@ -32,10 +33,8 @@ const PrettyPrint = (treeifyDep, entity, chainLink) =>({
               const assignedOption = {[routeKey]:value}
               Object.assign(obj,assignedOption )
             }
-
           }
         })
-        // Object.assign(shortEntity, obj)
       }
     }
     logger(treeifyDep.asTree(shortEntity))

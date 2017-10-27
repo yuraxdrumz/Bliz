@@ -1,5 +1,4 @@
 // handler for express middlewares with next...
-
 async function midHandler(Promise, req, res, arr){
   function next(resolve, reject, ...args){
     if(args.length > 0) return reject(args[0])

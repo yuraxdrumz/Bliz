@@ -24,7 +24,6 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
     // global middleware, if exists work with it, if throws error go to global handler
     // check routers middleware
     try {
-      console.time('promises seperate')
       if (middleWares){
         app.events.emit('global_middleware:start')
         await midHandler(Promise, req, res, middleWares)
@@ -35,7 +34,6 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
         await midHandler(Promise, req, res, combinedRoutersMids)
         app.events.emit(`router_middleware:finish`, baseOfRequest)
       }
-      console.timeEnd('promises seperate')
     } catch (middleWareError) {
       return defaultHandler(req, res, middleWareError)
     }

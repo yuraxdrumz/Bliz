@@ -31,7 +31,7 @@ const BlizApp = (request, response, Joi, RouterCreator, Listen, defaultHandler, 
     CreateNewObjOf('Path', PathCreator, treeify),
     EventsCreator(EventEmitter),
     GetObjProps({_middleWares, _routersObject, _subApps}),
-    Listen('listen', _createHandler)(http)
+    Listen('listen', _createHandler, http)
   )
 }
 

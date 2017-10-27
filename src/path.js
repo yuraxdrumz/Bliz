@@ -21,7 +21,7 @@ const PathCreator = path => {
     CreateArray('middleware',pathData.middleWareArr, _PathReturn),
     AssignHandler('handler', pathData, _PathReturn),
     AssignHandler('errHandler', pathData, _PathReturn),
-    GetObjProps(pathData)
+    GetObjProps(pathData),
   )
 }
 
