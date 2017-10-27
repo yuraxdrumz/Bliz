@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Default Handler suite should put statusCode to 404 if 3rd param error not passed 1`] = `
+Object {
+  "error": "GET - url/data/never/mind not found...",
+}
+`;
+
+exports[`Default Handler suite should put statusCode to 500 if error status is defined and 3rd param error was passed 1`] = `
+Object {
+  "error": "error to string",
+}
+`;
+
+exports[`Default Handler suite should put statusCode to err status if 3rd param error was passed 1`] = `
+Object {
+  "error": "error to string",
+}
+`;

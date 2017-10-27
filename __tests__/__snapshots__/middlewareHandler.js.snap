@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Middleware handler suite should iterate on functions array received and inject next to each 1`] = `
+Array [
+  Object {},
+  Object {},
+  [Function],
+]
+`;
+
+exports[`Middleware handler suite should iterate on functions array received and inject next to each 2`] = `
+Array [
+  Object {},
+  Object {},
+  [Function],
+]
+`;
+
+exports[`Middleware handler suite should iterate on functions array received and inject next to each 3`] = `
+Array [
+  Object {},
+  Object {},
+  [Function],
+]
+`;
