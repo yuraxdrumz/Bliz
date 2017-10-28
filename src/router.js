@@ -3,11 +3,10 @@ import {
   AssignHandler,
   GetObjProps,
   Method,
-  PrettyPrint
 } from './objectFactories'
 import { checkBaseUtil } from './utils'
 
-const RouterCreator = (base, dependencies) => {
+const RouterCreator = base => {
   const _checkedBase = checkBaseUtil(base)
   const _RouterReturn = {}
   const routerData = {
@@ -22,7 +21,6 @@ const RouterCreator = (base, dependencies) => {
   }
   return Object.assign(
     _RouterReturn,
-    PrettyPrint(dependencies[0], routerData),
     Method('get', routerData, _RouterReturn),
     Method('post', routerData, _RouterReturn),
     Method('put', routerData, _RouterReturn),

@@ -19,8 +19,7 @@ const PrettyPrint = (treeifyDep, entity, chainLink) =>({
     for(let key of keysOfEntity){
       let obj = {}
       let options = ['get','post','put','del']
-      shortEntity[key] = obj
-      options.forEach(option=>{
+      for(let option of options){
         let routeValues = Object.keys(entity[key][option])
         if(routeValues.length > 0){
           let routeKey = option.toUpperCase()
@@ -29,11 +28,12 @@ const PrettyPrint = (treeifyDep, entity, chainLink) =>({
             value[route] = ''
             const assignedOption = {[routeKey]:value}
             Object.assign(obj,assignedOption)
+            shortEntity[key] = obj
+
           }
         }
-      })
+      }
     }
-
     logger(treeifyDep.asTree(shortEntity))
     return chainLink
   }

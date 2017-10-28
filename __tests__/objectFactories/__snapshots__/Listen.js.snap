@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Listen suite Should extract handler from handlerFactory, pass it to http.createServer and return server.listen 1`] = `
+Array [
+  3000,
+  [Function],
+]
+`;
+
+exports[`Listen suite Should extract handler from handlerFactory, pass it to http.createServer and return server.listen 2`] = `
+Array [
+  3000,
+  [Function],
+]
+`;
