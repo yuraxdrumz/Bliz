@@ -11,32 +11,29 @@ const Listen = (name, handlerFactory, http) => ({
 const PrettyPrint = (treeifyDep, entity, chainLink) =>({
   prettyPrint: log =>{
     let logger = console.log
-    if(log && typeof log === 'function'){
-      logger = log
-    }
     let shortEntity = {}
     const keysOfEntity = Object.keys(entity)
-    if(keysOfEntity.length > 0){
-      for(let i=0,len=keysOfEntity.length;i<len;i++){
-        let obj = {}
-        let key = keysOfEntity[i]
-        let options = ['get','post','put','del']
-        shortEntity[key] = obj
 
-        options.forEach(option=>{
-          let routeValues = Object.keys(entity[key][option])
-          if(routeValues.length > 0){
-            let routeKey = option.toUpperCase()
-            let value = {}
-            for(let route of routeValues){
-              value[route] = ''
-              const assignedOption = {[routeKey]:value}
-              Object.assign(obj,assignedOption )
-            }
+    if(log && typeof log === 'function') logger = log
+
+    for(let key of keysOfEntity){
+      let obj = {}
+      let options = ['get','post','put','del']
+      shortEntity[key] = obj
+      options.forEach(option=>{
+        let routeValues = Object.keys(entity[key][option])
+        if(routeValues.length > 0){
+          let routeKey = option.toUpperCase()
+          let value = {}
+          for(let route of routeValues){
+            value[route] = ''
+            const assignedOption = {[routeKey]:value}
+            Object.assign(obj,assignedOption)
           }
-        })
-      }
+        }
+      })
     }
+
     logger(treeifyDep.asTree(shortEntity))
     return chainLink
   }

@@ -1,0 +1,113 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Listen suite Should extract handler from handlerFactory, pass it to http.createServer and return server.listen 1`] = `
+Array [
+  3000,
+  [Function],
+]
+`;
+
+exports[`Listen suite Should extract handler from handlerFactory, pass it to http.createServer and return server.listen 2`] = `
+Array [
+  3000,
+  [Function],
+]
+`;
+
+exports[`Pretty print suite Should call logger passed to pretty print with tree of urls 1`] = `
+Array [
+  Object {
+    "/": Object {
+      "DEL": Object {
+        "/delTest": "",
+      },
+      "GET": Object {
+        "/test": "",
+      },
+      "POST": Object {
+        "/postTest": "",
+      },
+      "PUT": Object {
+        "/putTest": "",
+      },
+    },
+    "/api": Object {
+      "DEL": Object {
+        "/apiDelTest": "",
+      },
+      "GET": Object {
+        "/apiGetTEst": "",
+      },
+      "POST": Object {
+        "/apiPostTest": "",
+      },
+      "PUT": Object {
+        "/apiPutTest": "",
+      },
+    },
+    "/data": Object {
+      "DEL": Object {
+        "/dataDelTest": "",
+      },
+      "GET": Object {
+        "/dataTest": "",
+      },
+      "POST": Object {
+        "/dataPostTest": "",
+      },
+      "PUT": Object {
+        "/dataPutTest": "",
+      },
+    },
+  },
+]
+`;
+
+exports[`Pretty print suite Should call logger passed to pretty print with tree of urls 2`] = `
+Array [
+  Object {
+    "/": Object {
+      "DEL": Object {
+        "/delTest": "",
+      },
+      "GET": Object {
+        "/test": "",
+      },
+      "POST": Object {
+        "/postTest": "",
+      },
+      "PUT": Object {
+        "/putTest": "",
+      },
+    },
+    "/api": Object {
+      "DEL": Object {
+        "/apiDelTest": "",
+      },
+      "GET": Object {
+        "/apiGetTEst": "",
+      },
+      "POST": Object {
+        "/apiPostTest": "",
+      },
+      "PUT": Object {
+        "/apiPutTest": "",
+      },
+    },
+    "/data": Object {
+      "DEL": Object {
+        "/dataDelTest": "",
+      },
+      "GET": Object {
+        "/dataTest": "",
+      },
+      "POST": Object {
+        "/dataPostTest": "",
+      },
+      "PUT": Object {
+        "/dataPutTest": "",
+      },
+    },
+  },
+]
+`;
