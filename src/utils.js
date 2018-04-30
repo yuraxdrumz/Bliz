@@ -135,7 +135,7 @@ function populateParamsUtil(req, routersObject, base, method, rest){
           for(let i=0,len=splitArr.length;i<len;i++){
             if(splitArr[i].includes(':')){
               toBeCounted+=1
-            }else if(!splitArr[i].includes(':') && splitArr[i] === splitUrl[i]){
+            }else if(splitArr[i] === splitUrl[i]){
               toBeCounted+=1
             }
           }

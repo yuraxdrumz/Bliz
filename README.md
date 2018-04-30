@@ -6,3 +6,5 @@ Express like app, written with object composition, simple to test, simple to add
 * Add automatic swagger generation
 * Add more unit tests
 * Add code coverage of at least 90%
+* add proxy option on route
+* add sockets ??
