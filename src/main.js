@@ -1,6 +1,6 @@
 import RouterCreator from './router'
 import PathCreator from './path'
-import { Listen, CreateArray, CreateNewObjOf, GetObjProps, PrettyPrint, EventsCreator } from './objectFactories'
+import { Listen, CreateArray, CreateNewObjOf, GetObjProps, PrettyPrint, EventsCreator, AssignHandler } from './objectFactories'
 import { urlUtil, populateQueryUtil,populateRoutersUtil,populateParamsUtil, handleNestedRoutersUtil, populateUrlOptions, populateSubAppsUtil } from './utils'
 import defaultHandler from './defaultHandler'
 import midHandler from './middlewareHandler'
@@ -19,10 +19,12 @@ const BlizApp = (request, response, { struct, superstruct }, RouterCreator, List
   const _Instance = {}
   const _middleWares = []
   const _routersObject = {}
-  const _createHandler = CreateHandler.bind(this,request, response ,defaultHandler, midHandler, { struct, superstruct }, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _Instance, Promise)
+  const _injected = {}
+  const _createHandler = CreateHandler.bind(this,request, response ,defaultHandler, midHandler, { struct, superstruct }, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, Promise)
   const _subApps = []
   return Object.assign(
     _Instance,
+    AssignHandler('inject', _injected, _Instance, true),
     PrettyPrint(treeify, _routersObject, _Instance),
     CreateNewObjOf('Router', RouterCreator, treeify),
     RegisterRouters(populateRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _subApps, _Instance),
@@ -30,7 +32,7 @@ const BlizApp = (request, response, { struct, superstruct }, RouterCreator, List
     CreateArray('subApp', _subApps, _Instance),
     CreateNewObjOf('Path', PathCreator, treeify),
     EventsCreator(EventEmitter),
-    GetObjProps({_middleWares, _routersObject, _subApps}),
+    GetObjProps({_middleWares, _routersObject, _subApps, _injected}),
     Listen('listen', _createHandler, http)
   )
 }

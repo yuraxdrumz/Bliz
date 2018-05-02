@@ -4,7 +4,7 @@
 // TODO clean handler and test for performance
 // TODO add tests
 // TODO merge events of subapps to main app
-function createHandler (request, response, defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, middleWares, routes, app, Promise) {
+function createHandler (request, response, defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, middleWares, routes, injected, app, Promise) {
   async function handler(req,res){
     middleWares = middleWares.reduce((prev, curr) => prev.concat(curr), [])
     // set proto of req and res to point to our req and res
@@ -66,7 +66,7 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
         }
         app.events.emit(`validation_schemas:finish`)
       }
-      handler(req, res)
+      handler(req, res, injected)
     } catch (errorFromHandler) {
       try{
         if(currentRoute.errHandler){

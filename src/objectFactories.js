@@ -49,9 +49,9 @@ const Method = (name, object,chainLink) => ({
 
 
 // assign creator
-const AssignHandler = (name, object, chainLink) =>({
+const AssignHandler = (name, object, chainLink, override = false) =>({
   [name]:data =>{
-    object[name] = data
+    override ? Object.assign(object, data) : object[name] = data
     return chainLink
   }
 })

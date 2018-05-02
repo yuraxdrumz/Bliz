@@ -2,7 +2,6 @@ import Bliz, { request, response, struct, superstruct } from './src/main'
 import bodyParser from 'body-parser'
 
 const app = Bliz()
-console.log(struct ,superstruct)
 
 const validationSchema = struct({
   data:'string'
@@ -29,7 +28,9 @@ const getData = app
   })
 const boom = app
   .createPath('/:data/boom')
-  .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
+  .handler((req,res, injected)=>{
+    res.json({params:req.params,query:req.query,body:req.body})
+  })
   .validationSchema({name:'params',schema:validationSchema})
   .validationSchema({name:'body',schema:bodySchema})
   .validationSchema({name:'query', schema: querySchema})
@@ -86,5 +87,12 @@ const slashRouter = app
 app
   .registerRouters(slashRouter)
   .prettyPrint()
+  .inject({
+    bla:()=>console.log('blaaaa'),
+    otherFunc:()=>console.log('other func')
+    // mongooseConnection
+  })
   .middleware(bodyParser.json())
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
+
+  console.log(app.getObjProps())
