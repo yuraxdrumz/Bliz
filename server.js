@@ -1,15 +1,24 @@
-import Bliz, { request, response, Joi } from './src/main'
+import Bliz, { request, response, struct, superstruct } from './src/main'
 import bodyParser from 'body-parser'
 
 const app = Bliz()
+console.log(struct ,superstruct)
 
-const getDataValidationSchema = Joi.object().keys({
-  data: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/),
+const validationSchema = struct({
+  data:'string'
+})
+
+const bodySchema = struct({
+  data:'number'
 })
 
 const getData = app
   .createPath('/:data/')
-  .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
+  .handler((req,res)=>{
+  })
+  .errHandler((req,res)=>{
+    res.json({error:'my custom error'})
+  })
   .middleware((req,res,next)=>{
     console.log('hit getData1')
     next()
@@ -17,7 +26,8 @@ const getData = app
 const boom = app
   .createPath('/:data/boom')
   .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
-  .validationSchema({name:'params',schema:getDataValidationSchema})
+  .validationSchema({name:'params',schema:validationSchema})
+  .validationSchema({name:'body',schema:bodySchema})
   .middleware((req,res,next)=>{
     console.log('hit boom')
     next()

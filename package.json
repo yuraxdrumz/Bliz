@@ -28,6 +28,7 @@
     "body-parser": "^1.18.2",
     "eventemitter2": "^4.1.2",
     "joi": "^13.0.1",
+    "superstruct": "^0.5.3",
     "treeify": "^1.0.1"
   }
 }

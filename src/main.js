@@ -10,16 +10,16 @@ import CreateHandler from './handler'
 import request from './request'
 import response from './response'
 import treeify from 'treeify'
-import Joi from 'joi'
+import { struct, superstruct } from 'superstruct'
 import EventEmitter from 'eventemitter2'
 import Promise from 'bluebird'
 
 // main instance creator, returns an instance of bliz app
-const BlizApp = (request, response, Joi, RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil, treeify, EventsCreator, EventEmitter, Promise) => {
+const BlizApp = (request, response, { struct, superstruct }, RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil, treeify, EventsCreator, EventEmitter, Promise) => {
   const _Instance = {}
   const _middleWares = []
   const _routersObject = {}
-  const _createHandler = CreateHandler.bind(this,request, response ,defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _Instance, Promise)
+  const _createHandler = CreateHandler.bind(this,request, response ,defaultHandler, midHandler, { struct, superstruct }, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _Instance, Promise)
   const _subApps = []
   return Object.assign(
     _Instance,
@@ -41,7 +41,7 @@ const BlizCreator = () => {
     BlizApp(
       request,
       response,
-      Joi,
+      { struct, superstruct },
       RouterCreator,
       Listen,
       defaultHandler,
@@ -66,4 +66,4 @@ const BlizCreator = () => {
 }
 
 export default BlizCreator
-export { request, response, Joi }
+export { request, response, struct, superstruct }

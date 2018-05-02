@@ -55,14 +55,14 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
         await midHandler(Promise, req, res, middleWareArr)
         app.events.emit(`path_middleware:finish`, rest)
       }
-
       if( validationSchemas && validationSchemas.length > 0 ){
         app.events.emit(`validation_schemas:start`)
         for( let i = 0, len = validationSchemas.length; i<len; i++ ){
-          const currentTest = req[validationSchemas[i].name]
-          if(!currentTest) throw new Error(`request object does not have a property: ${JSON.stringify(validationSchemas[i].name)}`)
-          const { error } = Joi.validate({...currentTest}, validationSchemas[i].schema);
-          if(error) throw error
+          validationSchemas[i].schema(req[validationSchemas[i].name])
+        //   const currentTest = req[validationSchemas[i].name]
+        //   if(!currentTest) throw new Error(`request object does not have a property: ${JSON.stringify(validationSchemas[i].name)}`)
+        //   const { error } = Joi.validate({...currentTest}, validationSchemas[i].schema);
+        //   if(error) throw error
         }
         app.events.emit(`validation_schemas:finish`)
       }
