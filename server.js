@@ -9,7 +9,11 @@ const validationSchema = struct({
 })
 
 const bodySchema = struct({
-  data:'number'
+  data:'number?'
+})
+
+const querySchema = struct({
+  bla:'string'
 })
 
 const getData = app
@@ -28,6 +32,7 @@ const boom = app
   .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
   .validationSchema({name:'params',schema:validationSchema})
   .validationSchema({name:'body',schema:bodySchema})
+  .validationSchema({name:'query', schema: querySchema})
   .middleware((req,res,next)=>{
     console.log('hit boom')
     next()
