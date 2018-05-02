@@ -20,10 +20,12 @@ const BlizApp = (request, response, { struct, superstruct }, RouterCreator, List
   const _middleWares = []
   const _routersObject = {}
   const _injected = {}
+  const _options = {}
   const _createHandler = CreateHandler.bind(this,request, response ,defaultHandler, midHandler, { struct, superstruct }, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, Promise)
   const _subApps = []
   return Object.assign(
     _Instance,
+    AssignHandler('options', _options, _Instance, true),
     AssignHandler('inject', _injected, _Instance, true),
     PrettyPrint(treeify, _routersObject, _Instance),
     CreateNewObjOf('Router', RouterCreator, treeify),
@@ -32,8 +34,8 @@ const BlizApp = (request, response, { struct, superstruct }, RouterCreator, List
     CreateArray('subApp', _subApps, _Instance),
     CreateNewObjOf('Path', PathCreator, treeify),
     EventsCreator(EventEmitter),
-    GetObjProps({_middleWares, _routersObject, _subApps, _injected}),
-    Listen('listen', _createHandler, http)
+    GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options}),
+    Listen('listen', _createHandler, http, _options)
   )
 }
 

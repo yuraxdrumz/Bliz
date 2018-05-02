@@ -28,7 +28,7 @@ const getData = app
   })
 const boom = app
   .createPath('/:data/boom')
-  .handler((req,res, injected)=>{
+  .handler((req,res)=>{
     res.json({params:req.params,query:req.query,body:req.body})
   })
   .validationSchema({name:'params',schema:validationSchema})
@@ -91,6 +91,9 @@ app
     bla:()=>console.log('blaaaa'),
     otherFunc:()=>console.log('other func')
     // mongooseConnection
+  })
+  .options({
+    printStartMessage: true
   })
   .middleware(bodyParser.json())
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
