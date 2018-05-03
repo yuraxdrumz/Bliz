@@ -8,11 +8,19 @@ const validationSchema = struct({
 })
 
 const bodySchema = struct({
-  data:'number?'
+  data:'number'
 })
 
 const querySchema = struct({
   bla:'string'
+})
+
+const errorSchema = struct({
+  error: 'string'
+})
+
+const responseSchema = struct({
+  response: 'string'
 })
 
 const getData = app
@@ -31,17 +39,21 @@ const boom = app
   .handler((req,res)=>{
     res.json({params:req.params,query:req.query,body:req.body})
   })
-  .validationSchema({name:'params',schema:validationSchema})
-  .validationSchema({name:'body',schema:bodySchema})
-  .validationSchema({name:'query', schema: querySchema})
   .middleware((req,res,next)=>{
     console.log('hit boom')
     next()
   })
+
 const boom2 = app
   .createPath('/')
-
   .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
+  .describe({
+    tags: ['main route', 'simple tag'],
+    summary: 'simple summary for swagger',
+    description: 'returns whatever it receives',
+    requests: [{name: 'query', schema: bodySchema}],
+    responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
+  })
   .middleware((req,res,next)=>{
     console.log('yesasadds')
     next()
@@ -91,9 +103,6 @@ app
     bla:()=>console.log('blaaaa'),
     otherFunc:()=>console.log('other func')
     // mongooseConnection
-  })
-  .options({
-    printStartMessage: true
   })
   .middleware(bodyParser.json())
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))

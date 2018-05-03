@@ -49,23 +49,19 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
     // try router middleware => route middleware=>route handler=>if err check route err handler=>
     // if err in err handler or err handler not exists => router err handler => if not go to global handler
     try {
-      const { middleWareArr, validationSchemas, handler } = currentRoute
+      const { middleWareArr, describe, handler } = currentRoute
       if (middleWareArr && middleWareArr.length > 0){
         app.events.emit(`path_middleware:start`, rest)
         await midHandler(Promise, req, res, middleWareArr)
         app.events.emit(`path_middleware:finish`, rest)
       }
-      if( validationSchemas && validationSchemas.length > 0 ){
-        app.events.emit(`validation_schemas:start`)
-        for( let i = 0, len = validationSchemas.length; i<len; i++ ){
-          validationSchemas[i].schema(req[validationSchemas[i].name])
-        //   const currentTest = req[validationSchemas[i].name]
-        //   if(!currentTest) throw new Error(`request object does not have a property: ${JSON.stringify(validationSchemas[i].name)}`)
-        //   const { error } = Joi.validate({...currentTest}, validationSchemas[i].schema);
-        //   if(error) throw error
+      if(describe && describe.requests && describe.requests.length > 0){
+        for(let i=0; i<describe.requests.length; i++){
+          describe.requests[i].schema(req[describe.requests[i].name])
         }
-        app.events.emit(`validation_schemas:finish`)
       }
+      app.events.emit(`validation_schemas:finish`)
+      
       handler(req, res, injected)
     } catch (errorFromHandler) {
       try{
