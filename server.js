@@ -26,9 +26,13 @@ const responseSchema = struct({
 const getData = app
   .createPath('/:data/')
   .handler((req,res)=>{
+    res.json('dsasda')
   })
-  .errHandler((req,res)=>{
-    res.json({error:'my custom error'})
+  .errHandler((req,res, e)=>{
+    res.json({error:e.message})
+  })
+  .describe({
+    requests:[{}]
   })
   .middleware((req,res,next)=>{
     console.log('hit getData1')
@@ -51,7 +55,7 @@ const boom2 = app
     tags: ['main route', 'simple tag'],
     summary: 'simple summary for swagger',
     description: 'returns whatever it receives',
-    requests: [{name: 'query', schema: bodySchema}],
+    requests: [{name: 'query', schema: bodySchema}, {name: 'params', schema: bodySchema}],
     responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
   })
   .middleware((req,res,next)=>{
@@ -72,7 +76,7 @@ const getData3 = app
 
 const slashRouter2 = app
   .createRouter('/lalala')
-  .get(boom)
+  .del(boom)
   .get(boom2)
   .post(boom)
   .get(getData)
@@ -107,4 +111,3 @@ app
   .middleware(bodyParser.json())
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
 
-  console.log(app.getObjProps())
