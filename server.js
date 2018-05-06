@@ -108,6 +108,9 @@ app
     otherFunc:()=>console.log('other func')
     // mongooseConnection
   })
+  .describe({
+    
+  })
   .middleware(bodyParser.json())
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
 

@@ -1,96 +1,51 @@
-const starter = {
-  "swagger": "2.0",
-  "info": {
-    "version": "1.0.0",
-    "title": "Swagger",
-    "termsOfService": "http://swagger.io/terms/",
-    "contact": {
-      "email": "apiteam@swagger.io"
-    },
-    "license": {
-      "name": "Apache 2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-    }
-  },
-  "host": "petstore.swagger.io",
-  "basePath": "/",
-  "tags": [
-    {
-      "name": "pet",
-      "description": "Everything about your Pets",
-    },
-    {
-      "name": "store",
-      "description": "Access to Petstore orders"
-    },
-    {
-      "name": "user",
-      "description": "Operations about user",
-    }
-  ],
-  "schemes": [
-    "http"
-  ],
-}
+const { struct } = require('superstruct')
+
+const contactStruct = struct({
+  name: 'string?',
+  email: 'string?',
+  url: 'string?'
+})
+
+const licenseStruct = struct({
+  name: 'string?',
+  url: 'string?'
+})
+
+const serversStruct = struct({
+  url: ['string']
+})
 
 
-function getSwaggerDataFromApp(app){
-  let finalUrls = []
-  // console.log(app.getObjProps()._routersObject)
-  const RouterPathsKeys = Object.keys(app.getObjProps()._routersObject)
-  RouterPathsKeys.forEach(key=>{
-    const methodKeys = ['get','post','put','del'].forEach(method=>{
-      const urls = Object.keys(app.getObjProps()._routersObject[key][method])
-      urls.forEach(url=>{
-        const routeData = app.getObjProps()._routersObject[key][method][url].getObjProps()
-        let fullPath = {
-          url:key+url,
-          method,
-          response:routeData.response,
-          tags:routeData.tags,
-          responseStatus:routeData.responseStatus,
-          errResponse:routeData.errResponse,
-          errResponseStatus:routeData.errResponseStatus,
-          validationSchemas:routeData.validationSchemas
-        }
-        finalUrls.push(fullPath)
-        // console.log(`KEY:${key}, METHOD:${method}, URL:${url}`)
-      })
-    })
-  })
-  return finalUrls
-}
-
-function buildParameter(paramIn, paramName, description, required, schema){
+const mainDescribe = ({title, version, description, termsOfService, contact, license, servers}) => {
   return {
-    "in": paramIn,
-    "name": paramName,
-    "description": description,
-    "required": required,
-    "schema": schema
+    openapi: "3.0.0",
+    info: {
+      title,
+      version,
+      description,
+      termsOfService,
+      contact: {
+        name,
+        email,
+        url
+      },
+      license: {
+        name,
+        url
+      }
+    },
+    servers:[]
   }
 }
 
-function buildSwaggerPath(url, method, tags, parameters, responseStatus, failedStatus, summary){
+const pathDescribe = ({path, method, description}) => {
   return {
-    [url]: {
-      [method]: {
-        "tags": tags || ["default"],
-        "summary": summary || "",
-        "description": "",
-        "parameters": parameters || [],
-        "responses": {
-          [responseStatus]: {
-            "description": "operation succeeded",
-          },
-          [failedStatus]:{
-            "description": "operation failed"
-          }
-        },
-        // "security": []
+    [path]:{
+      [method]:{
+        description,
       }
     }
   }
 }
 
-export { getSwaggerDataFromApp, starter, buildSwaggerPath, buildParameter }
+const schemas = () => {}
