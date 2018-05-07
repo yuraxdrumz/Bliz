@@ -107,23 +107,23 @@ const yamlText = stringify(mainDescribe({
   servers:[]
 } ))
 const pathText = stringify(pathDescribe({
-  path:'/blabla',
+  path:'/asdadsdasas/{api-name}',
   method:'get',
   tags:['one', 'two'],
   description: 'wahahahahaah',
+  responses:[{status:'200', description:'sdadsaaasd', content:{'application/json':{schema: {name:'string', dsad:'array'}}}}],
   parameters:[{name:'data',
-    in:'query'
+    in:'dsadsa'
     }, 
     {
-    name:' dssdasad',
+    name:'api-name',
     in:'path'
   }]
-  
 }))
 
 const postPathText = stringify(pathDescribe({
-  path:'/blabla',
-  method:'get',
+  path:'/dasadsads',
+  method:'post',
   tags:['one', 'two'],
   description: 'wahahahahaah',
   requestBody:{
@@ -136,4 +136,4 @@ const postPathText = stringify(pathDescribe({
   }
 }))
 // console.log(yamlText,pathText)
-console.log(postPathText)
+console.log(pathText)
