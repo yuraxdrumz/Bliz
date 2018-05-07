@@ -28,7 +28,10 @@
     "body-parser": "^1.18.2",
     "eventemitter2": "^4.1.2",
     "joi": "^13.0.1",
+    "json-to-pretty-yaml": "^1.2.2",
+    "json2yaml": "^1.1.0",
     "superstruct": "^0.5.3",
-    "treeify": "^1.0.1"
+    "treeify": "^1.0.1",
+    "yamljs": "^0.3.0"
   }
 }

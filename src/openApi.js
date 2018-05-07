@@ -1,4 +1,5 @@
 const { struct } = require('superstruct')
+const { stringify } = require('json-to-pretty-yaml')
 
 const contactStruct = struct({
   name: 'string?',
@@ -26,23 +27,16 @@ const mainDescribe = ({title, version, description, termsOfService, contact, lic
       version,
       description,
       termsOfService,
-      contact: {
-        name,
-        email,
-        url
-      },
-      license: {
-        name,
-        url
-      }
+      contact,
+      license
     },
-    servers:[]
+    servers
   }
 }
 
 const parameterStruct = struct({
   name: 'string',
-  in: 'string',
+  in: struct.enum(['query', 'path']),
   description: 'string?',
   required: 'boolean?'
 })
@@ -68,3 +62,22 @@ const pathDescribe = ({path, method, tags, description, parameters, requestBody,
 }
 
 const schemas = () => {}
+
+
+// const yamlText = stringify(mainDescribe({title:'my api', version:'1.0.0', description:'some andom api', contact:{name:'me', email:'yuri.khomyakov@ironsrc.com'}} ))
+const pathText = stringify(pathDescribe({
+  path:'/blabla',
+  method:'get',
+  tags:['one', 'two'],
+  description: 'wahahahahaah',
+  parameters:[{name:'data',
+    in:'query'
+    }, 
+    {
+    name:' dssdasad',
+    in:'path'
+  }]
+  
+  
+}))
+console.log(pathText)
