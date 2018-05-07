@@ -76,14 +76,14 @@ const pathStruct = (pathName, methodName) => struct({
 })
 
 
-const pathDescribe = ({path, method, tags, description, parameters, requestBody, responses}) => {
+const pathDescribe = ({path, method, tags, description, requests, requestBody, responses}) => {
   const injectedPathWithParams = pathStruct(path, method)
   const jsonWithParams = {
     [path]:{
       [method]:{
         tags,
         description,
-        parameters,
+        parameters: requests,
         requestBody,
         responses
       }
@@ -104,36 +104,25 @@ const yamlText = stringify(mainDescribe({
     name: 'dasdsaa',
     url:'dsadsa'
   },
-  servers:[]
-} ))
+  servers:[{url:'sadadsadads', description:'asdadsdssdaasd'}]
+} 
+))
 const pathText = stringify(pathDescribe({
-  path:'/asdadsdasas/{api-name}',
-  method:'get',
-  tags:['one', 'two'],
-  description: 'wahahahahaah',
-  responses:[{status:'200', description:'sdadsaaasd', content:{'application/json':{schema: {name:'string', dsad:'array'}}}}],
-  parameters:[{name:'data',
-    in:'dsadsa'
-    }, 
-    {
-    name:'api-name',
-    in:'path'
-  }]
+  path:'/booooom',
+  method:'post',
+  tags: ['main route', 'simple tag'],
+  summary: 'simple summary for swagger',
+  description: 'returns whatever it receives',
+  requests: [{name: 'bla', in:'query'}],
+  // responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
+  
 }))
 
 const postPathText = stringify(pathDescribe({
   path:'/dasadsads',
   method:'post',
   tags:['one', 'two'],
-  description: 'wahahahahaah',
-  requestBody:{
-    content:{
-      'application/json':{
-        schema: {}
-      }
-    }
-
-  }
+  description: 'wahahahahaah'
 }))
 // console.log(yamlText,pathText)
-console.log(pathText)
+console.log(pathText, yamlText)
