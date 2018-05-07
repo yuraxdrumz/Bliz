@@ -11,14 +11,16 @@ const licenseStruct = struct({
   url: 'string?'
 })
 
-const serversStruct = struct({
-  url: ['string']
+const serverStruct = struct({
+  url: 'string?',
+  description: 'string?'
 })
 
 
-const mainDescribe = ({title, version, description, termsOfService, contact, license, servers}) => {
+const mainDescribe = ({title, version, description, termsOfService, contact, license, servers, security}) => {
   return {
     openapi: "3.0.0",
+    security,
     info: {
       title,
       version,
@@ -38,11 +40,28 @@ const mainDescribe = ({title, version, description, termsOfService, contact, lic
   }
 }
 
-const pathDescribe = ({path, method, description}) => {
+const parameterStruct = struct({
+  name: 'string',
+  in: 'string',
+  description: 'string?',
+  required: 'boolean?'
+})
+
+const pathStruct = struct({
+  path: 'string'
+})
+
+
+
+const pathDescribe = ({path, method, tags, description, parameters, requestBody, responses}) => {
   return {
     [path]:{
       [method]:{
+        tags,
         description,
+        parameters,
+        requestBody,
+        responses
       }
     }
   }

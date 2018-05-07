@@ -5,8 +5,8 @@
 // TODO add tests
 // TODO merge events of subapps to main app
 function createHandler (request, response, defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, middleWares, routes, injected, app, Promise) {
+  middleWares = middleWares.reduce((prev, curr) => prev.concat(curr), [])
   async function handler(req,res){
-    middleWares = middleWares.reduce((prev, curr) => prev.concat(curr), [])
     // set proto of req and res to point to our req and res
     req.__proto__ = request
     res.__proto__ = response
