@@ -49,7 +49,7 @@ const boom = app
   })
 
 const boom2 = app
-  .createPath('/')
+  .createPath('/:bla/bb')
   .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
   .describe({
     tags: ['main route', 'simple tag'],

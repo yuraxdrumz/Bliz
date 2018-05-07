@@ -114,7 +114,7 @@ const pathText = stringify(pathDescribe({
   method:'get',
   description:'saddsa',
   tags:['saddas','sdadsa'],
-  requests: [{in: 'query', name:'data'}, {in:'params', name:'lala'}],
+  requests: [{in: 'query'}, {in:'params'}],
   // responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
 }))
 
