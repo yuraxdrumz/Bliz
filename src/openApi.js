@@ -2,24 +2,39 @@ const { struct } = require('superstruct')
 const { stringify } = require('json-to-pretty-yaml')
 
 const contactStruct = struct({
-  name: 'string?',
-  email: 'string?',
-  url: 'string?'
+  name: 'string',
+  email: 'string',
+  url: 'string'
 })
 
 const licenseStruct = struct({
-  name: 'string?',
-  url: 'string?'
+  name: 'string',
+  url: 'string'
 })
 
 const serverStruct = struct({
-  url: 'string?',
-  description: 'string?'
+  url: 'string',
+  description: 'string'
 })
 
+const infoStruct = struct({
+  title: 'string?',
+  version: 'string?',
+  description: 'string?',
+  termsOfService: 'string?',
+  contact: contactStruct,
+  license: licenseStruct,
+})
+
+const mainDescribeStruct = struct({
+  openapi: 'string',
+  security: 'array?',
+  info: infoStruct,
+  servers: [serverStruct]
+})
 
 const mainDescribe = ({title, version, description, termsOfService, contact, license, servers, security}) => {
-  return {
+  const validJson = {
     openapi: "3.0.0",
     security,
     info: {
@@ -32,23 +47,38 @@ const mainDescribe = ({title, version, description, termsOfService, contact, lic
     },
     servers
   }
+  return mainDescribeStruct(validJson)
 }
+
+
 
 const parameterStruct = struct({
   name: 'string',
   in: struct.enum(['query', 'path']),
   description: 'string?',
-  required: 'boolean?'
+  required: 'boolean?',
 })
 
-const pathStruct = struct({
-  path: 'string'
+const singlePathMetaData = struct({
+  tags: ['string'],
+  description: 'string',
+  parameters: 'array?',
+  requestBody: 'object?',
+  responses: 'array?'
 })
 
+const methodStruct = methodName => struct({
+  [methodName]: singlePathMetaData
+})
+
+const pathStruct = (pathName, methodName) => struct({
+  [pathName]: methodStruct(methodName)
+})
 
 
 const pathDescribe = ({path, method, tags, description, parameters, requestBody, responses}) => {
-  return {
+  const injectedPathWithParams = pathStruct(path, method)
+  const jsonWithParams = {
     [path]:{
       [method]:{
         tags,
@@ -59,12 +89,23 @@ const pathDescribe = ({path, method, tags, description, parameters, requestBody,
       }
     }
   }
+  return injectedPathWithParams(jsonWithParams)
 }
 
 const schemas = () => {}
 
 
-// const yamlText = stringify(mainDescribe({title:'my api', version:'1.0.0', description:'some andom api', contact:{name:'me', email:'yuri.khomyakov@ironsrc.com'}} ))
+const yamlText = stringify(mainDescribe({
+  title:'my api', 
+  version:'1.0.0', 
+  description:'some random api', 
+  contact:{name:'me', email:'yuri.khomyakov@ironsrc.com', url:'asddsasad'},
+  license:{
+    name: 'dasdsaa',
+    url:'dsadsa'
+  },
+  servers:[]
+} ))
 const pathText = stringify(pathDescribe({
   path:'/blabla',
   method:'get',
@@ -78,6 +119,21 @@ const pathText = stringify(pathDescribe({
     in:'path'
   }]
   
-  
 }))
-console.log(pathText)
+
+const postPathText = stringify(pathDescribe({
+  path:'/blabla',
+  method:'get',
+  tags:['one', 'two'],
+  description: 'wahahahahaah',
+  requestBody:{
+    content:{
+      'application/json':{
+        schema: {}
+      }
+    }
+
+  }
+}))
+// console.log(yamlText,pathText)
+console.log(postPathText)
