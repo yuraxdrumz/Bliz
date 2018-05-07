@@ -57,7 +57,7 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
       }
       if(describe && describe.requests && describe.requests.length > 0){
         for(let i=0; i<describe.requests.length; i++){
-          describe.requests[i].schema(req[describe.requests[i].name])
+          describe.requests[i].schema(req[describe.requests[i].in])
         }
       }
       app.events.emit(`validation_schemas:finish`)

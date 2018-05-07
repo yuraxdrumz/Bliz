@@ -105,24 +105,17 @@ const yamlText = stringify(mainDescribe({
     url:'dsadsa'
   },
   servers:[{url:'sadadsadads', description:'asdadsdssdaasd'}]
-} 
-))
-const pathText = stringify(pathDescribe({
-  path:'/booooom',
-  method:'post',
-  tags: ['main route', 'simple tag'],
-  summary: 'simple summary for swagger',
-  description: 'returns whatever it receives',
-  requests: [{name: 'bla', in:'query'}],
-  // responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
-  
-}))
-
-const postPathText = stringify(pathDescribe({
-  path:'/dasadsads',
-  method:'post',
-  tags:['one', 'two'],
-  description: 'wahahahahaah'
 }))
 // console.log(yamlText,pathText)
-console.log(pathText, yamlText)
+console.log(yamlText)
+
+const pathText = stringify(pathDescribe({
+  path: '/api/bla',
+  method:'get',
+  description:'saddsa',
+  tags:['saddas','sdadsa'],
+  requests: [{in: 'query', name:'data'}, {in:'params', name:'lala'}],
+  // responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
+}))
+
+console.log(pathText)

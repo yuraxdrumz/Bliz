@@ -8,7 +8,7 @@ const validationSchema = struct({
 })
 
 const bodySchema = struct({
-  data:'number'
+  data:'number?'
 })
 
 const querySchema = struct({
@@ -55,7 +55,7 @@ const boom2 = app
     tags: ['main route', 'simple tag'],
     summary: 'simple summary for swagger',
     description: 'returns whatever it receives',
-    requests: [{name: 'query', schema: bodySchema}, {name: 'params', schema: bodySchema}],
+    requests: [{in: 'params', schema: bodySchema}],
     responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
   })
   .middleware((req,res,next)=>{
