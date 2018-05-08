@@ -76,14 +76,57 @@ const pathStruct = (pathName, methodName) => struct({
 })
 
 
+const getNested = (struct, cycle = 1, map = {}) => {
+  const schema = cycle === 1 ? struct.schema.schema : struct.schema
+  const keys = Object.keys(schema)
+  console.log(`keys: `, keys)
+  for(let key of keys){
+    if(schema[key].schema && typeof schema[key].schema === 'object'){
+      return getNested(schema[key], ++cycle, map)
+    } else {
+      map[key] = schema[key]
+    }
+    // console.log(typeof schema[key].schema)
+  }
+  // for(key of keys){
+    
+  //   console.log(key)
+  //   if(struct.schema[key] === 'object'){
+  //     getNested(struct.schema, map)
+  //   }else{
+  //     map.set(key, struct.schema.schema[key])
+  //   }
+  // }
+  return map
+}
+
 const pathDescribe = ({path, method, tags, description, requests, requestBody, responses}) => {
-  const injectedPathWithParams = pathStruct(path, method)
+  // console.log(Object.keys(requests[0].schema.schema))
+  const swaggerOptPath = path.includes(':') ? path.replace(/\:/, '{') : path
+  const injectedPathWithParams = pathStruct(swaggerOptPath, method)
   const jsonWithParams = {
-    [path]:{
+    [swaggerOptPath]:{
       [method]:{
         tags,
         description,
-        parameters: requests,
+        parameters: requests.map(request=>{
+          // const all 
+          const arrayToConcat = []
+          const map = getNested(request,1, {})
+          const keys = Object.keys(map)
+          for(let key of keys){
+            const obj = {}
+            obj.in = request.in
+            obj.name = key
+            obj.required = !map[key].includes('?')
+            obj.type = map[key].replace('?', '')
+            arrayToConcat.push(obj)
+          }
+          return arrayToConcat
+        
+        
+          // console.log(objectToReturn)
+        }).reduce((prev,curr)=>prev.concat(curr),[]),
         requestBody,
         responses
       }
@@ -107,14 +150,21 @@ const yamlText = stringify(mainDescribe({
   servers:[{url:'sadadsadads', description:'asdadsdssdaasd'}]
 }))
 // console.log(yamlText,pathText)
-console.log(yamlText)
+// console.log(yamlText)
+
+
+const querySchema = struct({
+  data:'number?',
+  bla: 'string'
+})
 
 const pathText = stringify(pathDescribe({
-  path: '/api/bla',
+  path: '/api/:bla',
   method:'get',
-  description:'saddsa',
-  tags:['saddas','sdadsa'],
-  requests: [{in: 'query'}, {in:'params'}],
+  tags: ['main route', 'simple tag'],
+  summary: 'simple summary for swagger',
+  description: 'returns whatever it receives',
+  requests: [{in: 'query', schema: querySchema}, {in:'path', schema: querySchema}],
   // responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
 }))
 

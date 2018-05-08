@@ -56,7 +56,7 @@ const boom2 = app
     summary: 'simple summary for swagger',
     description: 'returns whatever it receives',
     requests: [{in: 'params', schema: bodySchema}],
-    responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
+    // responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
   })
   .middleware((req,res,next)=>{
     console.log('yesasadds')
