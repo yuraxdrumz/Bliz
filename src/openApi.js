@@ -102,12 +102,13 @@ const getNested = (struct, cycle = 1, map = {}) => {
 
 const pathDescribe = ({path, method, tags, description, requests, requestBody, responses}) => {
   // console.log(Object.keys(requests[0].schema.schema))
-  const matchedGroups = path.match(/:(.+?)([\/]|$)/g)
-  console.log(matchedGroups)
-  const swaggerOptPath = path.includes(':') ? path.replace(/:(.+?)([\/]|$)/, '$1') : path
-  const injectedPathWithParams = pathStruct(swaggerOptPath, method)
+  const myRegexp = /(:.+?)([\/]|$)/g
+  const swaggerPath = path.replace(myRegexp, function(...args){
+    return args[0].replace(args[1], `{${args[1].replace(':', '')}}`)
+  })
+  const injectedPathWithParams = pathStruct(swaggerPath, method)
   const jsonWithParams = {
-    [swaggerOptPath]:{
+    [swaggerPath]:{
       [method]:{
         tags,
         description,
