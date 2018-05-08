@@ -79,7 +79,7 @@ const pathStruct = (pathName, methodName) => struct({
 const getNested = (struct, cycle = 1, map = {}) => {
   const schema = cycle === 1 ? struct.schema.schema : struct.schema
   const keys = Object.keys(schema)
-  console.log(`keys: `, keys)
+  // console.log(`keys: `, keys)
   for(let key of keys){
     if(schema[key].schema && typeof schema[key].schema === 'object'){
       return getNested(schema[key], ++cycle, map)
@@ -102,7 +102,9 @@ const getNested = (struct, cycle = 1, map = {}) => {
 
 const pathDescribe = ({path, method, tags, description, requests, requestBody, responses}) => {
   // console.log(Object.keys(requests[0].schema.schema))
-  const swaggerOptPath = path.includes(':') ? path.replace(/\:/, '{') : path
+  const matchedGroups = path.match(/:(.+?)([\/]|$)/g)
+  console.log(matchedGroups)
+  const swaggerOptPath = path.includes(':') ? path.replace(/:(.+?)([\/]|$)/, '$1') : path
   const injectedPathWithParams = pathStruct(swaggerOptPath, method)
   const jsonWithParams = {
     [swaggerOptPath]:{
@@ -159,7 +161,7 @@ const querySchema = struct({
 })
 
 const pathText = stringify(pathDescribe({
-  path: '/api/:bla',
+  path: '/api/:bla/boom/getData/:param',
   method:'get',
   tags: ['main route', 'simple tag'],
   summary: 'simple summary for swagger',
