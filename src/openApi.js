@@ -64,6 +64,7 @@ const singlePathMetaData = struct({
   description: 'string',
   parameters: 'array?',
   requestBody: 'object?',
+  summary: 'string',
   responses: 'array?'
 })
 
@@ -79,7 +80,7 @@ const pathStruct = (pathName, methodName) => struct({
 const getNested = (struct, cycle = 1, map = {}) => {
   const schema = cycle === 1 ? struct.schema.schema : struct.schema
   const keys = Object.keys(schema)
-  // console.log(`keys: `, keys)
+  // console.log(`keys: `, struct)
   for(let key of keys){
     if(schema[key].schema && typeof schema[key].schema === 'object'){
       return getNested(schema[key], ++cycle, map)
@@ -100,37 +101,56 @@ const getNested = (struct, cycle = 1, map = {}) => {
   return map
 }
 
-const pathDescribe = ({path, method, tags, description, requests, requestBody, responses}) => {
+const addRequest = (request) => {
+  if(!request) return
+  return {
+    content:{
+      'application/json':{
+        schema:{
+          $ref:"#/components/schemas/error"
+        }
+      }
+    }
+  }
+}
+
+const pathDescribe = ({path, method, tags, description, summary, requests, requestBody, responses}) => {
   // console.log(Object.keys(requests[0].schema.schema))
   const myRegexp = /(:.+?)([\/]|$)/g
   const swaggerPath = path.replace(myRegexp, function(...args){
     return args[0].replace(args[1], `{${args[1].replace(':', '')}}`)
   })
+  const bodyRequests = requests.filter(request=>request.in === 'body')
+  const parametersRequests = requests.filter(request=>['path', 'query'].includes(request.in))
   const injectedPathWithParams = pathStruct(swaggerPath, method)
+
+  const parametersToInject = parametersRequests.map(request=>{
+    // const all 
+    const arrayToConcat = []
+    const map = getNested(request,1, {})
+    const keys = Object.keys(map)
+    for(let key of keys){
+      const obj = {}
+      obj.in = request.in
+      obj.name = key
+      obj.required = !map[key].includes('?')
+      obj.type = map[key].replace('?', '')
+      arrayToConcat.push(obj)
+    }
+    return arrayToConcat
+  
+  
+    // console.log(objectToReturn)
+  }).reduce((prev,curr)=>prev.concat(curr),[])
+
   const jsonWithParams = {
     [swaggerPath]:{
       [method]:{
         tags,
         description,
-        parameters: requests.map(request=>{
-          // const all 
-          const arrayToConcat = []
-          const map = getNested(request,1, {})
-          const keys = Object.keys(map)
-          for(let key of keys){
-            const obj = {}
-            obj.in = request.in
-            obj.name = key
-            obj.required = !map[key].includes('?')
-            obj.type = map[key].replace('?', '')
-            arrayToConcat.push(obj)
-          }
-          return arrayToConcat
-        
-        
-          // console.log(objectToReturn)
-        }).reduce((prev,curr)=>prev.concat(curr),[]),
-        requestBody,
+        summary,
+        requestBody: addRequest(bodyRequests[0]),
+        parameters: parametersToInject.length > 0 ? parametersToInject : undefined,
         responses
       }
     }
@@ -155,10 +175,9 @@ const yamlText = stringify(mainDescribe({
 // console.log(yamlText,pathText)
 // console.log(yamlText)
 
-
 const querySchema = struct({
   data:'number?',
-  bla: 'string'
+  bla: 'number'
 })
 
 const pathText = stringify(pathDescribe({
@@ -171,4 +190,15 @@ const pathText = stringify(pathDescribe({
   // responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
 }))
 
-console.log(pathText)
+const pathText2 = stringify(pathDescribe({
+  path: '/api/new-house/:house',
+  method:'post',
+  tags: ['main route', 'simple tag'],
+  summary: 'simple summary for swagger',
+  description: 'returns whatever it receives',
+  requests: [{in: 'body', schema: querySchema}],
+  // responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
+}))
+
+
+console.log(pathText2)
