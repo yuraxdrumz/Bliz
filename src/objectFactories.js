@@ -1,3 +1,4 @@
+const { pathDescribe } = require('./openApi')
 // receive an http and a handler and return a listen func
 const Listen = (name, handlerFactory, http) => ({
   [name]: (...args) => {
@@ -42,7 +43,33 @@ const PrettyPrint = (treeifyDep, entity, chainLink) =>({
 // method creator for router
 const Method = (name, object,chainLink) => ({
   [name]: data =>{
+    data.parent = chainLink.getObjProps()
     object[name][data.getObjProps().path] = data
+    return chainLink
+  }
+})
+
+const CreateSwagger = (yamlCreator, chainLink, ...args) => ({
+  swagger:(options)=>{
+    const swaggerObj = {}
+    args.map(arg=>Object.assign(swaggerObj, arg))
+    const swaggerYaml = yamlCreator(swaggerObj)
+    const routers = chainLink.getObjProps()._routersObject
+    const routersKeys = Object.keys(routers)
+    for(let key of routersKeys){
+      const router = routers[key]
+      const getPaths = Object.keys(router.get)
+      const postPaths = Object.keys(router.post)
+      const putPaths = Object.keys(router.put)
+      const delPaths = Object.keys(router.del)
+      for(let path of getPaths){
+        const fullPath = router.base + path
+        const describe = router.get[path].getObjProps().describe
+        const fullObj = Object.assign({}, describe, {method:'get', path: fullPath})
+        const yaml = yamlCreator(pathDescribe(fullObj))
+        console.log(yaml)
+      }
+    }
     return chainLink
   }
 })
@@ -93,5 +120,6 @@ export {
   GetObjProps,
   Listen,
   PrettyPrint,
-  EventsCreator
+  EventsCreator,
+  CreateSwagger
 }

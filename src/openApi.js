@@ -240,17 +240,21 @@ const errorSchema = struct({
 })
 
 
-const pathText2 = stringify(pathDescribe({
-  path: '/api/new-house/:house',
-  method:'post',
-  tags: ['main route', 'simple tag'],
-  summary: 'simple summary for swagger',
-  description: 'returns whatever it receives',
-  requests: [{in: 'body', contentType:'application/json', schema: querySchema}],
-  responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
-}))
+// const pathText2 = stringify(pathDescribe({
+//   path: '/api/new-house/:house',
+//   method:'post',
+//   tags: ['main route', 'simple tag'],
+//   summary: 'simple summary for swagger',
+//   description: 'returns whatever it receives',
+//   requests: [{in: 'body', contentType:'application/json', schema: querySchema}],
+//   responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
+// }))
 
-const swaggerSchemas = stringify(schemas([{name:'apinewhousehouse-body-post', schema:querySchema},{name:'fff', schema:errorSchema}, {name:'sdaasdsad', schema: responseSchema}]))
+// const swaggerSchemas = stringify(schemas([{name:'apinewhousehouse-body-post', schema:querySchema},{name:'fff', schema:errorSchema}, {name:'sdaasdsad', schema: responseSchema}]))
 
-console.log(pathText2)
-console.log(swaggerSchemas)
+// console.log(pathText2)
+// console.log(swaggerSchemas)
+
+module.exports = {
+  pathDescribe
+}

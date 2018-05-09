@@ -13,11 +13,13 @@ const PathCreator = path => {
     path:_checkedPath,
     describe: {},
     handler:null,
-    errHandler:null
+    errHandler:null,
+    parent: null
   }
   return Object.assign(
     _PathReturn,
     AssignHandler('describe', pathData.describe, _PathReturn, true),
+    AssignHandler('parent', pathData.parent, _PathReturn, true),
     CreateArray('middleware',pathData.middleWareArr, _PathReturn),
     AssignHandler('handler', pathData, _PathReturn),
     AssignHandler('errHandler', pathData, _PathReturn),

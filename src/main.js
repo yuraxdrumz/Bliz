@@ -1,6 +1,6 @@
 import RouterCreator from './router'
 import PathCreator from './path'
-import { Listen, CreateArray, CreateNewObjOf, GetObjProps, PrettyPrint, EventsCreator, AssignHandler } from './objectFactories'
+import { Listen, CreateArray, CreateNewObjOf, GetObjProps, PrettyPrint, EventsCreator, AssignHandler, CreateSwagger } from './objectFactories'
 import { urlUtil, populateQueryUtil,populateRoutersUtil,populateParamsUtil, handleNestedRoutersUtil, populateUrlOptions, populateSubAppsUtil } from './utils'
 import defaultHandler from './defaultHandler'
 import midHandler from './middlewareHandler'
@@ -13,19 +13,22 @@ import treeify from 'treeify'
 import { struct, superstruct } from 'superstruct'
 import EventEmitter from 'eventemitter2'
 import Promise from 'bluebird'
+import { stringify } from 'json-to-pretty-yaml'
 
 // main instance creator, returns an instance of bliz app
-const BlizApp = (request, response, { struct, superstruct }, RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil, treeify, EventsCreator, EventEmitter, Promise) => {
+const BlizApp = (request, response, { struct, superstruct }, RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil, treeify, EventsCreator, EventEmitter, Promise, CreateSwagger, stringify) => {
   const _Instance = {}
   const _middleWares = []
   const _routersObject = {}
   const _injected = {}
   const _options = {}
   const _describe = {}
+  const _swagger = {}
   const _createHandler = CreateHandler.bind(this,request, response ,defaultHandler, midHandler, { struct, superstruct }, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, Promise)
   const _subApps = []
   return Object.assign(
     _Instance,
+    CreateSwagger(stringify, _Instance),
     AssignHandler('describe', _describe, _Instance, true),
     AssignHandler('options', _options, _Instance, true),
     AssignHandler('inject', _injected, _Instance, true),
@@ -66,7 +69,9 @@ const BlizCreator = () => {
       treeify,
       EventsCreator,
       EventEmitter,
-      Promise
+      Promise,
+      CreateSwagger,
+      stringify
     )
   )
 }

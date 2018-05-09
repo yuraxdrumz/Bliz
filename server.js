@@ -3,96 +3,32 @@ import bodyParser from 'body-parser'
 
 const app = Bliz()
 
-const validationSchema = struct({
-  data:'string'
+const paramSchema = struct({
+  param: 'string'
 })
 
-const bodySchema = struct({
-  data:'number?'
-})
-
-const querySchema = struct({
-  bla:'string'
+const responseSchema = struct({
+  data: 'array'
 })
 
 const errorSchema = struct({
   error: 'string'
 })
 
-const responseSchema = struct({
-  response: 'string'
+const route = app
+.createPath('/test/:param')
+.handler((req,res)=>res.json('addas'))
+.describe({
+  tags: ['main route', 'simple tag'],
+  summary: 'simple summary for swagger',
+  description: 'returns whatever it receives',
+  requests: [{in: 'path', schema: paramSchema}],
+  responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
 })
 
-const getData = app
-  .createPath('/:data/')
-  .handler((req,res)=>{
-    res.json('dsasda')
-  })
-  .errHandler((req,res, e)=>{
-    res.json({error:e.message})
-  })
-  .describe({
-    requests:[{}]
-  })
-  .middleware((req,res,next)=>{
-    console.log('hit getData1')
-    next()
-  })
-const boom = app
-  .createPath('/:data/boom')
-  .handler((req,res)=>{
-    res.json({params:req.params,query:req.query,body:req.body})
-  })
-  .middleware((req,res,next)=>{
-    console.log('hit boom')
-    next()
-  })
-
-const boom2 = app
-  .createPath('/:bla/bb/:dd')
-  .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
-  .describe({
-    tags: ['main route', 'simple tag'],
-    summary: 'simple summary for swagger',
-    description: 'returns whatever it receives',
-    requests: [{in: 'params', schema: bodySchema}],
-    // responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
-  })
-  .middleware((req,res,next)=>{
-    console.log('yesasadds')
-    next()
-  })
-
-const getData3 = app
-  .createPath('/:data/:boom/wok')
-  .handler((req,res)=>res.json({params:req.params,query:req.query,body:req.body}))
-  .middleware((req,res,next)=>{
-    // console.log('hit getData3')
-    next()
-  })
-
-
-
-
-const slashRouter2 = app
-  .createRouter('/lalala')
-  .del(boom)
-  .get(boom2)
-  .post(boom)
-  .get(getData)
-  .get(getData3)
-  .middleware((req,res,next)=>{
-    console.log('hit /lalala')
-    next()
-  })
 const slashRouter = app
   .createRouter('/api/')
-  .subRouter(slashRouter2)
-  .get(boom)
-  .get(boom2)
-  .post(boom)
-  .put(getData)
-  .get(getData3)
+  .get(route)
   .middleware((req,res,next)=>{
     console.log('hit /api')
     next()
@@ -109,7 +45,18 @@ app
     // mongooseConnection
   })
   .describe({
-    
+    title:'my api', 
+    version:'1.0.0', 
+    description:'some random api', 
+    contact:{name:'me', email:'yuri.khomyakov@ironsrc.com', url:'asddsasad'},
+    license:{
+      name: 'dasdsaa',
+      url:'dsadsa'
+    },
+    servers:[{url:'sadadsadads', description:'asdadsdssdaasd'}]
+  })
+  .swagger({
+    createYAML: true
   })
   .middleware(bodyParser.json())
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
