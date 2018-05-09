@@ -7,9 +7,21 @@ const paramSchema = struct({
   param: 'string'
 })
 
-const responseSchema = struct({
-  data: 'array'
+const structush = struct({
+  name: 'string',
+  other: struct({hhh:'array'})
 })
+
+const otherSchema = struct({
+  inner: 'string',
+  structArray: structush
+})
+
+const responseSchema = struct({
+  data: otherSchema
+})
+
+
 
 const errorSchema = struct({
   error: 'string'

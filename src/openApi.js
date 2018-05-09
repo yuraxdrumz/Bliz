@@ -77,15 +77,19 @@ const pathStruct = (pathName, methodName) => struct({
 })
 
 
-const getNested = (struct, cycle = 1, map = {}) => {
+const getNested = (struct, cycle = 1, map = {}, objectKeys = []) => {
   const schema = cycle === 1 ? struct.schema.schema : struct.schema
   const keys = Object.keys(schema)
   // console.log(`keys: `, struct)
   for(let key of keys){
+    // console.log(schema[key])
+    // if(schema[key] && Array.isArray(schema[key].schema)){
+    //   for(let schema of schema[key].sc)
+    // }
     if(schema[key].schema && typeof schema[key].schema === 'object'){
-      return getNested(schema[key], ++cycle, map)
-    } else {
-      map[key] = schema[key]
+      objectKeys.push(key)
+      map[key] = schema[key].schema
+      return getNested(schema[key], ++cycle, map, objectKeys)
     }
     // console.log(typeof schema[key].schema)
   }
@@ -184,12 +188,14 @@ const schemas = (schemas, securitySchemes) => {
     const keys = Object.keys(obj.schema.schema)
     for(let key of keys){
       let replaced = false
+      // console.log(obj.schema.schema)
+      console.log(JSON.stringify(getNested(obj)))
       if(obj.schema.schema[key].includes('?')){
         obj.schema.schema[key] = obj.schema.schema[key].replace('?', '')
         replaced = true
       }
       obj.schema.schema[key] = {
-        type: sc.schema.schema[key],
+        type: obj.schema.schema[key],
         required: !replaced
       }
     }
