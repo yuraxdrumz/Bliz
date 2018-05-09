@@ -176,10 +176,26 @@ const pathDescribe = ({path, method, tags, description, summary, requests, reque
 }
 
 const schemas = (schemas, securitySchemes) => {
+  const schemasObject = {}
+  for(let sc of schemas){
+    const keys = Object.keys(sc.schema.schema)
+    for(let key of keys){
+      let replaced = false
+      if(sc.schema.schema[key].includes('?')){
+        sc.schema.schema[key] = sc.schema.schema[key].replace('?', '')
+        replaced = true
+      }
+      sc.schema.schema[key] = {
+        type: sc.schema.schema[key],
+        required: !replaced
+      }
+    }
+    schemasObject[sc.name] = sc.schema.schema
+  }
   return {
     components:{
       securitySchemes,
-      schemas
+      schemas: schemasObject
     }
   }
 }
@@ -234,5 +250,7 @@ const pathText2 = stringify(pathDescribe({
   responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
 }))
 
+const swaggerSchemas = stringify(schemas([{name:'apinewhousehouse-body-post', schema:querySchema},{name:'fff', schema:errorSchema}, {name:'sdaasdsad', schema: responseSchema}]))
 
 console.log(pathText2)
+console.log(swaggerSchemas)
