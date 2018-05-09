@@ -26,21 +26,21 @@ const route = app
   responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
 })
 
-// const route2 = app
-// .createPath('/api/:status')
-// .handler((req,res)=>res.json('addas'))
-// .describe({
-//   tags: ['oven', 'jenkins'],
-//   summary: 'simple summary for swagger',
-//   description: 'returns whatever it receives',
-//   requests: [{in: 'body', schema: paramSchema}, {in:'params', schema: paramSchema}],
-//   responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
-// })
+const route2 = app
+.createPath('/:status/')
+.handler((req,res)=>res.json('addas'))
+.describe({
+  tags: ['oven', 'jenkins'],
+  summary: 'simple summary for swagger',
+  description: 'returns whatever it receives',
+  requests: [{in: 'body', schema: paramSchema}, {in:'params', schema: paramSchema}],
+  responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
+})
 
 const slashRouter = app
   .createRouter('/api/')
   .get(route)
-  // .post(route2)
+  .post(route2)
   .middleware((req,res,next)=>{
     console.log('hit /api')
     next()

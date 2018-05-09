@@ -178,19 +178,22 @@ const pathDescribe = ({path, method, tags, description, summary, requests, reque
 const schemas = (schemas, securitySchemes) => {
   const schemasObject = {}
   for(let sc of schemas){
-    const keys = Object.keys(sc.schema.schema)
+    const obj = Object.assign({}, sc)
+    obj.schema = Object.assign({}, obj.schema)
+    obj.schema.schema = Object.assign({}, obj.schema.schema)
+    const keys = Object.keys(obj.schema.schema)
     for(let key of keys){
       let replaced = false
-      if(sc.schema.schema[key].includes('?')){
-        sc.schema.schema[key] = sc.schema.schema[key].replace('?', '')
+      if(obj.schema.schema[key].includes('?')){
+        obj.schema.schema[key] = obj.schema.schema[key].replace('?', '')
         replaced = true
       }
-      sc.schema.schema[key] = {
+      obj.schema.schema[key] = {
         type: sc.schema.schema[key],
         required: !replaced
       }
     }
-    schemasObject[sc.name] = sc.schema.schema
+    schemasObject[sc.name] = obj.schema.schema
   }
   return {
     components:{
