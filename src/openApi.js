@@ -65,7 +65,7 @@ const singlePathMetaData = struct({
   parameters: 'array?',
   requestBody: 'object?',
   summary: 'string',
-  responses: 'array?'
+  responses: 'object?'
 })
 
 const methodStruct = methodName => struct({
@@ -101,17 +101,34 @@ const getNested = (struct, cycle = 1, map = {}) => {
   return map
 }
 
-const addRequest = (request) => {
+const addRequest = (request, path, method) => {
+  console.log(`REQUEST: `, request)
   if(!request) return
   return {
     content:{
-      'application/json':{
+      [request.contentType || 'application/json']:{
         schema:{
-          $ref:"#/components/schemas/error"
+          $ref:`#/components/schemas/${path.replace(/\//g, '').replace(/-/,'').replace(/[{|}]/g,'')}-body-${method}`
         }
       }
     }
   }
+}
+
+const responseBuilder = (responses, path, method) => {
+  const responseObject = {}
+  for(let resp of responses){
+    responseObject[resp.status] = {
+      content:{
+        [resp.contentType || 'application/json']:{
+          schema: {
+            $ref: `#/components/schemas/${path.replace(/\//g, '').replace(/-/,'').replace(/[{|}]/g,'')}-${resp.status}-${method}`
+          }
+        }
+      }
+    }
+  }
+  return responseObject
 }
 
 const pathDescribe = ({path, method, tags, description, summary, requests, requestBody, responses}) => {
@@ -149,16 +166,23 @@ const pathDescribe = ({path, method, tags, description, summary, requests, reque
         tags,
         description,
         summary,
-        requestBody: addRequest(bodyRequests[0]),
+        requestBody: addRequest(bodyRequests[0], swaggerPath, method),
         parameters: parametersToInject.length > 0 ? parametersToInject : undefined,
-        responses
+        responses: responseBuilder(responses, swaggerPath, method)
       }
     }
   }
   return injectedPathWithParams(jsonWithParams)
 }
 
-const schemas = () => {}
+const schemas = (schemas, securitySchemes) => {
+  return {
+    components:{
+      securitySchemes,
+      schemas
+    }
+  }
+}
 
 
 const yamlText = stringify(mainDescribe({
@@ -180,15 +204,25 @@ const querySchema = struct({
   bla: 'number'
 })
 
-const pathText = stringify(pathDescribe({
-  path: '/api/:bla/boom/getData/:param',
-  method:'get',
-  tags: ['main route', 'simple tag'],
-  summary: 'simple summary for swagger',
-  description: 'returns whatever it receives',
-  requests: [{in: 'query', schema: querySchema}, {in:'path', schema: querySchema}],
-  // responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
-}))
+// const pathText = stringify(pathDescribe({
+//   path: '/api/:bla/boom/getData/:param',
+//   method:'get',
+//   tags: ['main route', 'simple tag'],
+//   summary: 'simple summary for swagger',
+//   description: 'returns whatever it receives',
+//   requests: [{in: 'query', schema: querySchema}, {in:'path', schema: querySchema}],
+//   // responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
+// }))
+
+const responseSchema = struct({
+  data: 'array',
+  porque: 'string'
+})
+
+const errorSchema = struct({
+  error: 'string'
+})
+
 
 const pathText2 = stringify(pathDescribe({
   path: '/api/new-house/:house',
@@ -196,8 +230,8 @@ const pathText2 = stringify(pathDescribe({
   tags: ['main route', 'simple tag'],
   summary: 'simple summary for swagger',
   description: 'returns whatever it receives',
-  requests: [{in: 'body', schema: querySchema}],
-  // responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
+  requests: [{in: 'body', contentType:'application/json', schema: querySchema}],
+  responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
 }))
 
 
