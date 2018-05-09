@@ -39,7 +39,7 @@ const BlizApp = (request, response, { struct, superstruct }, RouterCreator, List
     CreateArray('subApp', _subApps, _Instance),
     CreateNewObjOf('Path', PathCreator, treeify),
     EventsCreator(EventEmitter),
-    GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options}),
+    GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options, _describe}),
     Listen('listen', _createHandler, http, _options)
   )
 }

@@ -102,7 +102,7 @@ const getNested = (struct, cycle = 1, map = {}) => {
 }
 
 const addRequest = (request, path, method) => {
-  console.log(`REQUEST: `, request)
+  // console.log(`REQUEST: `, request)
   if(!request) return
   return {
     content:{
@@ -201,17 +201,17 @@ const schemas = (schemas, securitySchemes) => {
 }
 
 
-const yamlText = stringify(mainDescribe({
-  title:'my api', 
-  version:'1.0.0', 
-  description:'some random api', 
-  contact:{name:'me', email:'yuri.khomyakov@ironsrc.com', url:'asddsasad'},
-  license:{
-    name: 'dasdsaa',
-    url:'dsadsa'
-  },
-  servers:[{url:'sadadsadads', description:'asdadsdssdaasd'}]
-}))
+// const yamlText = stringify(mainDescribe({
+//   title:'my api', 
+//   version:'1.0.0', 
+//   description:'some random api', 
+//   contact:{name:'me', email:'yuri.khomyakov@ironsrc.com', url:'asddsasad'},
+//   license:{
+//     name: 'dasdsaa',
+//     url:'dsadsa'
+//   },
+//   servers:[{url:'sadadsadads', description:'asdadsdssdaasd'}]
+// }))
 // console.log(yamlText,pathText)
 // console.log(yamlText)
 
@@ -256,5 +256,7 @@ const errorSchema = struct({
 // console.log(swaggerSchemas)
 
 module.exports = {
-  pathDescribe
+  pathDescribe,
+  schemas,
+  mainDescribe
 }

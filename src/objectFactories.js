@@ -1,4 +1,4 @@
-const { pathDescribe } = require('./openApi')
+const { pathDescribe, mainDescribe, schemas } = require('./openApi')
 // receive an http and a handler and return a listen func
 const Listen = (name, handlerFactory, http) => ({
   [name]: (...args) => {
@@ -54,21 +54,47 @@ const CreateSwagger = (yamlCreator, chainLink, ...args) => ({
     const swaggerObj = {}
     args.map(arg=>Object.assign(swaggerObj, arg))
     const swaggerYaml = yamlCreator(swaggerObj)
-    const routers = chainLink.getObjProps()._routersObject
-    const routersKeys = Object.keys(routers)
+    let yaml = ''
+    
+    const {_routersObject, _describe } = chainLink.getObjProps()
+    const mainYaml = yamlCreator(mainDescribe(_describe))
+    yaml+=mainYaml
+    const routersKeys = Object.keys(_routersObject)
+    const mainPathsObject = {paths:{}}
+    const schemasObject = []
     for(let key of routersKeys){
-      const router = routers[key]
-      const getPaths = Object.keys(router.get)
-      const postPaths = Object.keys(router.post)
-      const putPaths = Object.keys(router.put)
-      const delPaths = Object.keys(router.del)
-      for(let path of getPaths){
-        const fullPath = router.base + path
-        const describe = router.get[path].getObjProps().describe
-        const fullObj = Object.assign({}, describe, {method:'get', path: fullPath})
-        const yaml = yamlCreator(pathDescribe(fullObj))
-        console.log(yaml)
+      const options = ['get', 'post', 'put', 'del']
+      const router = _routersObject[key]
+      for(let method of options){
+        const paths = Object.keys(router[method])
+        for(let path of paths){
+          const fullPath = router.base + path
+          const describe = router[method][path].getObjProps().describe
+          const responseObjectsForSchema = describe.requests.filter(request=>request.in === 'body')
+          if(responseObjectsForSchema.length > 0){
+            responseObjectsForSchema.map(response=>{
+              const obj = {}
+              const name = `${fullPath.replace(/\//g, '').replace(/-/,'').replace(/[:]/g,'')}-body-${method}`
+              obj.name = name
+              obj.schema = response.schema
+              schemasObject.push(obj)
+            })
+          }
+          describe.responses.map(response=>{
+            const obj = {}
+            const name = `${fullPath.replace(/\//g, '').replace(/-/,'').replace(/[{:}]/g,'')}-${response.status}-${method}`
+            obj.name = name
+            obj.schema = response.schema
+            schemasObject.push(obj)
+          })
+          
+          const fullObj = Object.assign({}, describe, {method, path: fullPath})
+          Object.assign(mainPathsObject.paths, pathDescribe(fullObj))
+        }
       }
+      yaml += yamlCreator(mainPathsObject)
+      yaml += yamlCreator(schemas(schemasObject))
+      console.log(yaml)
     }
     return chainLink
   }
