@@ -9,17 +9,20 @@ const paramSchema = struct({
 
 const structush = struct({
   name: 'string',
-  other: struct({hhh:'array'})
+  field1:'number',
+  field2: paramSchema
 })
 
 const otherSchema = struct({
-  inner: 'string',
-  structArray: structush
+  inner: structush,
+  lala:'number'
+  // structArray: structush
 })
 
 const responseSchema = struct({
   data: otherSchema
 })
+
 
 
 
@@ -79,9 +82,7 @@ app
     },
     servers:[{url:'sadadsadads', description:'asdadsdssdaasd'}]
   })
-  .swagger({
-    createYAML: true
-  })
+  .swagger()
   .middleware(bodyParser.json())
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
 

@@ -76,32 +76,28 @@ const pathStruct = (pathName, methodName) => struct({
   [pathName]: methodStruct(methodName)
 })
 
-
-const getNested = (struct, cycle = 1, map = {}, objectKeys = []) => {
-  const schema = cycle === 1 ? struct.schema.schema : struct.schema
-  const keys = Object.keys(schema)
-  // console.log(`keys: `, struct)
-  for(let key of keys){
-    // console.log(schema[key])
-    // if(schema[key] && Array.isArray(schema[key].schema)){
-    //   for(let schema of schema[key].sc)
-    // }
-    if(schema[key].schema && typeof schema[key].schema === 'object'){
-      objectKeys.push(key)
-      map[key] = schema[key].schema
-      return getNested(schema[key], ++cycle, map, objectKeys)
-    }
-    // console.log(typeof schema[key].schema)
+const assign = (obj, keyPath, value) => {
+  lastKeyIndex = keyPath.length-1;
+  for (let i = 0; i < lastKeyIndex; ++ i) {
+    key = keyPath[i];
+    if (!(key in obj))
+      obj[key] = {}
+    obj = obj[key];
   }
-  // for(key of keys){
-    
-  //   console.log(key)
-  //   if(struct.schema[key] === 'object'){
-  //     getNested(struct.schema, map)
-  //   }else{
-  //     map.set(key, struct.schema.schema[key])
-  //   }
-  // }
+  obj[keyPath[lastKeyIndex]] = value;
+}
+
+const getNested = (struct, cycle = 1, map = {}) => {
+  const schema = (struct.schema && struct.schema.schema) || struct.schema
+  const keys = Object.keys(schema)
+  for(let key of keys){
+    if(schema[key].kind && schema[key].kind === 'object'){
+      const result = getNested(schema[key], ++cycle, {})
+      assign(map, [key], result)
+    } else {
+      assign(map, [key], schema[key])
+    }
+  }
   return map
 }
 
@@ -150,6 +146,7 @@ const pathDescribe = ({path, method, tags, description, summary, requests, reque
     const arrayToConcat = []
     const map = getNested(request,1, {})
     const keys = Object.keys(map)
+    // TODO: change to nested structure
     for(let key of keys){
       const obj = {}
       obj.in = request.in
@@ -182,24 +179,27 @@ const pathDescribe = ({path, method, tags, description, summary, requests, reque
 const schemas = (schemas, securitySchemes) => {
   const schemasObject = {}
   for(let sc of schemas){
-    const obj = Object.assign({}, sc)
-    obj.schema = Object.assign({}, obj.schema)
-    obj.schema.schema = Object.assign({}, obj.schema.schema)
-    const keys = Object.keys(obj.schema.schema)
-    for(let key of keys){
-      let replaced = false
-      // console.log(obj.schema.schema)
-      console.log(JSON.stringify(getNested(obj)))
-      if(obj.schema.schema[key].includes('?')){
-        obj.schema.schema[key] = obj.schema.schema[key].replace('?', '')
-        replaced = true
-      }
-      obj.schema.schema[key] = {
-        type: obj.schema.schema[key],
-        required: !replaced
-      }
-    }
-    schemasObject[sc.name] = obj.schema.schema
+    // console.log(sc)
+    // const obj = Object.assign({}, sc)
+    // obj.schema = Object.assign({}, obj.schema)
+    // obj.schema.schema = Object.assign({}, obj.schema.schema)
+    // const keys = Object.keys(obj.schema.schema)
+    // for(let key of keys){
+    //   let replaced = false
+    //   // console.log(obj.schema.schema)
+    //   console.log(JSON.stringify(getNested(obj)))
+    //   // TODO: change to nested structures
+    //   if(obj.schema.schema[key].includes('?')){
+    //     obj.schema.schema[key] = obj.schema.schema[key].replace('?', '')
+    //     replaced = true
+    //   }
+    //   obj.schema.schema[key] = {
+    //     type: obj.schema.schema[key],
+    //     required: !replaced
+    //   }
+    // }
+    // schemasObject[sc.name] = obj.schema.schema
+    schemasObject[sc.name] = getNested(sc)
   }
   return {
     components:{
