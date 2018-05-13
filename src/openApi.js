@@ -93,11 +93,14 @@ const getNested = (struct, cycle = 1, map = {}) => {
   for(let key of keys){
     if(schema[key].kind && schema[key].kind === 'object'){
       const result = getNested(schema[key], ++cycle, {})
-      assign(map, [key], result)
+      assign(map, [key, 'type'], 'object')
+      assign(map, [key, 'properties'], result)
+      // assign(map, [key], result)
     } else {
       assign(map, [key], schema[key])
     }
   }
+  console.log(map)
   return map
 }
 
