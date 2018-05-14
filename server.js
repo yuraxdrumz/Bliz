@@ -14,7 +14,7 @@ const structush = struct({
   field1:'number',
   field2: paramSchema,
   array:struct.enum(['string', 'other', 'last']),
-  any: struct.any(['string']),
+  any: struct.any(['object']),
   // dict:struct.dict(['string', 'number']),
   // fn:struct.function(()=>typeof value === 'string'),
   // instance:struct.instance(MyObject),

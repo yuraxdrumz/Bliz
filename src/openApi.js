@@ -97,6 +97,9 @@ const getNested = (struct, map = {}) => {
       assign(map, [key, 'type'], 'object')
       assign(map, [key, 'properties'], result)
       // assign(map, [key], result)
+    } else if (schema[key].kind && schema[key].kind === 'list'){
+      assign(map, [key, 'type'], 'array')
+      assign(map, [key, 'items', 'type'], schema[key].type.replace(/\[|\]/g,''))
     } else if(schema[key].kind && schema[key].kind === 'enum'){
       assign(map, [key, 'type'], 'string')
       assign(map, [key, 'enum'], schema[key].type.split('|').map(item=>item.replace(/\"/g, '').replace(/\s/g, '')))
