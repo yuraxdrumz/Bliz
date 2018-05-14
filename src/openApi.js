@@ -91,14 +91,14 @@ const getNested = (struct, map = {}) => {
   const schema = (struct.schema && struct.schema.schema) || struct.schema
   const keys = Object.keys(schema)
   for(let key of keys){
-    console.log(key, schema[key])
+    // console.log(key, schema[key])
     if(schema[key].kind && schema[key].kind === 'object'){
       const result = getNested(schema[key], {})
       assign(map, [key, 'type'], 'object')
       assign(map, [key, 'properties'], result)
       // assign(map, [key], result)
     } else if (schema[key].kind && schema[key].kind === 'list'){
-      console.log(`schema[key]`, schema[key].type)
+      // console.log(`schema[key]`, schema[key].type)
       assign(map, [key, 'type'], 'array')
       let type = schema[key].type.replace(/\[|\]/g,'')
       assign(map, [key, 'items', 'type'], type)
@@ -131,7 +131,7 @@ const getNested = (struct, map = {}) => {
       const types = schema[key].type.split('|').map(item=>item.replace(/\s/g, '')).map(item=> 'type: '+item)
       assign(map, [key, 'anyOf'], types)
     }else {
-      console.log(key, schema[key])
+      // console.log(key, schema[key])
       assign(map, [key], schema[key])
     }
   }
@@ -157,6 +157,7 @@ const responseBuilder = (responses, path, method) => {
   const responseObject = {}
   for(let resp of responses){
     responseObject[resp.status] = {
+      description: `${resp.status}`,
       content:{
         [resp.contentType || 'application/json']:{
           schema: {
@@ -182,17 +183,19 @@ const pathDescribe = ({path, method, tags, description, summary, requests, reque
   const parametersToInject = parametersRequests.map(request=>{
     // const all 
     const arrayToConcat = []
-    const map = getNested(request,1, {})
+    const map = getNested(request, {})
     const keys = Object.keys(map)
     // TODO: change to nested structure
     for(let key of keys){
       const obj = {}
-      obj.in = request.in
       obj.name = key
+      obj.in = request.in
       obj.required = !map[key].includes('?')
-      obj.type = map[key].replace('?', '')
+      obj.schema = {}
+      obj.schema.type = map[key].replace('?', '')
       arrayToConcat.push(obj)
     }
+    console.log(`array to concat: `, arrayToConcat)
     return arrayToConcat
   
   

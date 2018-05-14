@@ -6,6 +6,9 @@ const app = Bliz()
 const paramSchema = struct({
   param: 'string'
 })
+const statusSchema = struct({
+  status: 'string'
+})
 
 class MyObject{}
 
@@ -72,7 +75,7 @@ const route2 = app
   tags: ['oven', 'jenkins'],
   summary: 'simple summary for swagger',
   description: 'returns whatever it receives',
-  requests: [{in: 'body', schema: paramSchema}, {in:'params', schema: paramSchema}],
+  requests: [{in: 'body', schema: paramSchema}, {in:'path', schema: statusSchema}],
   responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
 })
 
