@@ -1,5 +1,5 @@
 // main function
-function createHandler (request, response, defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, middleWares, routes, injected, app, Promise) {
+function createHandler (request, response, defaultHandler, midHandler, { struct, superstruct, StructError }, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, middleWares, routes, injected, app, Promise) {
   // receive all middlewares from routers and apps if exist and concatanate them
   middleWares = middleWares.reduce((prev, curr) => prev.concat(curr), [])
   // handler to be passed to http.createServer

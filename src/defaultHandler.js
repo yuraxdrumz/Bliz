@@ -1,8 +1,13 @@
 // default error handler handler
+import { StructError } from './main'
 const defaultErrorHandler = function(req ,res, err){
   if(err){
     res.statusCode = err.status || 500
-    res.json({error:err.toString()})
+    if(err instanceof StructError){
+      res.json({error:err.message, path: err.path, dataPassed:err.data, valueReceived:err.value, typeExpected:err.type})
+    } else {
+      res.json({error:err.message})
+    }
 
   }else{
     res.statusCode = 404

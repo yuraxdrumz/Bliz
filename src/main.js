@@ -11,13 +11,13 @@ import request from './request'
 import response from './response'
 import fs from 'fs'
 import treeify from 'treeify'
-import { struct, superstruct } from 'superstruct'
+import { struct, superstruct, StructError } from 'superstruct'
 import EventEmitter from 'eventemitter2'
 import Promise from 'bluebird'
 import { stringify } from 'json-to-pretty-yaml'
 
 // main instance creator, returns an instance of bliz app
-const BlizApp = (request, response, { struct, superstruct }, RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil, treeify, EventsCreator, EventEmitter, Promise, CreateSwagger, stringify, fs) => {
+const BlizApp = (request, response, { struct, superstruct, StructError }, RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil, treeify, EventsCreator, EventEmitter, Promise, CreateSwagger, stringify, fs) => {
   const _Instance = {}
   const _middleWares = []
   const _routersObject = {}
@@ -25,7 +25,7 @@ const BlizApp = (request, response, { struct, superstruct }, RouterCreator, List
   const _options = {}
   const _describe = {}
   const _swagger = {}
-  const _createHandler = CreateHandler.bind(this,request, response ,defaultHandler, midHandler, { struct, superstruct }, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, Promise)
+  const _createHandler = CreateHandler.bind(this,request, response ,defaultHandler, midHandler, { struct, superstruct, StructError }, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, Promise)
   const _subApps = []
   return Object.assign(
     _Instance,
@@ -51,7 +51,7 @@ const BlizCreator = () => {
     BlizApp(
       request,
       response,
-      { struct, superstruct },
+      { struct, superstruct, StructError },
       RouterCreator,
       Listen,
       defaultHandler,
@@ -79,4 +79,4 @@ const BlizCreator = () => {
 }
 
 export default BlizCreator
-export { request, response, struct, superstruct }
+export { request, response, struct, superstruct, StructError }
