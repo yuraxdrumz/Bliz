@@ -73,6 +73,7 @@ const route = app
 const route2 = app
 .createPath('/:status/')
 .handler((req,res)=>res.json('addas'))
+.errHandler((req,res, error))
 .describe({
   tags: ['oven', 'jenkins'],
   summary: 'simple summary for swagger',
@@ -94,7 +95,7 @@ const slashRouter = app
 
 app
   .registerRouters(slashRouter)
-  .prettyPrint()
+  .prettyPrint(logger)
   .inject({
     bla:()=>console.log('blaaaa'),
     otherFunc:()=>console.log('other func')

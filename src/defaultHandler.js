@@ -9,4 +9,4 @@ const defaultErrorHandler = function(req ,res, err){
     res.json({error:`${req.method.toUpperCase()} - ${req.url} not found...`})
   }
 }
-export default defaultHandler
+export default defaultErrorHandler
