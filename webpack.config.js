@@ -14,7 +14,7 @@ fs.readdirSync('node_modules')
 
 module.exports = {
   devtool: 'source-map',
-  entry: ['babel-polyfill','./test_server.js'],
+  entry: ['babel-polyfill','./server.js'],
   target: 'node',
   output: {
     path: path.join(__dirname, 'dist'),
