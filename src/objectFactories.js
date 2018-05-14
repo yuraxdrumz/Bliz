@@ -1,4 +1,5 @@
 const { pathDescribe, mainDescribe, schemas } = require('./openApi')
+
 // receive an http and a handler and return a listen func
 const Listen = (name, handlerFactory, http) => ({
   [name]: (...args) => {
@@ -8,7 +9,7 @@ const Listen = (name, handlerFactory, http) => ({
   }
 })
 
-
+// pretty print all app routes
 const PrettyPrint = (treeifyDep, entity, chainLink) =>({
   prettyPrint: log =>{
     let logger = console.log
@@ -49,6 +50,7 @@ const Method = (name, object,chainLink) => ({
   }
 })
 
+// create swagger yaml
 const CreateSwagger = (yamlCreator, chainLink, fs, ...args) => ({
   swagger:(swaggerOptions)=>{
     const swaggerObj = {}

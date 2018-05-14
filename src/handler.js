@@ -1,11 +1,8 @@
-// TODO check path to regex
-// TODO add auto generated swagger from routes support
-// TODO add default middleware ???
-// TODO clean handler and test for performance
-// TODO add tests
-// TODO merge events of subapps to main app
+// main function
 function createHandler (request, response, defaultHandler, midHandler, Joi, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, middleWares, routes, injected, app, Promise) {
+  // receive all middlewares from routers and apps if exist and concatanate them
   middleWares = middleWares.reduce((prev, curr) => prev.concat(curr), [])
+  // handler to be passed to http.createServer
   async function handler(req,res){
     // set proto of req and res to point to our req and res
     req.__proto__ = request
@@ -18,23 +15,23 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
     const urlCombinationOptions = populateUrlOptions(splitRest)
     // get all middlewares collected on routers existing hit on request
     const { baseOfRequest, rest, combinedRoutersMids } = handleNestedRoutersUtil(urlCombinationOptions, routes)
-    // handle params
+    // populate req.query and return the final url to check on routers object
     const finalRest = populateQueryUtil(req, rest) || rest
+    // populate req.params and return bool if need to skip param check or not
     const { param, canSkipBecauseParams } = populateParamsUtil(req, routes, baseOfRequest, method, finalRest)
     // global middleware, if exists work with it, if throws error go to global handler
     // check routers middleware
     try {
+      // if global middlewares exists, execute them
       if (middleWares){
-        app.events.emit('global_middleware:start')
         await midHandler(Promise, req, res, middleWares)
-        app.events.emit('global_middleware:finish')
       }
+      // if routers middlewares exist, execute them
       if (combinedRoutersMids) {
-        app.events.emit(`router_middleware:start`, baseOfRequest)
         await midHandler(Promise, req, res, combinedRoutersMids)
-        app.events.emit(`router_middleware:finish`, baseOfRequest)
       }
     } catch (middleWareError) {
+      // in case of error in middlewares call defualt handler
       return defaultHandler(req, res, middleWareError)
     }
     // something is not defined go to default handler
@@ -45,24 +42,24 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
     }
     // current route after all checks
     const currentRoute = routes[baseOfRequest][method][!canSkipBecauseParams ? finalRest : param ].getObjProps()
-    // try router middleware => route middleware=>route handler=>if err check route err handler=>
+    // try router middleware => route middleware=> route handler=> if err check route err handler=>
     // if err in err handler or err handler not exists => router err handler => if not go to global handler
     try {
       const { middleWareArr, describe, handler } = currentRoute
+      // if route middleware, execute
       if (middleWareArr && middleWareArr.length > 0){
-        app.events.emit(`path_middleware:start`, rest)
         await midHandler(Promise, req, res, middleWareArr)
-        app.events.emit(`path_middleware:finish`, rest)
       }
+      // if validation schemes exist, execute them
       if(describe && describe.requests && describe.requests.length > 0){
         for(let i=0; i<describe.requests.length; i++){
           describe.requests[i].schema(req[describe.requests[i].in])
         }
       }
-      app.events.emit(`validation_schemas:finish`)
-      
+      // call handler with req, res and injected object from app.inject      
       handler(req, res, injected)
     } catch (errorFromHandler) {
+      // here, it is the same as with middlewares but backwards, try route err handler, next up try router err handler and finally try global middleware
       try{
         if(currentRoute.errHandler){
           currentRoute.errHandler(req, res, errorFromHandler)
