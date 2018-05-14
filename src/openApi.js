@@ -98,12 +98,39 @@ const getNested = (struct, map = {}) => {
       assign(map, [key, 'properties'], result)
       // assign(map, [key], result)
     } else if (schema[key].kind && schema[key].kind === 'list'){
+      console.log(`schema[key]`, schema[key].type)
       assign(map, [key, 'type'], 'array')
-      assign(map, [key, 'items', 'type'], schema[key].type.replace(/\[|\]/g,''))
+      let type = schema[key].type.replace(/\[|\]/g,'')
+      assign(map, [key, 'items', 'type'], type)
     } else if(schema[key].kind && schema[key].kind === 'enum'){
       assign(map, [key, 'type'], 'string')
       assign(map, [key, 'enum'], schema[key].type.split('|').map(item=>item.replace(/\"/g, '').replace(/\s/g, '')))
-    } else {
+    } else if(schema[key].kind && schema[key].kind === 'scalar'){
+      assign(map, [key], schema[key].type)
+    }else if(schema[key].kind && schema[key].kind === 'dict'){
+      assign(map, [key, 'type'], 'object')
+      const type = schema[key].type.replace(/dict\<|\>/g, '')
+      assign(map, [key, 'type'], type.substring(type.indexOf(',') + 1))
+    }else if(schema[key].kind && schema[key].kind === 'function'){
+    
+    }else if(schema[key].kind && schema[key].kind === 'instance'){
+    
+    }else if(schema[key].kind && schema[key].kind === 'interface'){
+    
+    }else if(schema[key].kind && schema[key].kind === 'intersection'){
+      const types = schema[key].type.split('&').map(item=>item.replace(/\s/g, '')).map(item=> 'type: '+item)
+      assign(map, [key, 'allOf'], types)
+    }else if(schema[key].kind && schema[key].kind === 'literal'){
+      // const types = schema[key].type.replace(/literal:|\s/g, '')
+      // assign(map, [key, 'type'], types)
+    }else if(schema[key].kind && schema[key].kind === 'lazy'){
+
+    } else if(schema[key].kind && schema[key].kind === 'tuple'){
+
+    }else if(schema[key].kind && schema[key].kind === 'union'){
+      const types = schema[key].type.split('|').map(item=>item.replace(/\s/g, '')).map(item=> 'type: '+item)
+      assign(map, [key, 'anyOf'], types)
+    }else {
       console.log(key, schema[key])
       assign(map, [key], schema[key])
     }
