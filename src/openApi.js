@@ -69,7 +69,7 @@ const singlePathMetaData = struct({
 })
 
 const methodStruct = methodName => struct({
-  [methodName]: singlePathMetaData
+  [methodName === 'del' ? 'delete' : methodName]: singlePathMetaData
 })
 
 const pathStruct = (pathName, methodName) => struct({
@@ -201,7 +201,7 @@ const pathDescribe = ({path, method, tags, description, summary, requests, reque
 
   const jsonWithParams = {
     [swaggerPath]:{
-      [method]:{
+      [method === 'del' ? 'delete' : method]:{
         tags,
         description,
         summary,

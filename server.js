@@ -81,8 +81,8 @@ const route2 = app
 
 const slashRouter = app
   .createRouter('/api/')
-  .get(route)
-  .post(route2)
+  .del(route)
+  .put(route2)
   .middleware((req,res,next)=>{
     console.log('hit /api')
     next()
