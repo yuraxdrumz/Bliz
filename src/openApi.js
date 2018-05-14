@@ -221,32 +221,9 @@ const pathDescribe = ({path, method, tags, description, summary, requests, reque
 const schemas = (schemas, securitySchemes) => {
   const schemasObject = {}
   for(let sc of schemas){
-    // console.log(sc)
-    // const obj = Object.assign({}, sc)
-    // obj.schema = Object.assign({}, obj.schema)
-    // obj.schema.schema = Object.assign({}, obj.schema.schema)
-    // const keys = Object.keys(obj.schema.schema)
-    // for(let key of keys){
-    //   let replaced = false
-    //   // console.log(obj.schema.schema)
-    //   console.log(JSON.stringify(getNested(obj)))
-    //   // TODO: change to nested structures
-    //   if(obj.schema.schema[key].includes('?')){
-    //     obj.schema.schema[key] = obj.schema.schema[key].replace('?', '')
-    //     replaced = true
-    //   }
-    //   obj.schema.schema[key] = {
-    //     type: obj.schema.schema[key],
-    //     required: !replaced
-    //   }
-    // }
-    // schemasObject[sc.name] = obj.schema.schema
     const data = getNested(sc)
-    // console.log(`sc nedted data:`, data)
     schemasObject[sc.name] = data[Object.keys(data)[0]]
-    // schemasObject[sc.name] = data
   }
-  // console.log(schemasObject)
   return {
     components:{
       securitySchemes,
@@ -255,60 +232,6 @@ const schemas = (schemas, securitySchemes) => {
   }
 }
 
-
-// const yamlText = stringify(mainDescribe({
-//   title:'my api', 
-//   version:'1.0.0', 
-//   description:'some random api', 
-//   contact:{name:'me', email:'yuri.khomyakov@ironsrc.com', url:'asddsasad'},
-//   license:{
-//     name: 'dasdsaa',
-//     url:'dsadsa'
-//   },
-//   servers:[{url:'sadadsadads', description:'asdadsdssdaasd'}]
-// }))
-// console.log(yamlText,pathText)
-// console.log(yamlText)
-
-const querySchema = struct({
-  data:'number?',
-  bla: 'number'
-})
-
-// const pathText = stringify(pathDescribe({
-//   path: '/api/:bla/boom/getData/:param',
-//   method:'get',
-//   tags: ['main route', 'simple tag'],
-//   summary: 'simple summary for swagger',
-//   description: 'returns whatever it receives',
-//   requests: [{in: 'query', schema: querySchema}, {in:'path', schema: querySchema}],
-//   // responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
-// }))
-
-const responseSchema = struct({
-  data: 'array',
-  porque: 'string'
-})
-
-const errorSchema = struct({
-  error: 'string'
-})
-
-
-// const pathText2 = stringify(pathDescribe({
-//   path: '/api/new-house/:house',
-//   method:'post',
-//   tags: ['main route', 'simple tag'],
-//   summary: 'simple summary for swagger',
-//   description: 'returns whatever it receives',
-//   requests: [{in: 'body', contentType:'application/json', schema: querySchema}],
-//   responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
-// }))
-
-// const swaggerSchemas = stringify(schemas([{name:'apinewhousehouse-body-post', schema:querySchema},{name:'fff', schema:errorSchema}, {name:'sdaasdsad', schema: responseSchema}]))
-
-// console.log(pathText2)
-// console.log(swaggerSchemas)
 
 module.exports = {
   pathDescribe,

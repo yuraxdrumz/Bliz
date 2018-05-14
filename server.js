@@ -6,7 +6,7 @@ import logger from './src/logger'
 const app = Bliz()
 
 const paramSchema = struct({
-  param: 'string'
+  param: 'string?'
 })
 const statusSchema = struct({
   status: 'string'
@@ -94,7 +94,7 @@ const slashRouter = app
 
 app
   .registerRouters(slashRouter)
-  .prettyPrint(logger)
+  .prettyPrint()
   .inject({
     bla:()=>console.log('blaaaa'),
     otherFunc:()=>console.log('other func')

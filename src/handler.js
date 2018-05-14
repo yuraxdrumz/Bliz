@@ -53,7 +53,13 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
       // if validation schemes exist, execute them
       if(describe && describe.requests && describe.requests.length > 0){
         for(let i=0; i<describe.requests.length; i++){
-          describe.requests[i].schema(req[describe.requests[i].in])
+          let searchIn = ''
+          if(describe.requests[i].in === 'path'){
+            searchIn = 'params'
+          } else {
+            searchIn = describe.requests[i].in
+          }
+          describe.requests[i].schema(req[searchIn])
         }
       }
       // call handler with req, res and injected object from app.inject      
