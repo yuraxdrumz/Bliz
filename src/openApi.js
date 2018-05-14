@@ -87,16 +87,21 @@ const assign = (obj, keyPath, value) => {
   obj[keyPath[lastKeyIndex]] = value;
 }
 
-const getNested = (struct, cycle = 1, map = {}) => {
+const getNested = (struct, map = {}) => {
   const schema = (struct.schema && struct.schema.schema) || struct.schema
   const keys = Object.keys(schema)
   for(let key of keys){
+    console.log(key, schema[key])
     if(schema[key].kind && schema[key].kind === 'object'){
-      const result = getNested(schema[key], ++cycle, {})
+      const result = getNested(schema[key], {})
       assign(map, [key, 'type'], 'object')
       assign(map, [key, 'properties'], result)
       // assign(map, [key], result)
+    } else if(schema[key].kind && schema[key].kind === 'enum'){
+      assign(map, [key, 'type'], 'string')
+      assign(map, [key, 'enum'], schema[key].type.split('|').map(item=>item.replace(/\"/g, '').replace(/\s/g, '')))
     } else {
+      console.log(key, schema[key])
       assign(map, [key], schema[key])
     }
   }

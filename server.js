@@ -7,10 +7,32 @@ const paramSchema = struct({
   param: 'string'
 })
 
+class MyObject{}
+
 const structush = struct({
   name: 'string',
   field1:'number',
-  field2: paramSchema
+  field2: paramSchema,
+  array:struct.enum(['string', 'other', 'last']),
+  any: struct.any(['string']),
+  // dict:struct.dict(['string', 'number']),
+  // fn:struct.function(()=>typeof value === 'string'),
+  // instance:struct.instance(MyObject),
+  // interface:struct.interface({
+  //   property: 'number',
+  //   method: 'function',
+  // }),
+  // intersection:struct.intersection(['string', 'number']),
+  // list:struct.list(['string']),
+  // literal:struct.literal(42),
+  // object:struct.object({
+  //   id: 'number',
+  //   name: 'string',
+  // }),
+  // partial:struct.partial({
+  //   a: 'number',
+  //   b: 'number',
+  // })
 })
 
 const otherSchema = struct({
