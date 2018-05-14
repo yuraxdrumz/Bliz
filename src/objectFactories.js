@@ -49,8 +49,8 @@ const Method = (name, object,chainLink) => ({
   }
 })
 
-const CreateSwagger = (yamlCreator, chainLink, ...args) => ({
-  swagger:(options)=>{
+const CreateSwagger = (yamlCreator, chainLink, fs, ...args) => ({
+  swagger:(swaggerOptions)=>{
     const swaggerObj = {}
     args.map(arg=>Object.assign(swaggerObj, arg))
     const swaggerYaml = yamlCreator(swaggerObj)
@@ -97,6 +97,8 @@ const CreateSwagger = (yamlCreator, chainLink, ...args) => ({
       yaml += yamlCreator(mainPathsObject)
       yaml += yamlCreator(schemas(schemasObject))
       console.log(yaml)
+      console.log(swaggerOptions)
+      fs.writeFileSync(swaggerOptions.absoluteFilePath, yaml, 'utf8')
     }
     return chainLink
   }

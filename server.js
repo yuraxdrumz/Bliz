@@ -1,5 +1,6 @@
 import Bliz, { request, response, struct, superstruct } from './src/main'
 import bodyParser from 'body-parser'
+import path from 'path'
 
 const app = Bliz()
 
@@ -81,8 +82,8 @@ const route2 = app
 
 const slashRouter = app
   .createRouter('/api/')
-  .del(route)
-  .put(route2)
+  .get(route)
+  .post(route2)
   .middleware((req,res,next)=>{
     console.log('hit /api')
     next()
@@ -100,16 +101,18 @@ app
   })
   .describe({
     title:'my api', 
-    version:'1.0.0', 
+    version:'1.0.1', 
     description:'some random api', 
     contact:{name:'me', email:'yuri.khomyakov@ironsrc.com', url:'asddsasad'},
     license:{
-      name: 'dasdsaa',
+      name: 'MIT',
       url:'dsadsa'
     },
     servers:[{url:'sadadsadads', description:'asdadsdssdaasd'}]
   })
-  .swagger()
+  .swagger({
+    absoluteFilePath: path.resolve('./swagger.yaml')
+  })
   .middleware(bodyParser.json())
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
 

@@ -9,6 +9,7 @@ import RegisterRouters from './registerRouters'
 import CreateHandler from './handler'
 import request from './request'
 import response from './response'
+import fs from 'fs'
 import treeify from 'treeify'
 import { struct, superstruct } from 'superstruct'
 import EventEmitter from 'eventemitter2'
@@ -16,7 +17,7 @@ import Promise from 'bluebird'
 import { stringify } from 'json-to-pretty-yaml'
 
 // main instance creator, returns an instance of bliz app
-const BlizApp = (request, response, { struct, superstruct }, RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil, treeify, EventsCreator, EventEmitter, Promise, CreateSwagger, stringify) => {
+const BlizApp = (request, response, { struct, superstruct }, RouterCreator, Listen, defaultHandler, midHandler, PathCreator, http, urlUtil, populateRoutersUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, createHandler, GetObjProps, populateSubAppsUtil, treeify, EventsCreator, EventEmitter, Promise, CreateSwagger, stringify, fs) => {
   const _Instance = {}
   const _middleWares = []
   const _routersObject = {}
@@ -28,7 +29,7 @@ const BlizApp = (request, response, { struct, superstruct }, RouterCreator, List
   const _subApps = []
   return Object.assign(
     _Instance,
-    CreateSwagger(stringify, _Instance),
+    CreateSwagger(stringify, _Instance, fs),
     AssignHandler('describe', _describe, _Instance, true),
     AssignHandler('options', _options, _Instance, true),
     AssignHandler('inject', _injected, _Instance, true),
@@ -71,7 +72,8 @@ const BlizCreator = () => {
       EventEmitter,
       Promise,
       CreateSwagger,
-      stringify
+      stringify,
+      fs
     )
   )
 }
