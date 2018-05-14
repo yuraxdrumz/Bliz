@@ -98,7 +98,9 @@ const CreateSwagger = (yamlCreator, chainLink, fs, ...args) => ({
       yaml += yamlCreator(schemas(schemasObject))
       console.log(yaml)
       console.log(swaggerOptions)
-      fs.writeFileSync(swaggerOptions.absoluteFilePath, yaml, 'utf8')
+      if(swaggerOptions && swaggerOptions.absoluteFilePath){
+        fs.writeFileSync(swaggerOptions.absoluteFilePath, yaml, 'utf8')
+      }
     }
     return chainLink
   }
