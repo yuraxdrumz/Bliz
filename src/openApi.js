@@ -132,14 +132,14 @@ const getNested = (struct, map = {}) => {
       assign(map, [key, 'anyOf'], types)
     }else {
       // console.log(key, schema[key])
-      console.log(`assigning type array`, key, schema[key])
+      // console.log(`assigning type array`, key, schema[key])
       assign(map, [key, 'type'], schema[key])
       if(schema[key] === 'array'){
         assign(map, [key, 'items', 'type'], 'object')
       }
     }
   }
-  console.log(`map:`, map)
+  // console.log(`map:`, map)
   return map
 }
 
@@ -246,7 +246,7 @@ const schemas = (schemas, securitySchemes) => {
     schemasObject[sc.name] = data[Object.keys(data)[0]]
     // schemasObject[sc.name] = data
   }
-  console.log(schemasObject)
+  // console.log(schemasObject)
   return {
     components:{
       securitySchemes,

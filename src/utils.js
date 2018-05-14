@@ -104,7 +104,11 @@ function populateQueryUtil(req, urlArray){
         const keyValue = query.split('=')
         req.query[keyValue[0]] = keyValue[1]
       })
-    return urlArray.substring(0, urlArray.indexOf('?'))
+    let urlToReturn = urlArray.substring(0, urlArray.indexOf('?'))
+    if(urlToReturn[urlToReturn.length - 1] === '/' && urlToReturn.length > 1){
+      urlToReturn = urlToReturn.substring(0, urlToReturn.length -1)
+    }
+    return urlToReturn
   }
 }
 
