@@ -20,7 +20,6 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
     const { baseOfRequest, rest, combinedRoutersMids } = handleNestedRoutersUtil(urlCombinationOptions, routes)
     // handle params
     const finalRest = populateQueryUtil(req, rest) || rest
-    console.log(finalRest)
     const { param, canSkipBecauseParams } = populateParamsUtil(req, routes, baseOfRequest, method, finalRest)
     // global middleware, if exists work with it, if throws error go to global handler
     // check routers middleware
@@ -38,7 +37,6 @@ function createHandler (request, response, defaultHandler, midHandler, Joi, urlU
     } catch (middleWareError) {
       return defaultHandler(req, res, middleWareError)
     }
-    console.log(routes, baseOfRequest, method, finalRest)
     // something is not defined go to default handler
     if(!canSkipBecauseParams){
       if (!routes[baseOfRequest])return defaultHandler(req, res)

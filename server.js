@@ -1,6 +1,7 @@
 import Bliz, { request, response, struct, superstruct } from './src/main'
 import bodyParser from 'body-parser'
 import path from 'path'
+import logger from './src/logger'
 
 const app = Bliz()
 
@@ -114,5 +115,5 @@ app
     absoluteFilePath: path.resolve('./swagger.yaml')
   })
   .middleware(bodyParser.json())
-  .listen(3000,()=>console.log('listening on bliz server on port 3000'))
+  .listen(3000,()=>logger('listening on bliz server on port 3000'))
 
