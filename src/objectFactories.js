@@ -76,6 +76,7 @@ const CreateSwagger = (yamlCreator, chainLink, ...args) => ({
               const obj = {}
               const name = `${fullPath.replace(/\//g, '').replace(/-/,'').replace(/[:]/g,'')}-body-${method}`
               obj.name = name
+              // obj.department = 'requestBodies'
               obj.schema = Object.assign({}, response.schema)
               schemasObject.push(obj)
             })
@@ -84,6 +85,7 @@ const CreateSwagger = (yamlCreator, chainLink, ...args) => ({
             const obj = {}
             const name = `${fullPath.replace(/\//g, '').replace(/-/,'').replace(/[{:}]/g,'')}-${response.status}-${method}`
             obj.name = name
+            // obj.department = 'responses'
             obj.schema = Object.assign({}, response.schema)
             schemasObject.push(obj)
           })

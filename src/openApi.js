@@ -132,10 +132,10 @@ const getNested = (struct, map = {}) => {
       assign(map, [key, 'anyOf'], types)
     }else {
       // console.log(key, schema[key])
-      assign(map, [key], schema[key])
+      assign(map, [key, 'type'], schema[key])
     }
   }
-  console.log(map)
+  // console.log(map)
   return map
 }
 
@@ -179,23 +179,20 @@ const pathDescribe = ({path, method, tags, description, summary, requests, reque
   const bodyRequests = requests.filter(request=>request.in === 'body')
   const parametersRequests = requests.filter(request=>['path', 'query'].includes(request.in))
   const injectedPathWithParams = pathStruct(swaggerPath, method)
-
   const parametersToInject = parametersRequests.map(request=>{
     // const all 
     const arrayToConcat = []
     const map = getNested(request, {})
     const keys = Object.keys(map)
-    // TODO: change to nested structure
     for(let key of keys){
       const obj = {}
       obj.name = key
       obj.in = request.in
-      obj.required = !map[key].includes('?')
+      obj.required = !map[key]['type'].includes('?')
       obj.schema = {}
-      obj.schema.type = map[key].replace('?', '')
+      obj.schema.type = map[key]['type'].replace('?', '')
       arrayToConcat.push(obj)
     }
-    console.log(`array to concat: `, arrayToConcat)
     return arrayToConcat
   
   
@@ -240,12 +237,13 @@ const schemas = (schemas, securitySchemes) => {
     //   }
     // }
     // schemasObject[sc.name] = obj.schema.schema
-    schemasObject[sc.name] = getNested(sc)
+    const data = getNested(sc)
+    schemasObject[sc.name] = data[Object.keys(data)[0]]
   }
   return {
     components:{
       securitySchemes,
-      schemas: schemasObject
+      schemas:schemasObject
     }
   }
 }
