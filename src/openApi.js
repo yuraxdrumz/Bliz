@@ -2,19 +2,19 @@ const { struct } = require('superstruct')
 const { stringify } = require('json-to-pretty-yaml')
 
 const contactStruct = struct({
-  name: 'string',
-  email: 'string',
-  url: 'string'
+  name: 'string?',
+  email: 'string?',
+  url: 'string?'
 })
 
 const licenseStruct = struct({
-  name: 'string',
-  url: 'string'
+  name: 'string?',
+  url: 'string?'
 })
 
 const serverStruct = struct({
-  url: 'string',
-  description: 'string'
+  url: 'string?',
+  description: 'string?'
 })
 
 const infoStruct = struct({
@@ -132,10 +132,14 @@ const getNested = (struct, map = {}) => {
       assign(map, [key, 'anyOf'], types)
     }else {
       // console.log(key, schema[key])
+      console.log(`assigning type array`, key, schema[key])
       assign(map, [key, 'type'], schema[key])
+      if(schema[key] === 'array'){
+        assign(map, [key, 'items', 'type'], 'object')
+      }
     }
   }
-  // console.log(map)
+  console.log(`map:`, map)
   return map
 }
 
@@ -238,8 +242,11 @@ const schemas = (schemas, securitySchemes) => {
     // }
     // schemasObject[sc.name] = obj.schema.schema
     const data = getNested(sc)
+    // console.log(`sc nedted data:`, data)
     schemasObject[sc.name] = data[Object.keys(data)[0]]
+    // schemasObject[sc.name] = data
   }
+  console.log(schemasObject)
   return {
     components:{
       securitySchemes,

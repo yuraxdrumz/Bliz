@@ -1,0 +1,82 @@
+openapi: "3.0.0"
+info:
+  title: "gdpr test api"
+  version: "0.1.0"
+  description: "gdpr test api for daily and weekly crons that allows QA to test end to end gdpr flow"
+  contact:
+    name: "Yuri Khomyakov"
+    email: "yuri.khomyakov@ironsrc.com"
+  license:
+    name: "MIT"
+servers:
+  - url: "http://52.13.209.8:3000"
+    description: "test server for gdpr"
+paths:
+  /api/weekly:
+    get:
+      tags:
+        - "weekly"
+        - "gdpr"
+      description: "returns whatever it receives from Ynon"
+      summary: "weekly job cron mock, fires get/delete/get_premium/delete_premium requests to Ynons api"
+      responses:
+        200:
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/apiweekly-200-get"
+  /api/daily:
+    get:
+      tags:
+        - "daily"
+        - "gdpr"
+      description: "returns whatever it receives from Ynon"
+      summary: "daily job cron mock, fires get/delete/get_premium/delete_premium requests to Ynons api"
+      responses:
+        200:
+          description: "200"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/apidaily-200-get"
+components:
+  schemas:
+    apiweekly-200-get:
+      type: "object"
+      properties:
+        getData:
+          type: "array"
+          items:
+            type: "object"
+        deleteData:
+          type: "array"
+          items:
+            type: "object"
+        getPremiumData:
+          type: "array"
+          items:
+            type: "object"
+        deletePremiumData:
+          type: "array"
+          items:
+            type: "object"
+    apidaily-200-get:
+      type: "object"
+      properties:
+        getData:
+          type: "array"
+          items:
+            type: "object"
+        deleteData:
+          type: "array"
+          items:
+            type: "object"
+        getPremiumData:
+          type: "array"
+          items:
+            type: "object"
+        deletePremiumData:
+          type: "array"
+          items:
+            type: "object"
