@@ -78,7 +78,7 @@ const route = app
 
 const route2 = app
 .createPath('/:status/')
-.handler((req,res)=>res.json({params:req.params, query:req.query}))
+.handler((req,res)=>res.vjson({params:req.params, query:req.query}))
 .describe({
   tags: ['oven', 'jenkins'],
   summary: 'simple summary for swagger',

@@ -80,7 +80,7 @@ const BlizApp = (BlizAppParams) => {
   const _options = {}
   const _describe = {}
   const _swagger = {}
-  const _createHandler = CreateHandler.bind(this, { request, response ,defaultHandler, midHandler, superStructObject, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, Promise})
+  const _createHandler = BlizAppParams.CreateHandler.bind(this, { request, response ,defaultHandler, midHandler, superStructObject, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, Promise})
   const _subApps = []
   return Object.assign(
     _Instance,
@@ -95,7 +95,7 @@ const BlizApp = (BlizAppParams) => {
     CreateArray('middleware',_middleWares, _Instance),
     CreateArray('subApp', _subApps, _Instance),
     CreateNewObjOf('Path', PathCreator, treeify),
-    EventsCreator(EventEmitter),
+    EventsCreator(BlizAppParams.EventEmitter),
     GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options, _describe, _useSockets}),
     Listen(_createHandler, _useSockets, http)
   )
