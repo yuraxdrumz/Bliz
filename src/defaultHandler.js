@@ -7,6 +7,7 @@ const defaultErrorHandler = function(req ,res, err){
     if(err instanceof StructError){
       res.json({error:err.message, path: err.path, dataPassed:err.data, valueReceived:err.value, typeExpected:err.type})
     } else {
+      console.error(err)
       res.json({error:err.message})
     }
 

@@ -18,8 +18,8 @@ const serverStruct = struct({
 })
 
 const infoStruct = struct({
-  title: 'string?',
-  version: 'string?',
+  title: 'string',
+  version: 'string',
   description: 'string?',
   termsOfService: 'string?',
   contact: contactStruct,
@@ -56,7 +56,7 @@ const mainDescribe = ({title, version, description, termsOfService, contact, lic
 const parameterStruct = struct({
   name: 'string',
   in: struct.enum(['query', 'path']),
-  description: 'string?',
+  description: 'string',
   required: 'boolean?',
 })
 
@@ -65,7 +65,7 @@ const singlePathMetaData = struct({
   description: 'string',
   parameters: 'array?',
   requestBody: 'object?',
-  summary: 'string',
+  summary: 'string?',
   responses: 'object?'
 })
 
@@ -180,14 +180,14 @@ const responseBuilder = (responses, path, method) => {
 }
 
 // describe path based on data received
-const pathDescribe = ({path, method, tags, description, summary, requests, requestBody, responses}) => {
+const pathDescribe = ({path, method, tags, description, summary, incoming, requestBody, outgoing}) => {
   // console.log(Object.keys(requests[0].schema.schema))
   const myRegexp = /(:.+?)([\/]|$)/g
   const swaggerPath = path.replace(myRegexp, function(...args){
     return args[0].replace(args[1], `{${args[1].replace(':', '')}}`)
   })
-  const bodyRequests = requests.filter(request=>request.in === 'body')
-  const parametersRequests = requests.filter(request=>['path', 'query'].includes(request.in))
+  const bodyRequests = incoming.filter(request=>request.in === 'body')
+  const parametersRequests = incoming.filter(request=>['path', 'query'].includes(request.in))
   const injectedPathWithParams = pathStruct(swaggerPath, method)
   const parametersToInject = parametersRequests.map(request=>{
     // const all 
@@ -217,7 +217,7 @@ const pathDescribe = ({path, method, tags, description, summary, requests, reque
         summary,
         requestBody: addRequest(bodyRequests[0], swaggerPath, method),
         parameters: parametersToInject.length > 0 ? parametersToInject : undefined,
-        responses: responseBuilder(responses, swaggerPath, method)
+        responses: responseBuilder(outgoing, swaggerPath, method)
       }
     }
   }

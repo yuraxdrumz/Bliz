@@ -51,7 +51,9 @@ const responseSchema = struct({
   data: otherSchema
 })
 
-
+const querySchema = struct({
+  ggg: 'string'
+})
 
 
 const errorSchema = struct({
@@ -65,8 +67,8 @@ const route = app
   tags: ['main route', 'simple tag'],
   summary: 'simple summary for swagger',
   description: 'returns whatever it receives',
-  requests: [{in: 'path', schema: paramSchema}],
-  responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
+  incoming: [{in: 'path', schema: paramSchema}, {in: 'query', schema: querySchema}],
+  outgoing: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
 })
 .middleware((req,res,next)=>{
   console.log('works like a charm!')
@@ -80,8 +82,8 @@ const route2 = app
   tags: ['oven', 'jenkins'],
   summary: 'simple summary for swagger',
   description: 'returns whatever it receives',
-  requests: [{in: 'body', schema: paramSchema}, {in:'path', schema: statusSchema}],
-  responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
+  incoming: [{in: 'body', schema: paramSchema}, {in:'path', schema: statusSchema}],
+  outgoing: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
 })
 
 const slashRouter = app

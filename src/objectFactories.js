@@ -67,7 +67,7 @@ const CreateSwagger = (yamlCreator, chainLink, fs, ...args) => ({
         for(let path of paths){
           const fullPath = router.base + path
           const describe = router[method][path].getObjProps().describe
-          const responseObjectsForSchema = describe.requests.filter(request=>request.in === 'body')
+          const responseObjectsForSchema = describe.incoming.filter(request=>request.in === 'body')
           if(responseObjectsForSchema.length > 0){
             responseObjectsForSchema.map(response=>{
               const obj = {}
@@ -78,7 +78,7 @@ const CreateSwagger = (yamlCreator, chainLink, fs, ...args) => ({
               schemasObject.push(obj)
             })
           }
-          describe.responses.map(response=>{
+          describe.outgoing.map(response=>{
             const obj = {}
             const name = `${fullPath.replace(/\//g, '').replace(/-/,'').replace(/[{:}]/g,'')}-${response.status}-${method}`
             obj.name = name

@@ -68,15 +68,15 @@ function createHandler ({
         await midHandler(Promise, req, res, middleWareArr)
       }
       // if validation schemes exist, execute them
-      if(describe && describe.requests && describe.requests.length > 0){
-        for(let i=0; i<describe.requests.length; i++){
+      if(describe && describe.incoming && describe.incoming.length > 0){
+        for(let i=0; i<describe.incoming.length; i++){
           let searchIn = ''
-          if(describe.requests[i].in === 'path'){
+          if(describe.incoming[i].in === 'path'){
             searchIn = 'params'
           } else {
-            searchIn = describe.requests[i].in
+            searchIn = describe.incoming[i].in
           }
-          describe.requests[i].schema(req[searchIn])
+          describe.incoming[i].schema(req[searchIn])
         }
       }
       // call handler with req, res and injected object from app.inject      
