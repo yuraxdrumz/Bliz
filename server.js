@@ -1,7 +1,6 @@
 import Bliz, { request, response, struct, superstruct } from './src/main'
 import bodyParser from 'body-parser'
 import path from 'path'
-import logger from './src/logger'
 
 const app = Bliz()
 
@@ -61,7 +60,7 @@ const errorSchema = struct({
 
 const route = app
 .createPath('/test/:param')
-.handler((req,res)=>res.json('addas'))
+.handler((req,res)=>res.json({params:req.params, query:req.query}))
 .describe({
   tags: ['main route', 'simple tag'],
   summary: 'simple summary for swagger',
@@ -69,10 +68,14 @@ const route = app
   requests: [{in: 'path', schema: paramSchema}],
   responses: [{status:200, schema: responseSchema}, {status:400, schema: errorSchema}]
 })
+.middleware((req,res,next)=>{
+  console.log('works like a charm!')
+  next()
+})
 
 const route2 = app
 .createPath('/:status/')
-.handler((req,res)=>res.json('addas'))
+.handler((req,res)=>res.json({params:req.params, query:req.query}))
 .describe({
   tags: ['oven', 'jenkins'],
   summary: 'simple summary for swagger',
@@ -115,5 +118,5 @@ app
     absoluteFilePath: path.resolve('./swagger.yaml')
   })
   .middleware(bodyParser.json())
-  .listen(3000,()=>logger('listening on bliz server on port 3000'))
+  .listen(3000,()=>console.log('listening on bliz server on port 3000'))
 

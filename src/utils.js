@@ -1,26 +1,20 @@
+import logger from './logger'
 
+// check url, split by /, return split url and method to lower case
 function urlUtil(url, methodUpperCase){
-  if(url.includes('?')){
-    let split = url.split(/(\?)/g)
-    for(let i=0,len=split.length;i<len;i++){
-      if(split[i].includes('?') && split[i-1][split[i-1].length -1] !== '/'){
-        split[i-1] = split[i-1] + '/'
-      }
-    }
-    url = split.join('')
-  }
   const dividedUrl = url.split('/');
   let method = methodUpperCase.toLowerCase()
   if(method === 'delete') method = 'del'
   let splitRest = dividedUrl.slice(1).map(each=>`/${each}`)
   splitRest.unshift('/')
-  if(splitRest.length > 1 && splitRest[splitRest.length - 1] === '/' && splitRest.length>1) splitRest = splitRest.slice(0,splitRest.length -1)
+  splitRest = checkBaseUtil(splitRest)
   return {
     method,
     splitRest
   }
 }
 
+// recurse on routers object and populate obj passed
 function populateRoutersUtil(obj, routers, parent = null){
   const innerRouterObj = {}
   routers.map( router => {
@@ -33,6 +27,7 @@ function populateRoutersUtil(obj, routers, parent = null){
   Object.assign(obj, innerRouterObj)
 }
 
+// recurse on sub apps, populate routers and middlewares
 function populateSubAppsUtil(mds, routes, subApps){
   subApps.map(subApp=>{
     const data = subApp.getObjProps()
@@ -56,6 +51,8 @@ function populateUrlOptions(arr){
     return startStr
   })
 }
+
+// run on split url receives and check each part of the url, if it is defined
 function handleNestedRoutersUtil(splitUrl, routesObject, combinedRoutersMids = []){
   let baseOfRequest
   let rest = null
@@ -95,6 +92,7 @@ function handleNestedRoutersUtil(splitUrl, routesObject, combinedRoutersMids = [
   }
 }
 
+// populate req.query from url
 function populateQueryUtil(req, urlArray){
   if(urlArray.includes('?')){
     urlArray
@@ -112,6 +110,7 @@ function populateQueryUtil(req, urlArray){
   }
 }
 
+// if //, slice /
 function checkBaseUtil(base){
   let newBase
   if(base[base.length - 1] === '/' && base.length > 1) {
@@ -122,6 +121,7 @@ function checkBaseUtil(base){
   return newBase
 }
 
+// populate params util and replace params to match original route
 function populateParamsUtil(req, routersObject, base, method, rest){
   try{
     let param

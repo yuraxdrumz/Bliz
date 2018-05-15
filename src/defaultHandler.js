@@ -1,5 +1,6 @@
 // default error handler handler
 import { StructError } from './main'
+
 const defaultErrorHandler = function(req ,res, err){
   if(err){
     res.statusCode = err.status || 500
