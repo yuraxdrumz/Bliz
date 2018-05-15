@@ -26,6 +26,7 @@
   "dependencies": {
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
+    "etag": "^1.8.1",
     "eventemitter2": "^4.1.2",
     "joi": "^13.0.1",
     "json-to-pretty-yaml": "^1.2.2",
