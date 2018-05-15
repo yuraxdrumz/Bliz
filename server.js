@@ -1,6 +1,7 @@
 import Bliz, { request, response, struct, superstruct } from './src/main'
 import bodyParser from 'body-parser'
 import path from 'path'
+import io from 'socket.io'
 
 const app = Bliz()
 
@@ -97,7 +98,7 @@ const slashRouter = app
 // app2.events.addListener('*',data=>console.log(`event delegated to app2: ${this.events}, data: ${data}`))
 // app.events.addListener('*',data=>console.log(`event delegated to app: ${app.events.event}, data: ${data}`))
 
-const io = app
+const socketServer = app
   .registerRouters(slashRouter)
   .prettyPrint()
   .inject({})
@@ -114,5 +115,5 @@ const io = app
   })
   .swagger({absoluteFilePath: path.resolve('./swagger.yaml')})
   .middleware(bodyParser.json())
-  .sockets({enabled:true})
+  .sockets({enabled:true, io:io})
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))

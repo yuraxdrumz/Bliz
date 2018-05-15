@@ -5,9 +5,8 @@ const Listen = (handlerFactory, socket, http, deps) => ({
   listen: (...args) => {
     const { handler } = handlerFactory(deps)
     const server = http.createServer(handler)
-    if(socket.enabled){
-      const io = require('socket.io')
-      const injectedIo = io(server)
+    if(socket.enabled && socket.io){
+      const injectedIo = socket.io(server)
       server.listen.apply(server, args)
       return injectedIo
     } else {
