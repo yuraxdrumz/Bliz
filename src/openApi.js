@@ -104,7 +104,7 @@ const getNested = (struct, map = {}) => {
       // console.log(`schema[key]`, schema[key].type)
       assign(map, [key, 'type'], 'array')
       let type = schema[key].type.replace(/\[|\]/g,'')
-      assign(map, [key, 'items', 'type'], type)
+      assign(map, [key, 'items', 'type'], type.replace('?', ''))
     } else if(schema[key].kind && schema[key].kind === 'enum'){
       assign(map, [key, 'type'], 'string')
       assign(map, [key, 'enum'], schema[key].type.split('|').map(item=>item.replace(/\"/g, '').replace(/\s/g, '')))
@@ -136,7 +136,7 @@ const getNested = (struct, map = {}) => {
     }else {
       // console.log(key, schema[key])
       // console.log(`assigning type array`, key, schema[key])
-      assign(map, [key, 'type'], schema[key])
+      assign(map, [key, 'type'], schema[key].replace('?', ''))
       if(schema[key] === 'array'){
         assign(map, [key, 'items', 'type'], 'object')
       }
