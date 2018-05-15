@@ -1,11 +1,18 @@
 const { pathDescribe, mainDescribe, schemas } = require('./openApi')
 
 // receive an http and a handler and return a listen func
-const Listen = (handlerFactory, http, deps) => ({
+const Listen = (handlerFactory, socket, http, deps) => ({
   listen: (...args) => {
     const { handler } = handlerFactory(deps)
     const server = http.createServer(handler)
-    return server.listen.apply(server, args)
+    if(socket.enabled){
+      const io = require('socket.io')
+      const injectedIo = io(server)
+      server.listen.apply(server, args)
+      return injectedIo
+    } else {
+      return server.listen.apply(server, args)
+    }
   }
 })
 

@@ -62,7 +62,7 @@ const errorSchema = struct({
 
 const route = app
 .createPath('/test/:param')
-.handler((req,res)=>res.json({params:req.params, query:req.query}))
+.handler((req,res)=>res.json({params:req.params, query:req.query, files:req.files}))
 .describe({
   tags: ['main route', 'simple tag'],
   summary: 'simple summary for swagger',
@@ -88,7 +88,7 @@ const route2 = app
 
 const slashRouter = app
   .createRouter('/api/')
-  .get(route)
+  .post(route)
   .post(route2)
   .middleware((req,res,next)=>{
     console.log('hit /api')
@@ -97,14 +97,10 @@ const slashRouter = app
 // app2.events.addListener('*',data=>console.log(`event delegated to app2: ${this.events}, data: ${data}`))
 // app.events.addListener('*',data=>console.log(`event delegated to app: ${app.events.event}, data: ${data}`))
 
-app
+const io = app
   .registerRouters(slashRouter)
   .prettyPrint()
-  .inject({
-    bla:()=>console.log('blaaaa'),
-    otherFunc:()=>console.log('other func')
-    // mongooseConnection
-  })
+  .inject({})
   .describe({
     title:'my api', 
     version:'1.0.1', 
@@ -116,9 +112,7 @@ app
     },
     servers:[{url:'sadadsadads', description:'asdadsdssdaasd'}]
   })
-  .swagger({
-    absoluteFilePath: path.resolve('./swagger.yaml')
-  })
+  .swagger({absoluteFilePath: path.resolve('./swagger.yaml')})
   .middleware(bodyParser.json())
+  .sockets({enabled:true})
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
-

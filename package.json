@@ -29,6 +29,7 @@
     "etag": "^1.8.1",
     "eventemitter2": "^4.1.2",
     "json-to-pretty-yaml": "^1.2.2",
+    "socket.io": "^2.1.0",
     "superstruct": "^0.5.3",
     "treeify": "^1.0.1"
   }
