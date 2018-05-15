@@ -33,6 +33,7 @@ const mainDescribeStruct = struct({
   servers: [serverStruct]
 })
 
+// mainDescribe block
 const mainDescribe = ({title, version, description, termsOfService, contact, license, servers, security}) => {
   const validJson = {
     openapi: "3.0.0",
@@ -76,6 +77,7 @@ const pathStruct = (pathName, methodName) => struct({
   [pathName]: methodStruct(methodName)
 })
 
+// assign nested object properties
 const assign = (obj, keyPath, value) => {
   lastKeyIndex = keyPath.length-1;
   for (let i = 0; i < lastKeyIndex; ++ i) {
@@ -87,6 +89,7 @@ const assign = (obj, keyPath, value) => {
   obj[keyPath[lastKeyIndex]] = value;
 }
 
+// recurse on structs and populate object according to struct received
 const getNested = (struct, map = {}) => {
   const schema = (struct.schema && struct.schema.schema) || struct.schema
   const keys = Object.keys(schema)
@@ -143,6 +146,7 @@ const getNested = (struct, map = {}) => {
   return map
 }
 
+// add request schema based on path, method and request object
 const addRequest = (request, path, method) => {
   // console.log(`REQUEST: `, request)
   if(!request) return
@@ -157,6 +161,7 @@ const addRequest = (request, path, method) => {
   }
 }
 
+// build response object
 const responseBuilder = (responses, path, method) => {
   const responseObject = {}
   for(let resp of responses){
@@ -174,6 +179,7 @@ const responseBuilder = (responses, path, method) => {
   return responseObject
 }
 
+// describe path based on data received
 const pathDescribe = ({path, method, tags, description, summary, requests, requestBody, responses}) => {
   // console.log(Object.keys(requests[0].schema.schema))
   const myRegexp = /(:.+?)([\/]|$)/g
@@ -218,6 +224,7 @@ const pathDescribe = ({path, method, tags, description, summary, requests, reque
   return injectedPathWithParams(jsonWithParams)
 }
 
+// schema builder according to describe.requests object and describe.responses
 const schemas = (schemas, securitySchemes) => {
   const schemasObject = {}
   for(let sc of schemas){

@@ -1,10 +1,18 @@
-const RegisterRouters = (populateRoutersUtil, populateSubAppsUtil, middleWares, globalRoutesObject, subApps, chainLink) => ({
+
+const RegisterRouters = ({
+  populateRoutersUtil, 
+  populateSubAppsUtil, 
+  _middleWares, 
+  _routersObject, 
+  _subApps, 
+  _Instance
+}) => ({
   registerRouters:(...routers)=>{
     // populate subApps object with sub apps passed
-    populateSubAppsUtil(middleWares, globalRoutesObject, subApps)
+    populateSubAppsUtil(_middleWares, _routersObject, _subApps)
     // populate globalRoutesObject with routers passed
-    populateRoutersUtil(globalRoutesObject, routers)
-    return chainLink
+    populateRoutersUtil(_routersObject, routers)
+    return _Instance
   }
 })
 export default RegisterRouters

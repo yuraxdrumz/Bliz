@@ -1,9 +1,9 @@
 const { pathDescribe, mainDescribe, schemas } = require('./openApi')
 
 // receive an http and a handler and return a listen func
-const Listen = (name, handlerFactory, http) => ({
-  [name]: (...args) => {
-    const { handler } = handlerFactory()
+const Listen = (handlerFactory, http, deps) => ({
+  listen: (...args) => {
+    const { handler } = handlerFactory(deps)
     const server = http.createServer(handler)
     return server.listen.apply(server, args)
   }
@@ -11,16 +11,12 @@ const Listen = (name, handlerFactory, http) => ({
 
 // pretty print all app routes
 const PrettyPrint = (treeifyDep, entity, chainLink) =>({
-  prettyPrint: log =>{
-    let logger = console.log
+  prettyPrint: (logger = console.log) =>{
     let shortEntity = {}
+    let options = ['get','post','put','del']
     const keysOfEntity = Object.keys(entity)
-
-    if(log && typeof log === 'function') logger = log
-
     for(let key of keysOfEntity){
       let obj = {}
-      let options = ['get','post','put','del']
       for(let option of options){
         let routeValues = Object.keys(entity[key][option])
         if(routeValues.length > 0){
@@ -31,7 +27,6 @@ const PrettyPrint = (treeifyDep, entity, chainLink) =>({
             const assignedOption = {[routeKey]:value}
             Object.assign(obj,assignedOption)
             shortEntity[key] = obj
-
           }
         }
       }
@@ -42,7 +37,7 @@ const PrettyPrint = (treeifyDep, entity, chainLink) =>({
 })
 
 // method creator for router
-const Method = (name, object,chainLink) => ({
+const Method = (name, object, chainLink) => ({
   [name]: data =>{
     data.parent = chainLink.getObjProps()
     object[name][data.getObjProps().path] = data
