@@ -15,6 +15,22 @@ function urlUtil(url, methodUpperCase){
 }
 
 // recurse on routers object and populate obj passed
+function populateSocketRoutersUtil(obj, routers, parent = null, delimiter){
+  // console.log(`obj: `, obj, `routers: `, routers, `parent: `, parent)
+  const innerRouterObj = {}
+  routers.map( router => {
+    let list = router.getObjProps()
+    innerRouterObj[parent ? `${parent}${delimiter}${list.base}` : list.base] = list
+    // console.log(`inner object`, innerRouterObj)
+    if(list.subRouters.length > 0){
+      return populateSocketRoutersUtil(obj, list.subRouters, parent ? parent += ':' + list.base : list.base, delimiter)
+    }
+  })
+  Object.assign(obj, innerRouterObj)
+}
+
+
+// recurse on routers object and populate obj passed
 function populateRoutersUtil(obj, routers, parent = null){
   const innerRouterObj = {}
   routers.map( router => {
@@ -41,6 +57,8 @@ function populateSubAppsUtil(mds, routes, subApps){
     }
   })
 }
+
+
 
 // nested routers handle test
 function populateUrlOptions(arr){
@@ -175,5 +193,6 @@ export {
   populateSubAppsUtil,
   checkBaseUtil,
   populateQueryUtil,
-  populateParamsUtil
+  populateParamsUtil,
+  populateSocketRoutersUtil
 }

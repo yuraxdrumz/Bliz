@@ -19,7 +19,7 @@ import {
       Method('event', routerData, _RouterReturn),
       AssignHandler('routerErrorHandler',routerData, _RouterReturn),
       CreateArray('middleware',routerData.middleWareArr, _RouterReturn),
-      CreateArray('subRouter',routerData.subRouters, _RouterReturn),
+      CreateArray('subSocketRouter',routerData.subRouters, _RouterReturn),
       GetObjProps(routerData)
     )
   }

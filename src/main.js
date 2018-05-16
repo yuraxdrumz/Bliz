@@ -20,7 +20,8 @@ import {
   populateParamsUtil, 
   handleNestedRoutersUtil, 
   populateUrlOptions, 
-  populateSubAppsUtil
+  populateSubAppsUtil,
+  populateSocketRoutersUtil
  } from './utils'
  
 import defaultHandler from './defaultHandler'
@@ -47,6 +48,7 @@ const superStructObject = {
 const BlizAppParams = {
   request, 
   response, 
+  populateSocketRoutersUtil,
   superStructObject, 
   RouterCreator, 
   Listen, 
@@ -74,9 +76,38 @@ const BlizAppParams = {
 
 // main instance creator, returns an instance of bliz app
 const BlizApp = (BlizAppParams) => {
+  const {
+    request, 
+    response, 
+    superStructObject, 
+    RouterCreator, 
+    Listen, 
+    defaultHandler, 
+    midHandler, 
+    PathCreator, 
+    http, 
+    urlUtil, 
+    populateRoutersUtil, 
+    handleNestedRoutersUtil,
+    populateParamsUtil, 
+    populateQueryUtil, 
+    populateUrlOptions, 
+    populateSocketRoutersUtil,
+    CreateHandler, 
+    GetObjProps, 
+    populateSubAppsUtil, 
+    treeify, 
+    EventsCreator, 
+    EventEmitter, 
+    Promise, 
+    CreateSwagger, 
+    stringify, 
+    fs
+  } = BlizAppParams
   const _Instance = {}
   const _middleWares = []
   const _routersObject = {}
+  const _socketRoutersObject = {}
   const _injected = {}
   const _useSockets = {enabled:false, delimiter: ':'}
   const _options = {}
@@ -95,13 +126,13 @@ const BlizApp = (BlizAppParams) => {
     AssignHandler('inject', _injected, _Instance, true),
     PrettyPrint(treeify, _routersObject, _Instance),
     CreateNewObjOf('Router', RouterCreator, treeify),
-    RegisterRouters({populateRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _subApps, _Instance}),
+    RegisterRouters({populateRoutersUtil, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     CreateArray('middleware',_middleWares, _Instance),
     CreateArray('subApp', _subApps, _Instance),
     CreateNewObjOf('Path', PathCreator, treeify),
-    EventsCreator(BlizAppParams.EventEmitter),
-    GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options, _describe, _useSockets}),
-    Listen(_createHandler, _useSockets, http)
+    EventsCreator(EventEmitter),
+    GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject}),
+    Listen(_createHandler, _useSockets, http, _Instance)
   )
 }
 
