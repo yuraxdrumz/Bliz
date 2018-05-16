@@ -78,7 +78,7 @@ const BlizApp = (BlizAppParams) => {
   const _middleWares = []
   const _routersObject = {}
   const _injected = {}
-  const _useSockets = {enabled:false}
+  const _useSockets = {enabled:false, delimiter: ':'}
   const _options = {}
   const _describe = {}
   const _swagger = {}

@@ -16,7 +16,6 @@ const server = app
 
 const listener2 = app.createSocketListener('team1').handler((cb)=>cb('awsome'))
 const listener3 = app.createSocketListener('team2').handler((cb)=>cb('awsomeee'))
-
 const listener1 = app.createSocketRouter('teams').event(listener2).event(listener3)
 
 // .event(listener2).event(listener3)
