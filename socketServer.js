@@ -29,6 +29,6 @@ const otherRouter = app
 
 const server = app
   .prettyPrint()
-  .sockets({enabled: true, io: io, delimiter: '#$'})
+  .sockets({enabled: true, io: io, delimiter: ':'})
   .registerSocketRouters(otherRouter)
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
