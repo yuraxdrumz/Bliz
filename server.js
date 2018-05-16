@@ -12,40 +12,8 @@ const statusSchema = struct({
   status: 'string'
 })
 
-class MyObject{}
-
-const structush = struct({
-  name: 'string',
-  field1:'number',
-  field2: paramSchema,
-  array:struct.enum([1, 'other', 'last']),
-  any: struct.any(['boolean']),
-  dict:struct.dict(['string', 'object']),
-  fn:struct.function(()=>typeof value === 'string'),
-  instance:struct.instance(MyObject),
-  interface:struct.interface({
-    property: 'number',
-    method: 'function',
-  }),
-  // tuple: struct.union(['boolean', 'string']),
-  // intersection:struct.intersection(['string', 'number']),
-  list:struct.list(['string']),
-  literal:struct.literal(42),
-  left: struct.lazy(() => struct.optional('string')),
-  // object:struct.object({
-  //   id: 'number',
-  //   name: 'string',
-  // }),
-  // partial:struct.partial({
-  //   a: 'number',
-  //   b: 'number',
-  // })
-})
-
 const otherSchema = struct({
-  inner: structush,
   lala:'number'
-  // structArray: structush
 })
 
 const responseSchema = struct({
@@ -95,10 +63,8 @@ const slashRouter = app
     console.log('hit /api')
     next()
   })
-// app2.events.addListener('*',data=>console.log(`event delegated to app2: ${this.events}, data: ${data}`))
-// app.events.addListener('*',data=>console.log(`event delegated to app: ${app.events.event}, data: ${data}`))
 
-const socketServer = app
+const server = app
   .registerRouters(slashRouter)
   .prettyPrint()
   .inject({})
@@ -115,5 +81,13 @@ const socketServer = app
   })
   .swagger({absoluteFilePath: path.resolve('./swagger.yaml')})
   .middleware(bodyParser.json())
-  .sockets({enabled:true, io:io})
+  // .sockets({enabled: true, io})
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
+
+
+// should contain all added events
+
+// const listener2 = app.createSocketListener('1').handler((cb)=>cb('awsome'))
+// const listener3 = app.createSocketListener('2').handler((cb)=>cb('awsomeee'))
+
+// const listener1 = app.createSocketRouter('teams').event(listener2).event(listener3)
