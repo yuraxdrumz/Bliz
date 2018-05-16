@@ -1,28 +1,28 @@
 const { pathDescribe, mainDescribe, schemas } = require('./openApi')
 
 // receive an http and a handler and return a listen func
-const Listen = (handlerFactory, http) => ({
+const Listen = (handlerFactory, socket, http) => ({
   createServer:(...args)=>{
     const { handler } = handlerFactory()
     const server = http.createServer(handler)
     return server
   },
-  listen: (...args) => {
-    const { handler } = handlerFactory()
-    const server = http.createServer(handler)
-    return server.listen.apply(server, args)
-  },
   // listen: (...args) => {
   //   const { handler } = handlerFactory()
   //   const server = http.createServer(handler)
-  //   if(socket.enabled && socket.io){
-  //     const injectedIo = socket.io(server)
-  //     server.listen.apply(server, args)
-  //     return injectedIo
-  //   } else {
-  //     return server.listen.apply(server, args)
-  //   }
-  // }
+  //   return server.listen.apply(server, args)
+  // },
+  listen: (...args) => {
+    const { handler } = handlerFactory()
+    const server = http.createServer(handler)
+    if(socket.enabled && socket.io){
+      const injectedIo = socket.io(server)
+      server.listen.apply(server, args)
+      return injectedIo
+    } else {
+      return server.listen.apply(server, args)
+    }
+  }
 })
 
 // pretty print all app routes

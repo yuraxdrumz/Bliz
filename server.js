@@ -81,7 +81,7 @@ const server = app
   })
   .swagger({absoluteFilePath: path.resolve('./swagger.yaml')})
   .middleware(bodyParser.json())
-  // .sockets({enabled: true, io})
+  .sockets({enabled: true, io})
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))
 
 
@@ -90,4 +90,5 @@ const server = app
 // const listener2 = app.createSocketListener('1').handler((cb)=>cb('awsome'))
 // const listener3 = app.createSocketListener('2').handler((cb)=>cb('awsomeee'))
 
-// const listener1 = app.createSocketRouter('teams').event(listener2).event(listener3)
+const listener1 = app.createSocketRouter('teams')
+// .event(listener2).event(listener3)

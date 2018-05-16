@@ -1,4 +1,6 @@
 import RouterCreator from './router'
+import SocketRouterCreator from './socketRouter' 
+import SocketListenerCreator from './socketListener'
 import PathCreator from './path'
 import { 
   Listen, 
@@ -8,7 +10,7 @@ import {
   PrettyPrint, 
   EventsCreator, 
   AssignHandler, 
-  CreateSwagger
+  CreateSwagger,
  } from './objectFactories'
 
 import { 
@@ -76,7 +78,7 @@ const BlizApp = (BlizAppParams) => {
   const _middleWares = []
   const _routersObject = {}
   const _injected = {}
-  // const _useSockets = {enabled:false}
+  const _useSockets = {enabled:false}
   const _options = {}
   const _describe = {}
   const _swagger = {}
@@ -84,7 +86,9 @@ const BlizApp = (BlizAppParams) => {
   const _subApps = []
   return Object.assign(
     _Instance,
-    // AssignHandler('sockets', _useSockets, _Instance, true),
+    CreateNewObjOf('SocketRouter', SocketRouterCreator),
+    CreateNewObjOf('SocketListener', SocketListenerCreator),
+    AssignHandler('sockets', _useSockets, _Instance, true),
     CreateSwagger(stringify, _Instance, fs),
     AssignHandler('describe', _describe, _Instance, true),
     AssignHandler('options', _options, _Instance, true),
@@ -96,8 +100,8 @@ const BlizApp = (BlizAppParams) => {
     CreateArray('subApp', _subApps, _Instance),
     CreateNewObjOf('Path', PathCreator, treeify),
     EventsCreator(BlizAppParams.EventEmitter),
-    GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options, _describe}),
-    Listen(_createHandler, http)
+    GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options, _describe, _useSockets}),
+    Listen(_createHandler, _useSockets, http)
   )
 }
 
