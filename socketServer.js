@@ -9,11 +9,14 @@ const app = Bliz()
 
 const listener2 = app
 .createSocketListener('team1')
-.handler((socket, msg, cb)=>cb('awsome'))
+.handler((io, socket, msg, cb)=>{
+  console.log(msg, cb)
+  console.log('awsome')
+})
 
 const listener3 = app
 .createSocketListener('team2')
-.handler((socket, msg, cb)=>cb('awsomeee'))
+.handler((io, socket, msg, cb)=>cb('awsomeee'))
 
 const socketRouter = app
 .createSocketRouter('teams')
@@ -28,7 +31,7 @@ const otherRouter = app
 // .event(listener2).event(listener3)
 
 const server = app
-  .prettyPrint()
   .sockets({enabled: true, io: io, delimiter: ':'})
   .registerSocketRouters(otherRouter)
+  .prettyPrintSocket()
   .listen(3000,()=>console.log('listening on bliz server on port 3000'))

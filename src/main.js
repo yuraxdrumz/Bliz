@@ -32,7 +32,6 @@ import CreateHandler from './handler'
 import request from './request'
 import response from './response'
 import fs from 'fs'
-import io from 'socket.io'
 import treeify from 'treeify'
 import { struct, superstruct, StructError } from 'superstruct'
 import EventEmitter from 'eventemitter2'
@@ -113,26 +112,26 @@ const BlizApp = (BlizAppParams) => {
   const _options = {}
   const _describe = {}
   const _swagger = {}
-  const _createHandler = BlizAppParams.CreateHandler.bind(this, { request, response ,defaultHandler, midHandler, superStructObject, urlUtil, handleNestedRoutersUtil,populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, Promise})
+  const _createHandler = CreateHandler.bind(this, { request, response ,defaultHandler, midHandler, superStructObject, urlUtil, handleNestedRoutersUtil, populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, Promise})
   const _subApps = []
   return Object.assign(
     _Instance,
-    CreateNewObjOf('SocketRouter', SocketRouterCreator),
-    CreateNewObjOf('SocketListener', SocketListenerCreator),
+    CreateNewObjOf('SocketRouter', SocketRouterCreator, treeify),
+    CreateNewObjOf('SocketListener', SocketListenerCreator, treeify),
+    CreateNewObjOf('Router', RouterCreator, treeify),
+    CreateNewObjOf('Path', PathCreator, treeify),
     AssignHandler('sockets', _useSockets, _Instance, true),
-    CreateSwagger(stringify, _Instance, fs),
     AssignHandler('describe', _describe, _Instance, true),
     AssignHandler('options', _options, _Instance, true),
     AssignHandler('inject', _injected, _Instance, true),
-    PrettyPrint(treeify, _routersObject, _Instance),
-    CreateNewObjOf('Router', RouterCreator, treeify),
-    RegisterRouters({populateRoutersUtil, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     CreateArray('middleware',_middleWares, _Instance),
     CreateArray('subApp', _subApps, _Instance),
-    CreateNewObjOf('Path', PathCreator, treeify),
+    CreateSwagger(stringify, _Instance, fs),
+    PrettyPrint(treeify, _routersObject, _socketRoutersObject, _Instance),
+    RegisterRouters({populateRoutersUtil, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
     GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject}),
-    Listen(_createHandler, _useSockets, http, _Instance)
+    Listen(_createHandler, _useSockets, http, _socketRoutersObject)
   )
 }
 

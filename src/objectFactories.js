@@ -1,7 +1,7 @@
 const { pathDescribe, mainDescribe, schemas } = require('./openApi')
 
 // receive an http and a handler and return a listen func
-const Listen = (handlerFactory, socket, http, _Instance) => ({
+const Listen = (handlerFactory, _useSockets, http, _socketRoutersObject) => ({
   createServer:(...args)=>{
     const { handler } = handlerFactory()
     const server = http.createServer(handler)
@@ -15,13 +15,24 @@ const Listen = (handlerFactory, socket, http, _Instance) => ({
   listen: (...args) => {
     const { handler } = handlerFactory()
     const server = http.createServer(handler)
-    if(socket.enabled && socket.io){
-      const injectedIo = socket.io(server)
+    if(_useSockets.enabled && _useSockets.io){
+      const injectedIo = _useSockets.io(server)
       server.listen.apply(server, args)
       // injectedIo.on('connction', )
-      const { _socketRoutersObject } = _Instance.getObjProps()
-
       injectedIo.on('connection', (socket)=>{
+      
+        const routersKeys = Object.keys(_socketRoutersObject)
+        for(let key of routersKeys){
+          const eventKeys = Object.keys(_socketRoutersObject[key].event)
+          for(let eventKey of eventKeys){
+            // _socketRoutersObject[key].event[eventKey].handler()
+            socket.on(`${key}${_useSockets.delimiter}${eventKey}`, (msg, cb)=>{
+              _socketRoutersObject[key].event[eventKey].getObjProps().handler(injectedIo, socket, msg, cb)
+            })
+          }
+      
+          // socket.on()
+        }
         console.log(socket.id, ' connected')
 
         socket.on('disconnect', ()=>{
@@ -38,10 +49,33 @@ const Listen = (handlerFactory, socket, http, _Instance) => ({
 })
 
 // pretty print all app routes
-const PrettyPrint = (treeifyDep, entity, chainLink) =>({
+const PrettyPrint = (treeifyDep, entity, socketEntity, chainLink) =>({
+  prettyPrintSocket: (logger = console.log) =>{
+    let shortEntity = {}
+    let options = ['event']
+    const keysOfEntity = Object.keys(socketEntity)
+    for(let key of keysOfEntity){
+      let obj = {}
+      for(let option of options){
+        let routeValues = Object.keys(socketEntity[key][option])
+        if(routeValues.length > 0){
+          let routeKey = option.toUpperCase()
+          let value = {}
+          for(let route of routeValues){
+            value[route] = ''
+            const assignedOption = {[routeKey]:value}
+            Object.assign(obj,assignedOption)
+            shortEntity[key] = obj
+          }
+        }
+      }
+    }
+    logger(treeifyDep.asTree(shortEntity))
+    return chainLink
+  },
   prettyPrint: (logger = console.log) =>{
     let shortEntity = {}
-    let options = ['get','post','put','del']
+    let options = ['get','post','put','del', 'event']
     const keysOfEntity = Object.keys(entity)
     for(let key of keysOfEntity){
       let obj = {}
@@ -134,8 +168,10 @@ const CreateSwagger = (yamlCreator, chainLink, fs, ...args) => ({
 
 // assign creator
 const AssignHandler = (name, object, chainLink, override = false) =>({
-  [name]:data =>{
+  [name]: data =>{
+    // console.log(`DATA BEFORE: `, name, object, data)
     override ? Object.assign(object, data) : object[name] = data
+    // console.log(`DATA AFTER: `, object, name, data)
     return chainLink
   }
 })
