@@ -25,7 +25,7 @@ import {
  } from './utils'
  
 import defaultHandler from './defaultHandler'
-import midHandler from './middlewareHandler'
+import midHandler, { socketMiddlewareHandler } from './middlewareHandler'
 import http from 'http'
 import RegisterRouters from './registerRouters'
 import CreateHandler from './handler'
@@ -47,6 +47,7 @@ const superStructObject = {
 const BlizAppParams = {
   request, 
   response, 
+  socketMiddlewareHandler,
   populateSocketRoutersUtil,
   superStructObject, 
   RouterCreator, 
@@ -79,6 +80,7 @@ const BlizApp = (BlizAppParams) => {
     request, 
     response, 
     superStructObject, 
+    socketMiddlewareHandler,
     RouterCreator, 
     Listen, 
     defaultHandler, 
@@ -130,7 +132,7 @@ const BlizApp = (BlizAppParams) => {
     RegisterRouters({populateRoutersUtil, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
     GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject}),
-    Listen(_createHandler, _useSockets, http, _socketRoutersObject)
+    Listen({_createHandler, _useSockets, http, _socketRoutersObject, socketMiddlewareHandler})
   )
 }
 

@@ -1,9 +1,8 @@
 const { pathDescribe, mainDescribe, schemas } = require('./openApi')
-
 // receive an http and a handler and return a listen func
-const Listen = (handlerFactory, _useSockets, http, _socketRoutersObject) => ({
+const Listen = ({_createHandler, _useSockets, http, _socketRoutersObject, socketMiddlewareHandler}) => ({
   createServer:(...args)=>{
-    const { handler } = handlerFactory()
+    const { handler } = _createHandler()
     const server = http.createServer(handler)
     return server
   },
@@ -13,27 +12,31 @@ const Listen = (handlerFactory, _useSockets, http, _socketRoutersObject) => ({
   //   return server.listen.apply(server, args)
   // },
   listen: (...args) => {
-    const { handler } = handlerFactory()
+    const { handler } = _createHandler()
     const server = http.createServer(handler)
     if(_useSockets.enabled && _useSockets.io){
       const injectedIo = _useSockets.io(server)
       server.listen.apply(server, args)
       // injectedIo.on('connction', )
       injectedIo.on('connection', (socket)=>{
-      
+        console.log(socket.id, ' connected')
+
         const routersKeys = Object.keys(_socketRoutersObject)
         for(let key of routersKeys){
           const eventKeys = Object.keys(_socketRoutersObject[key].event)
           for(let eventKey of eventKeys){
             // _socketRoutersObject[key].event[eventKey].handler()
-            socket.on(`${key}${_useSockets.delimiter}${eventKey}`, (msg, cb)=>{
-              _socketRoutersObject[key].event[eventKey].getObjProps().handler(injectedIo, socket, msg, cb)
+            socket.on(`${key}${_useSockets.delimiter}${eventKey}`, async (msg, cb)=>{
+              const chosenEvent = _socketRoutersObject[key].event[eventKey].getObjProps()
+              if(chosenEvent.middleWareArr){
+                await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, chosenEvent.middleWareArr)
+              }
+              chosenEvent.handler(injectedIo, socket, msg, cb)
             })
           }
       
           // socket.on()
         }
-        console.log(socket.id, ' connected')
 
         socket.on('disconnect', ()=>{
           console.log(socket.id, 'disconnected ')
@@ -204,6 +207,13 @@ const CreateArray = (name, arr, chainLink) => ({
   }
 })
 
+// pushes data to array
+const CreateObjectArray = (name, arr, chainLink) => ({
+  [name]:(fn, timeout = 5000, throwError = true)=>{
+    arr.push({fn, timeout, throwError})
+    return chainLink
+  }
+})
 
 export {
   AssignHandler,
@@ -214,5 +224,6 @@ export {
   Listen,
   PrettyPrint,
   EventsCreator,
-  CreateSwagger
+  CreateSwagger,
+  CreateObjectArray
 }

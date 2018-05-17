@@ -10,12 +10,16 @@ const app = Bliz()
 const listener2 = app
 .createSocketListener('team1')
 .handler((io, socket, msg, cb)=>{
-  console.log(msg, cb)
   console.log('awsome')
 })
-// .middleware((msg, cb, next)=>{
-//   console.log('middleware!')
-// })
+.middleware((io, socket, msg, cb, next)=>{
+  console.log('middleware!')
+  // next()
+}, 5000)
+.middleware((io, socket, msg, cb, next)=>{
+  console.log('middleware2!')
+  // next()
+}, 5000)
 
 const listener3 = app
 .createSocketListener('team2')
@@ -28,7 +32,7 @@ const socketRouter = app
 
 const otherRouter = app
 .createSocketRouter('prefix')
-.subSocketRouter(socketRouter)
+.socketSubRouter(socketRouter)
 .event(listener2)
 .event(listener3)
 
@@ -38,4 +42,4 @@ app
   .sockets({enabled: true, io: io, delimiter: ':'})
   .registerSocketRouters(otherRouter)
   .prettyPrintSocket()
-  .listen(4000,()=>console.log('listening on bliz server on port 3000'))
+  .listen(4000,()=>console.log('listening on bliz server on port 4000'))
