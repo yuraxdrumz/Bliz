@@ -1,26 +1,38 @@
 const { pathDescribe, mainDescribe, schemas } = require('./openApi')
 
 // receive an http and a handler and return a listen func
-const Listen = (name, handlerFactory, http) => ({
-  [name]: (...args) => {
+const Listen = (handlerFactory, http) => ({
+  createServer:(...args)=>{
+    const { handler } = handlerFactory()
+    const server = http.createServer(handler)
+    return server
+  },
+  listen: (...args) => {
     const { handler } = handlerFactory()
     const server = http.createServer(handler)
     return server.listen.apply(server, args)
-  }
+  },
+  // listen: (...args) => {
+  //   const { handler } = handlerFactory()
+  //   const server = http.createServer(handler)
+  //   if(socket.enabled && socket.io){
+  //     const injectedIo = socket.io(server)
+  //     server.listen.apply(server, args)
+  //     return injectedIo
+  //   } else {
+  //     return server.listen.apply(server, args)
+  //   }
+  // }
 })
 
 // pretty print all app routes
 const PrettyPrint = (treeifyDep, entity, chainLink) =>({
-  prettyPrint: log =>{
-    let logger = console.log
+  prettyPrint: (logger = console.log) =>{
     let shortEntity = {}
+    let options = ['get','post','put','del']
     const keysOfEntity = Object.keys(entity)
-
-    if(log && typeof log === 'function') logger = log
-
     for(let key of keysOfEntity){
       let obj = {}
-      let options = ['get','post','put','del']
       for(let option of options){
         let routeValues = Object.keys(entity[key][option])
         if(routeValues.length > 0){
@@ -31,7 +43,6 @@ const PrettyPrint = (treeifyDep, entity, chainLink) =>({
             const assignedOption = {[routeKey]:value}
             Object.assign(obj,assignedOption)
             shortEntity[key] = obj
-
           }
         }
       }
@@ -42,7 +53,7 @@ const PrettyPrint = (treeifyDep, entity, chainLink) =>({
 })
 
 // method creator for router
-const Method = (name, object,chainLink) => ({
+const Method = (name, object, chainLink) => ({
   [name]: data =>{
     // data.parent = chainLink.getObjProps()
     object[name][data.getObjProps().path] = data
@@ -72,7 +83,7 @@ const CreateSwagger = (yamlCreator, chainLink, fs, ...args) => ({
         for(let path of paths){
           const fullPath = router.base + path
           const describe = router[method][path].getObjProps().describe
-          const responseObjectsForSchema = describe.requests.filter(request=>request.in === 'body')
+          const responseObjectsForSchema = describe.incoming.filter(request=>request.in === 'body')
           if(responseObjectsForSchema.length > 0){
             responseObjectsForSchema.map(response=>{
               const obj = {}
@@ -83,7 +94,7 @@ const CreateSwagger = (yamlCreator, chainLink, fs, ...args) => ({
               schemasObject.push(obj)
             })
           }
-          describe.responses.map(response=>{
+          describe.outgoing.map(response=>{
             const obj = {}
             const name = `${fullPath.replace(/\//g, '').replace(/-/,'').replace(/[{:}]/g,'')}-${response.status}-${method}`
             obj.name = name

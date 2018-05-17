@@ -18,8 +18,8 @@ const serverStruct = struct({
 })
 
 const infoStruct = struct({
-  title: 'string?',
-  version: 'string?',
+  title: 'string',
+  version: 'string',
   description: 'string?',
   termsOfService: 'string?',
   contact: contactStruct,
@@ -33,6 +33,7 @@ const mainDescribeStruct = struct({
   servers: [serverStruct]
 })
 
+// mainDescribe block
 const mainDescribe = ({title, version, description, termsOfService, contact, license, servers, security}) => {
   const validJson = {
     openapi: "3.0.0",
@@ -55,7 +56,7 @@ const mainDescribe = ({title, version, description, termsOfService, contact, lic
 const parameterStruct = struct({
   name: 'string',
   in: struct.enum(['query', 'path']),
-  description: 'string?',
+  description: 'string',
   required: 'boolean?',
 })
 
@@ -64,7 +65,7 @@ const singlePathMetaData = struct({
   description: 'string',
   parameters: 'array?',
   requestBody: 'object?',
-  summary: 'string',
+  summary: 'string?',
   responses: 'object?'
 })
 
@@ -76,6 +77,7 @@ const pathStruct = (pathName, methodName) => struct({
   [pathName]: methodStruct(methodName)
 })
 
+// assign nested object properties
 const assign = (obj, keyPath, value) => {
   lastKeyIndex = keyPath.length-1;
   for (let i = 0; i < lastKeyIndex; ++ i) {
@@ -87,6 +89,7 @@ const assign = (obj, keyPath, value) => {
   obj[keyPath[lastKeyIndex]] = value;
 }
 
+// recurse on structs and populate object according to struct received
 const getNested = (struct, map = {}) => {
   const schema = (struct.schema && struct.schema.schema) || struct.schema
   const keys = Object.keys(schema)
@@ -101,7 +104,7 @@ const getNested = (struct, map = {}) => {
       // console.log(`schema[key]`, schema[key].type)
       assign(map, [key, 'type'], 'array')
       let type = schema[key].type.replace(/\[|\]/g,'')
-      assign(map, [key, 'items', 'type'], type)
+      assign(map, [key, 'items', 'type'], type.replace('?', ''))
     } else if(schema[key].kind && schema[key].kind === 'enum'){
       assign(map, [key, 'type'], 'string')
       assign(map, [key, 'enum'], schema[key].type.split('|').map(item=>item.replace(/\"/g, '').replace(/\s/g, '')))
@@ -133,7 +136,7 @@ const getNested = (struct, map = {}) => {
     }else {
       // console.log(key, schema[key])
       // console.log(`assigning type array`, key, schema[key])
-      assign(map, [key, 'type'], schema[key])
+      assign(map, [key, 'type'], schema[key].replace('?', ''))
       if(schema[key] === 'array'){
         assign(map, [key, 'items', 'type'], 'object')
       }
@@ -143,6 +146,7 @@ const getNested = (struct, map = {}) => {
   return map
 }
 
+// add request schema based on path, method and request object
 const addRequest = (request, path, method) => {
   // console.log(`REQUEST: `, request)
   if(!request) return
@@ -157,6 +161,7 @@ const addRequest = (request, path, method) => {
   }
 }
 
+// build response object
 const responseBuilder = (responses, path, method) => {
   const responseObject = {}
   for(let resp of responses){
@@ -174,14 +179,15 @@ const responseBuilder = (responses, path, method) => {
   return responseObject
 }
 
-const pathDescribe = ({path, method, tags, description, summary, requests, requestBody, responses}) => {
+// describe path based on data received
+const pathDescribe = ({path, method, tags, description, summary, incoming, requestBody, outgoing}) => {
   // console.log(Object.keys(requests[0].schema.schema))
   const myRegexp = /(:.+?)([\/]|$)/g
   const swaggerPath = path.replace(myRegexp, function(...args){
     return args[0].replace(args[1], `{${args[1].replace(':', '')}}`)
   })
-  const bodyRequests = requests.filter(request=>request.in === 'body')
-  const parametersRequests = requests.filter(request=>['path', 'query'].includes(request.in))
+  const bodyRequests = incoming.filter(request=>request.in === 'body')
+  const parametersRequests = incoming.filter(request=>['path', 'query'].includes(request.in))
   const injectedPathWithParams = pathStruct(swaggerPath, method)
   const parametersToInject = parametersRequests.map(request=>{
     // const all 
@@ -211,13 +217,14 @@ const pathDescribe = ({path, method, tags, description, summary, requests, reque
         summary,
         requestBody: addRequest(bodyRequests[0], swaggerPath, method),
         parameters: parametersToInject.length > 0 ? parametersToInject : undefined,
-        responses: responseBuilder(responses, swaggerPath, method)
+        responses: responseBuilder(outgoing, swaggerPath, method)
       }
     }
   }
   return injectedPathWithParams(jsonWithParams)
 }
 
+// schema builder according to describe.requests object and describe.responses
 const schemas = (schemas, securitySchemes) => {
   const schemasObject = {}
   for(let sc of schemas){
