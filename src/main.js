@@ -108,10 +108,9 @@ const BlizApp = (BlizAppParams) => {
   const _routersObject = {}
   const _socketRoutersObject = {}
   const _injected = {}
-  const _useSockets = {enabled:false, delimiter: ':'}
+  const _useSockets = {enabled: false, delimiter: ':'}
   const _options = {}
   const _describe = {}
-  const _swagger = {}
   const _createHandler = CreateHandler.bind(this, { request, response ,defaultHandler, midHandler, superStructObject, urlUtil, handleNestedRoutersUtil, populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, Promise})
   const _subApps = []
   return Object.assign(

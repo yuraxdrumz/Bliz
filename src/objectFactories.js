@@ -75,7 +75,7 @@ const PrettyPrint = (treeifyDep, entity, socketEntity, chainLink) =>({
   },
   prettyPrint: (logger = console.log) =>{
     let shortEntity = {}
-    let options = ['get','post','put','del', 'event']
+    let options = ['get','post','put','del']
     const keysOfEntity = Object.keys(entity)
     for(let key of keysOfEntity){
       let obj = {}

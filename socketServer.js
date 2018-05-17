@@ -1,4 +1,4 @@
-import Bliz, { request, response, struct, superstruct } from './src/main'
+import Bliz, { struct, superstruct } from './src/main'
 import path from 'path'
 import io from 'socket.io'
 
@@ -13,6 +13,9 @@ const listener2 = app
   console.log(msg, cb)
   console.log('awsome')
 })
+// .middleware((msg, cb, next)=>{
+//   console.log('middleware!')
+// })
 
 const listener3 = app
 .createSocketListener('team2')
@@ -27,6 +30,7 @@ const otherRouter = app
 .createSocketRouter('prefix')
 .subSocketRouter(socketRouter)
 .event(listener2)
+.event(listener3)
 
 // .event(listener2).event(listener3)
 
