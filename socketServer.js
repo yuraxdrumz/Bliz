@@ -30,8 +30,8 @@ const otherRouter = app
 
 // .event(listener2).event(listener3)
 
-const server = app
+app
   .sockets({enabled: true, io: io, delimiter: ':'})
   .registerSocketRouters(otherRouter)
   .prettyPrintSocket()
-  .listen(3000,()=>console.log('listening on bliz server on port 3000'))
+  .listen(4000,()=>console.log('listening on bliz server on port 3000'))
