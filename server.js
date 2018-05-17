@@ -115,5 +115,5 @@ app
     absoluteFilePath: path.resolve('./swagger.yaml')
   })
   .middleware(bodyParser.json())
-  .listen(3000,()=>logger('listening on bliz server on port 3000'))
+  .listen(4000,()=>logger('listening on bliz server on port 3000'))
 

@@ -44,7 +44,7 @@ const PrettyPrint = (treeifyDep, entity, chainLink) =>({
 // method creator for router
 const Method = (name, object,chainLink) => ({
   [name]: data =>{
-    data.parent = chainLink.getObjProps()
+    // data.parent = chainLink.getObjProps()
     object[name][data.getObjProps().path] = data
     return chainLink
   }
