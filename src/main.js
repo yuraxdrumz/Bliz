@@ -22,7 +22,8 @@ import {
   handleNestedRoutersUtil, 
   populateUrlOptions, 
   populateSubAppsUtil,
-  populateSocketRoutersUtil
+  populateSocketRoutersUtil,
+  populateObjectWithTreeUtil
  } from './utils'
  
 import defaultHandler from './defaultHandler'
@@ -62,6 +63,7 @@ const BlizAppParams = {
   PathCreator, 
   http, 
   print,
+  populateObjectWithTreeUtil,
   urlUtil, 
   populateRoutersUtil, 
   handleNestedRoutersUtil,
@@ -97,6 +99,7 @@ const BlizApp = (BlizAppParams) => {
     http, 
     CreateObjectArray,
     urlUtil, 
+    populateObjectWithTreeUtil,
     populateRoutersUtil, 
     handleNestedRoutersUtil,
     populateParamsUtil, 
@@ -142,7 +145,7 @@ const BlizApp = (BlizAppParams) => {
     CreateObjectArray('socketMiddleware', _socketMiddlewares, _Instance),
     CreateArray('subApp', _subApps, _Instance),
     CreateSwagger(stringify, _Instance, fs),
-    PrettyPrint(treeify, _routersObject, _socketRoutersObject, _Instance, _useSockets, _loggerEntity),
+    PrettyPrint(treeify, _routersObject, _socketRoutersObject, _Instance, _useSockets, _loggerEntity, populateObjectWithTreeUtil),
     RegisterRouters({populateRoutersUtil, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
     GetObjProps({_middleWares, _routersObject, _loggerEntity, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject, _socketMiddlewares, _version}),

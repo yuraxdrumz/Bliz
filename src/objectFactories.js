@@ -81,44 +81,10 @@ const Listen = ({_createHandler, _useSockets, _socketRoutersObject, socketMiddle
 })
 
 // pretty print all app routes
-const PrettyPrint = (treeifyDep, entity, socketEntity, chainLink, _useSockets, _loggerEntity) =>({
+const PrettyPrint = (treeifyDep, entity, socketEntity, chainLink, _useSockets, _loggerEntity, populateObjectWithTreeUtil) =>({
   prettyPrint: (logger = console.log) =>{
-    let options = ['get','post','put','del']
-    const keysOfEntity = Object.keys(entity)
-    let socketOptions = ['event']
-    const socketEntityKeys = Object.keys(socketEntity)
-    for(let key of socketEntityKeys){
-      let obj = {}
-      for(let option of socketOptions){
-        let routeValues = Object.keys(socketEntity[key][option])
-        if(routeValues.length > 0){
-          let routeKey = _useSockets.delimiter
-          let value = {}
-          for(let route of routeValues){
-            value[route] = ''
-            const assignedOption = {[`${[routeKey]}`]:value}
-            Object.assign(obj,assignedOption)
-            _loggerEntity.sockets[key] = obj
-          }
-        }
-      }
-    }
-    for(let key of keysOfEntity){
-      let obj = {}
-      for(let option of options){
-        let routeValues = Object.keys(entity[key][option])
-        if(routeValues.length > 0){
-          let routeKey = option.toUpperCase()
-          let value = {}
-          for(let route of routeValues){
-            value[route] = ''
-            const assignedOption = {[routeKey]:value}
-            Object.assign(obj,assignedOption)
-            _loggerEntity.http[key] = obj
-          }
-        }
-      }
-    }
+    populateObjectWithTreeUtil(entity, ['get','post','put','del'], _loggerEntity.http)
+    populateObjectWithTreeUtil(socketEntity, ['event'], _loggerEntity.sockets, _useSockets.delimiter)
     logger(treeifyDep.asTree(_loggerEntity))
     return chainLink
   }
@@ -135,19 +101,14 @@ const Method = (name, object, chainLink) => ({
 
 // create swagger yaml
 const CreateSwagger = (yamlCreator, chainLink, fs, ...args) => ({
-  swagger:(swaggerOptions)=>{
-    const swaggerObj = {}
-    args.map(arg=>Object.assign(swaggerObj, arg))
-    const swaggerYaml = yamlCreator(swaggerObj)
+  swagger: swaggerOptions => {
     let yaml = ''
-    
     const {_routersObject, _describe } = chainLink.getObjProps()
-    const mainYaml = yamlCreator(mainDescribe(_describe))
-    yaml+=mainYaml
+    yaml += yamlCreator(mainDescribe(_describe))
     const routersKeys = Object.keys(_routersObject)
-    const mainPathsObject = {paths:{}}
+    const mainPathsObject = {paths: {}}
     const schemasObject = []
-    for(let key of routersKeys){
+    for (let key of routersKeys) {
       const options = ['get', 'post', 'put', 'del']
       const router = _routersObject[key]
       for(let method of options){
@@ -183,7 +144,7 @@ const CreateSwagger = (yamlCreator, chainLink, fs, ...args) => ({
       yaml += yamlCreator(schemas(schemasObject))
       // console.log(yaml)
       // console.log(swaggerOptions)
-      if(swaggerOptions && swaggerOptions.absoluteFilePath){
+      if (swaggerOptions && swaggerOptions.absoluteFilePath) {
         fs.writeFileSync(swaggerOptions.absoluteFilePath, yaml, 'utf8')
       }
     }
@@ -208,8 +169,8 @@ const GetObjProps = obj =>({
   getObjProps:()=>(obj)
 })
 
-const EventsCreator = eventEmitter =>({
-  events:new eventEmitter({wildcard:true})
+const EventsCreator = EventEmitter =>({
+  events: new EventEmitter({wildcard: true})
 })
 
 // when called, receives an object
@@ -224,7 +185,7 @@ const CreateNewObjOf = (name, obj, ...deps) => ({
 })
 // pushes data to array
 const CreateArray = (name, arr, chainLink) => ({
-  [name]:data=>{
+  [name]: data => {
     arr.push(data)
     return chainLink
   }
@@ -232,7 +193,7 @@ const CreateArray = (name, arr, chainLink) => ({
 
 // pushes data to array
 const CreateObjectArray = (name, arr, chainLink) => ({
-  [name]:(fn, timeout = 5000, throwError = true)=>{
+  [name]: (fn, timeout = 5000, throwError = true) => {
     arr.push({fn, timeout, throwError})
     return chainLink
   }

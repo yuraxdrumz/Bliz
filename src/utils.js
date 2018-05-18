@@ -14,6 +14,26 @@ function urlUtil(url, methodUpperCase){
   }
 }
 
+const populateObjectWithTreeUtil = (entity, options, objectToAddTo, delimiter) => {
+  const keysOfEntity = Object.keys(entity)
+  for (let key of keysOfEntity) {
+    let obj = {}
+    for (let option of options) {
+      let routeValues = Object.keys(entity[key][option])
+      if (routeValues.length > 0) {
+        let routeKey = delimiter || option.toUpperCase()
+        let value = {}
+        for (let route of routeValues) {
+          value[route] = ''
+          const assignedOption = {[`${[routeKey]}`]: value}
+          Object.assign(obj, assignedOption)
+          objectToAddTo[key] = obj
+        }
+      }
+    }
+  }
+}
+
 // recurse on routers object and populate obj passed
 function populateSocketRoutersUtil(obj, routers, parent = null, delimiter){
   // console.log(`obj: `, obj, `routers: `, routers, `parent: `, parent)
@@ -192,6 +212,7 @@ export {
   handleNestedRoutersUtil,
   populateSubAppsUtil,
   checkBaseUtil,
+  populateObjectWithTreeUtil,
   populateQueryUtil,
   populateParamsUtil,
   populateSocketRoutersUtil

@@ -23,7 +23,7 @@ const infoStruct = struct({
   description: 'string?',
   termsOfService: 'string?',
   contact: contactStruct,
-  license: licenseStruct,
+  license: licenseStruct
 })
 
 const mainDescribeStruct = struct({

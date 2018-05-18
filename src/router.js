@@ -3,7 +3,7 @@ import {
   CreateObjectArray,
   AssignHandler,
   GetObjProps,
-  Method,
+  Method
 } from './objectFactories'
 import { checkBaseUtil } from './utils'
 
@@ -11,14 +11,14 @@ const RouterCreator = base => {
   const _checkedBase = checkBaseUtil(base)
   const _RouterReturn = {}
   const routerData = {
-    base:_checkedBase,
+    base: _checkedBase,
     get: {},
     post: {},
     put : {},
-    del :{},
-    middleWareArr :[],
-    subRouters:[],
-    routerErrorHandler: null,
+    del : {},
+    middleWareArr : [],
+    subRouters: [],
+    routerErrorHandler: null
   }
   return Object.assign(
     _RouterReturn,
@@ -26,9 +26,9 @@ const RouterCreator = base => {
     Method('post', routerData, _RouterReturn),
     Method('put', routerData, _RouterReturn),
     Method('del', routerData, _RouterReturn),
-    AssignHandler('routerErrorHandler',routerData, _RouterReturn),
-    CreateObjectArray('middleware',routerData.middleWareArr, _RouterReturn),
-    CreateArray('subRouter',routerData.subRouters, _RouterReturn),
+    AssignHandler('routerErrorHandler', routerData, _RouterReturn),
+    CreateObjectArray('middleware', routerData.middleWareArr, _RouterReturn),
+    CreateArray('subRouter', routerData.subRouters, _RouterReturn),
     GetObjProps(routerData)
   )
 }

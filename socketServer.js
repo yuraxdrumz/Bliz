@@ -6,7 +6,11 @@ import print from 'print-message'
 const app = Bliz()
 
 // should contain all added events
-
+// TODO: change all names of createSocketRouter => createRouter like http
+// TODO: change all names of socketSubRouter => subRouter like http
+// TODO: change name of registerSocketRouters => registerRouters like http
+// TODO: add check if type is http do this, if type is sockets do that
+// TODO: add middlewares regular, add
 
 const listener2 = app
 .createSocketListener('team1')
