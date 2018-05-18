@@ -15,10 +15,13 @@ res.addHeader = function(header, value){
 
 
 res.json = function(data){
+  // console.log(this.req.headers)
   this.addHeader('Content-Type','application/json')
   this.addHeader('X-Powered-By', 'Bliz')
   const stringified = JSON.stringify(data, null, 3)
-  this.addHeader('ETag', etag(stringified))
+  const generatedEtag = etag(stringified)
+  // console.log(generatedEtag, this.req.headers.etag)
+  this.addHeader('ETag', generatedEtag)
   this.end(stringified)
 }
 

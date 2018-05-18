@@ -1,6 +1,7 @@
 import Bliz, { struct, superstruct } from './src/main'
 import path from 'path'
 import io from 'socket.io'
+import print from 'print-message'
 
 const app = Bliz()
 
@@ -54,10 +55,10 @@ app
   .prettyPrintSocket()
   .prettyPrint()
   .inject({
-    mongoose:()=>{console.log('saddsa')}
+    mongoose:()=>{console.log('mongoose called')}
   })
   .socketMiddleware((io, socket, msg, cb, next) => {
     console.log('global')
     next()
   }, 5000)
-    .listen(4000, ()=> console.log('listening on bliz server on port 4000'))
+    .listen(4000)

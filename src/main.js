@@ -38,6 +38,8 @@ import { struct, superstruct, StructError } from 'superstruct'
 import EventEmitter from 'eventemitter2'
 import Promise from 'bluebird'
 import { stringify } from 'json-to-pretty-yaml'
+import print from 'print-message'
+import os from 'os'
 
 const superStructObject = {
   struct,
@@ -52,12 +54,14 @@ const BlizAppParams = {
   populateSocketRoutersUtil,
   superStructObject, 
   RouterCreator, 
+  os,
   CreateObjectArray,
   Listen, 
   defaultHandler, 
   midHandler, 
   PathCreator, 
   http, 
+  print,
   urlUtil, 
   populateRoutersUtil, 
   handleNestedRoutersUtil,
@@ -85,9 +89,11 @@ const BlizApp = (BlizAppParams) => {
     socketMiddlewareHandler,
     RouterCreator, 
     Listen, 
+    print,
     defaultHandler, 
     midHandler, 
     PathCreator, 
+    os,
     http, 
     CreateObjectArray,
     urlUtil, 
@@ -108,6 +114,8 @@ const BlizApp = (BlizAppParams) => {
     stringify, 
     fs
   } = BlizAppParams
+
+  const _version = '0.0.1'
   const _Instance = {}
   const _middleWares = []
   const _socketMiddlewares = []
@@ -133,11 +141,11 @@ const BlizApp = (BlizAppParams) => {
     CreateObjectArray('socketMiddleware', _socketMiddlewares, _Instance),
     CreateArray('subApp', _subApps, _Instance),
     CreateSwagger(stringify, _Instance, fs),
-    PrettyPrint(treeify, _routersObject, _socketRoutersObject, _Instance),
+    PrettyPrint(treeify, _routersObject, _socketRoutersObject, _Instance, _useSockets),
     RegisterRouters({populateRoutersUtil, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
-    GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject, _socketMiddlewares}),
-    Listen({_createHandler, _useSockets, http, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares})
+    GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject, _socketMiddlewares, _version}),
+    Listen({_createHandler, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version})
   )
 }
 

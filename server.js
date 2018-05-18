@@ -42,11 +42,11 @@ const route = app
 .middleware((req,res,next)=>{
   console.log('works like a charm!')
   next()
-})
+}, 5000)
 
 const route2 = app
 .createPath('/:status/')
-.handler((req,res)=>res.vjson({params:req.params, query:req.query}))
+.handler((req,res)=>res.json({params:req.params, query:req.query}))
 .describe({
   tags: ['oven', 'jenkins'],
   summary: 'simple summary for swagger',
@@ -82,7 +82,7 @@ const server = app
   .swagger({absoluteFilePath: path.resolve('./swagger.yaml')})
   .middleware(bodyParser.json())
   .sockets({enabled: true, io})
-  .listen(3000,()=>console.log('listening on bliz server on port 3000'))
+  .listen(4000,()=>console.log('listening on bliz server on port 4000'))
 
 
 // should contain all added events

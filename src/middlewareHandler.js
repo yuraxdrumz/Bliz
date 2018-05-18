@@ -15,8 +15,8 @@ async function midHandler(Promise, req, res, arr){
   for(let item of arr){
     const { fn, timeout, throwError } = item
     await new Promise((resolve, reject) => {
-      const timeout = setTimeout(()=> throwError ? reject(`timeout of ${timeout}ms has passed...`) : resolve(`timeout of ${timeout}ms has passed...`), timeout)
-      fn(req, res, next.bind(this, resolve, reject, timeout))
+      const timeoutHolder = setTimeout(()=> throwError ? reject(`timeout of ${timeout}ms has passed...`) : resolve(`timeout of ${timeout}ms has passed...`), timeout)
+      fn(req, res, next.bind(this, resolve, reject, timeoutHolder))
     })      
     
   }

@@ -25,6 +25,9 @@ function createHandler ({
     // set proto of req and res to point to our req and res
     req.__proto__ = request
     res.__proto__ = response
+    // expose request and response to each other
+    response.req = req
+    request.res = res
     if(!req.params) req.params = {}
     if(!req.query) req.query = {}
     // get url parts

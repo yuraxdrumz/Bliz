@@ -1,6 +1,6 @@
 const { pathDescribe, mainDescribe, schemas } = require('./openApi')
 // receive an http and a handler and return a listen func
-const Listen = ({_createHandler, _useSockets, http, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares}) => ({
+const Listen = ({_createHandler, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version}) => ({
   createServer:(...args)=>{
     const { handler } = _createHandler()
     const server = http.createServer(handler)
@@ -16,7 +16,18 @@ const Listen = ({_createHandler, _useSockets, http, _socketRoutersObject, socket
     const server = http.createServer(handler)
     if(_useSockets.enabled && _useSockets.io){
       const injectedIo = _useSockets.io(server)
-      server.listen.apply(server, args)
+      if(args.length > 1){
+        server.listen.apply(server, args)
+      } else {
+        server.listen.apply(server, [
+          ()=>print([`Listening on Bliz server ${_version} on port ${args[0]}`,
+          `Platform: ${os.platform()}`,
+          `Hostname: ${os.hostname()}`,
+          `Architecture: ${os.arch()}`,
+          `CPU Cores: ${os.cpus().length}`,
+          `Memory Free: ${( ((os.freemem()/1024/1024)/(os.totalmem()/1024/1024)) * 100 ).toFixed(0)}%, ${(os.freemem()/1024/1024).toFixed(0)} MB / ${(os.totalmem()/1024/1024).toFixed(0)} MB`
+        ])])        
+      }
       // injectedIo.on('connction', )
       injectedIo.on('connection', (socket)=>{
         console.log(socket.id, ' connected')
@@ -53,13 +64,24 @@ const Listen = ({_createHandler, _useSockets, http, _socketRoutersObject, socket
 
       return injectedIo
     } else {
-      return server.listen.apply(server, args)
+      if (args.length > 1) {
+        return server.listen.apply(server, args)
+      } else {
+        return server.listen.apply(server, [
+          ()=>print([`Listening on Bliz server ${_version} on port ${args[0]}`,
+          `Platform: ${os.platform()}`,
+          `Hostname: ${os.hostname()}`,
+          `Architecture: ${os.arch()}`,
+          `CPU Cores: ${os.cpus().length}`,
+          `Memory Free: ${( ((os.freemem()/1024/1024)/(os.totalmem()/1024/1024)) * 100 ).toFixed(0)}%, ${(os.freemem()/1024/1024).toFixed(0)} MB / ${(os.totalmem()/1024/1024).toFixed(0)} MB`
+        ])])         
+      }
     }
   }
 })
 
 // pretty print all app routes
-const PrettyPrint = (treeifyDep, entity, socketEntity, chainLink) =>({
+const PrettyPrint = (treeifyDep, entity, socketEntity, chainLink, _useSockets) =>({
   prettyPrintSocket: (logger = console.log) =>{
     let shortEntity = {}
     let options = ['event']
@@ -69,11 +91,11 @@ const PrettyPrint = (treeifyDep, entity, socketEntity, chainLink) =>({
       for(let option of options){
         let routeValues = Object.keys(socketEntity[key][option])
         if(routeValues.length > 0){
-          let routeKey = option.toUpperCase()
+          let routeKey = _useSockets.delimiter
           let value = {}
           for(let route of routeValues){
             value[route] = ''
-            const assignedOption = {[routeKey]:value}
+            const assignedOption = {[`(${[routeKey]})`]:value}
             Object.assign(obj,assignedOption)
             shortEntity[key] = obj
           }
