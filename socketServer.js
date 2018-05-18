@@ -52,7 +52,6 @@ const otherRouter = app
 app
   .sockets({enabled: true, io: io, delimiter: ':'})
   .registerSocketRouters(otherRouter)
-  .prettyPrintSocket()
   .prettyPrint()
   .inject({
     mongoose:()=>{console.log('mongoose called')}

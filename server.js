@@ -82,7 +82,7 @@ const server = app
   .swagger({absoluteFilePath: path.resolve('./swagger.yaml')})
   .middleware(bodyParser.json())
   .sockets({enabled: true, io})
-  .listen(4000,()=>console.log('listening on bliz server on port 4000'))
+  .listen(4000)
 
 
 // should contain all added events

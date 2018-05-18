@@ -25,7 +25,7 @@ const Listen = ({_createHandler, _useSockets, _socketRoutersObject, socketMiddle
           `Hostname: ${os.hostname()}`,
           `Architecture: ${os.arch()}`,
           `CPU Cores: ${os.cpus().length}`,
-          `Memory Free: ${( ((os.freemem()/1024/1024)/(os.totalmem()/1024/1024)) * 100 ).toFixed(0)}%, ${(os.freemem()/1024/1024).toFixed(0)} MB / ${(os.totalmem()/1024/1024).toFixed(0)} MB`
+          `Memory Free: ${( ((os.freemem()/1024/1024)/(os.totalmem()/1024/1024)) * 100 ).toFixed(0)}%, ${(os.freemem()/1024/1024).toFixed(0)} MB / ${(os.totalmem()/1024/1024).toFixed(0)} MB`,
         ])])        
       }
       // injectedIo.on('connction', )
@@ -81,34 +81,28 @@ const Listen = ({_createHandler, _useSockets, _socketRoutersObject, socketMiddle
 })
 
 // pretty print all app routes
-const PrettyPrint = (treeifyDep, entity, socketEntity, chainLink, _useSockets) =>({
-  prettyPrintSocket: (logger = console.log) =>{
-    let shortEntity = {}
-    let options = ['event']
-    const keysOfEntity = Object.keys(socketEntity)
-    for(let key of keysOfEntity){
+const PrettyPrint = (treeifyDep, entity, socketEntity, chainLink, _useSockets, _loggerEntity) =>({
+  prettyPrint: (logger = console.log) =>{
+    let options = ['get','post','put','del']
+    const keysOfEntity = Object.keys(entity)
+    let socketOptions = ['event']
+    const socketEntityKeys = Object.keys(socketEntity)
+    for(let key of socketEntityKeys){
       let obj = {}
-      for(let option of options){
+      for(let option of socketOptions){
         let routeValues = Object.keys(socketEntity[key][option])
         if(routeValues.length > 0){
           let routeKey = _useSockets.delimiter
           let value = {}
           for(let route of routeValues){
             value[route] = ''
-            const assignedOption = {[`(${[routeKey]})`]:value}
+            const assignedOption = {[`${[routeKey]}`]:value}
             Object.assign(obj,assignedOption)
-            shortEntity[key] = obj
+            _loggerEntity.sockets[key] = obj
           }
         }
       }
     }
-    logger(treeifyDep.asTree(shortEntity))
-    return chainLink
-  },
-  prettyPrint: (logger = console.log) =>{
-    let shortEntity = {}
-    let options = ['get','post','put','del']
-    const keysOfEntity = Object.keys(entity)
     for(let key of keysOfEntity){
       let obj = {}
       for(let option of options){
@@ -120,12 +114,12 @@ const PrettyPrint = (treeifyDep, entity, socketEntity, chainLink, _useSockets) =
             value[route] = ''
             const assignedOption = {[routeKey]:value}
             Object.assign(obj,assignedOption)
-            shortEntity[key] = obj
+            _loggerEntity.http[key] = obj
           }
         }
       }
     }
-    logger(treeifyDep.asTree(shortEntity))
+    logger(treeifyDep.asTree(_loggerEntity))
     return chainLink
   }
 })

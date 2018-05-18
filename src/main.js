@@ -117,6 +117,7 @@ const BlizApp = (BlizAppParams) => {
 
   const _version = '0.0.1'
   const _Instance = {}
+  const _loggerEntity = {sockets:{}, http:{}}
   const _middleWares = []
   const _socketMiddlewares = []
   const _routersObject = {}
@@ -141,10 +142,10 @@ const BlizApp = (BlizAppParams) => {
     CreateObjectArray('socketMiddleware', _socketMiddlewares, _Instance),
     CreateArray('subApp', _subApps, _Instance),
     CreateSwagger(stringify, _Instance, fs),
-    PrettyPrint(treeify, _routersObject, _socketRoutersObject, _Instance, _useSockets),
+    PrettyPrint(treeify, _routersObject, _socketRoutersObject, _Instance, _useSockets, _loggerEntity),
     RegisterRouters({populateRoutersUtil, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
-    GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject, _socketMiddlewares, _version}),
+    GetObjProps({_middleWares, _routersObject, _loggerEntity, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject, _socketMiddlewares, _version}),
     Listen({_createHandler, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version})
   )
 }
