@@ -136,7 +136,7 @@ const BlizApp = (BlizAppParams) => {
     PrettyPrint(treeify, _routersObject, _socketRoutersObject, _Instance),
     RegisterRouters({populateRoutersUtil, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
-    GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject}),
+    GetObjProps({_middleWares, _routersObject, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject, _socketMiddlewares}),
     Listen({_createHandler, _useSockets, http, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares})
   )
 }

@@ -15,7 +15,6 @@ const listener2 = app
 })
 .middleware((io, socket, msg, cb, next)=>{
   console.log('middleware!')
-  throw new Error('asddasas')
   next()
 }, 5000)
 .middleware((io, socket, msg, cb, next)=>{
@@ -38,7 +37,6 @@ const socketRouter = app
 //   console.log(e)
 // })
 
-
 const otherRouter = app
 .createSocketRouter('prefix')
 .socketSubRouter(socketRouter)
@@ -58,8 +56,8 @@ app
   .inject({
     mongoose:()=>{console.log('saddsa')}
   })
-  .socketMiddleware((io, socket, msg, cb, next)=>{
+  .socketMiddleware((io, socket, msg, cb, next) => {
     console.log('global')
     next()
   }, 5000)
-    .listen(4000,()=>console.log('listening on bliz server on port 4000'))
+    .listen(4000, ()=> console.log('listening on bliz server on port 4000'))
