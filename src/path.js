@@ -2,6 +2,7 @@ import {
   CreateArray,
   AssignHandler,
   GetObjProps,
+  CreateObjectArray
 } from './objectFactories'
 import { checkBaseUtil } from './utils'
 
@@ -20,7 +21,7 @@ const PathCreator = path => {
     _PathReturn,
     AssignHandler('describe', pathData.describe, _PathReturn, true),
     AssignHandler('parent', pathData.parent, _PathReturn, true),
-    CreateArray('middleware',pathData.middleWareArr, _PathReturn),
+    CreateObjectArray('middleware',pathData.middleWareArr, _PathReturn),
     AssignHandler('handler', pathData, _PathReturn),
     AssignHandler('errHandler', pathData, _PathReturn),
     GetObjProps(pathData),

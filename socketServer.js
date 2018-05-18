@@ -9,17 +9,22 @@ const app = Bliz()
 
 const listener2 = app
 .createSocketListener('team1')
-.handler((io, socket, msg, cb)=>{
+.handler((io, socket, msg, cb, { mongoose })=>{
+  mongoose()
   console.log('awsome')
 })
 .middleware((io, socket, msg, cb, next)=>{
   console.log('middleware!')
-  // next()
+  throw new Error('asddasas')
+  next()
 }, 5000)
 .middleware((io, socket, msg, cb, next)=>{
   console.log('middleware2!')
-  // next()
+  next()
 }, 5000)
+// .errHandler((io, socket, msg, e)=>{
+//   console.log(e)
+// })
 
 const listener3 = app
 .createSocketListener('team2')
@@ -29,12 +34,19 @@ const socketRouter = app
 .createSocketRouter('teams')
 .event(listener2)
 .event(listener3)
+// .errHandler((io, socket, msg, e)=>{
+//   console.log(e)
+// })
+
 
 const otherRouter = app
 .createSocketRouter('prefix')
 .socketSubRouter(socketRouter)
 .event(listener2)
 .event(listener3)
+.middleware((io, socket, msg, cb, next)=>{
+  next()
+}, 5000)
 
 // .event(listener2).event(listener3)
 
@@ -42,4 +54,12 @@ app
   .sockets({enabled: true, io: io, delimiter: ':'})
   .registerSocketRouters(otherRouter)
   .prettyPrintSocket()
-  .listen(4000,()=>console.log('listening on bliz server on port 4000'))
+  .prettyPrint()
+  .inject({
+    mongoose:()=>{console.log('saddsa')}
+  })
+  .socketMiddleware((io, socket, msg, cb, next)=>{
+    console.log('global')
+    next()
+  }, 5000)
+    .listen(4000,()=>console.log('listening on bliz server on port 4000'))

@@ -1,6 +1,6 @@
 const { pathDescribe, mainDescribe, schemas } = require('./openApi')
 // receive an http and a handler and return a listen func
-const Listen = ({_createHandler, _useSockets, http, _socketRoutersObject, socketMiddlewareHandler}) => ({
+const Listen = ({_createHandler, _useSockets, http, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares}) => ({
   createServer:(...args)=>{
     const { handler } = _createHandler()
     const server = http.createServer(handler)
@@ -28,10 +28,17 @@ const Listen = ({_createHandler, _useSockets, http, _socketRoutersObject, socket
             // _socketRoutersObject[key].event[eventKey].handler()
             socket.on(`${key}${_useSockets.delimiter}${eventKey}`, async (msg, cb)=>{
               const chosenEvent = _socketRoutersObject[key].event[eventKey].getObjProps()
-              if(chosenEvent.middleWareArr){
+              // if()
+              if(_socketMiddlewares && _socketMiddlewares.length > 0){
+                await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, _socketMiddlewares)
+              }
+              if(_socketRoutersObject[key].middleWareArr && _socketRoutersObject[key].middleWareArr.length > 0){
+                await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, _socketRoutersObject[key].middleWareArr)
+              }
+              if(chosenEvent.middleWareArr && chosenEvent.middleWareArr.length > 0){
                 await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, chosenEvent.middleWareArr)
               }
-              chosenEvent.handler(injectedIo, socket, msg, cb)
+              chosenEvent.handler(injectedIo, socket, msg, cb, _injected)
             })
           }
       

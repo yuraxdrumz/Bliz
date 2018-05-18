@@ -1,8 +1,9 @@
 import {
+    CreateObjectArray,
     CreateArray,
     AssignHandler,
     GetObjProps,
-    Method,
+    Method
   } from './objectFactories'
   
   const SocketRouterCreator = base => {
@@ -18,7 +19,7 @@ import {
       _RouterReturn,
       Method('event', routerData, _RouterReturn),
       AssignHandler('routerErrorHandler',routerData, _RouterReturn),
-      CreateArray('middleware',routerData.middleWareArr, _RouterReturn),
+      CreateObjectArray('middleware',routerData.middleWareArr, _RouterReturn),
       CreateArray('socketSubRouter',routerData.subRouters, _RouterReturn),
       GetObjProps(routerData)
     )

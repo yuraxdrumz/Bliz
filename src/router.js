@@ -1,5 +1,6 @@
 import {
   CreateArray,
+  CreateObjectArray,
   AssignHandler,
   GetObjProps,
   Method,
@@ -26,7 +27,7 @@ const RouterCreator = base => {
     Method('put', routerData, _RouterReturn),
     Method('del', routerData, _RouterReturn),
     AssignHandler('routerErrorHandler',routerData, _RouterReturn),
-    CreateArray('middleware',routerData.middleWareArr, _RouterReturn),
+    CreateObjectArray('middleware',routerData.middleWareArr, _RouterReturn),
     CreateArray('subRouter',routerData.subRouters, _RouterReturn),
     GetObjProps(routerData)
   )
