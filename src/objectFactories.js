@@ -20,6 +20,7 @@ const Listen = ({_createHandler, _useSockets, _socketRoutersObject, socketMiddle
         server.listen.apply(server, args)
       } else {
         server.listen.apply(server, [
+          args[0],
           ()=>print([`Listening on Bliz server ${_version} on port ${args[0]}`,
           `Platform: ${os.platform()}`,
           `Hostname: ${os.hostname()}`,
@@ -31,13 +32,13 @@ const Listen = ({_createHandler, _useSockets, _socketRoutersObject, socketMiddle
       // injectedIo.on('connction', )
       injectedIo.on('connection', (socket)=>{
         console.log(socket.id, ' connected')
-
+        
         const routersKeys = Object.keys(_socketRoutersObject)
         for(let key of routersKeys){
           const eventKeys = Object.keys(_socketRoutersObject[key].event)
           for(let eventKey of eventKeys){
             // _socketRoutersObject[key].event[eventKey].handler()
-            socket.on(`${key}${_useSockets.delimiter}${eventKey}`, async (msg, cb)=>{
+            socket.on(`${key}${_useSockets.delimiter}${eventKey}`, async (msg, cb)=>{    
               const chosenEvent = _socketRoutersObject[key].event[eventKey].getObjProps()
               // if()
               if(_socketMiddlewares && _socketMiddlewares.length > 0){
@@ -61,13 +62,13 @@ const Listen = ({_createHandler, _useSockets, _socketRoutersObject, socketMiddle
         })
 
       })
-
       return injectedIo
     } else {
       if (args.length > 1) {
         return server.listen.apply(server, args)
       } else {
         return server.listen.apply(server, [
+          args[0],
           ()=>print([`Listening on Bliz server ${_version} on port ${args[0]}`,
           `Platform: ${os.platform()}`,
           `Hostname: ${os.hostname()}`,

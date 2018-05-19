@@ -1,19 +1,18 @@
 // default error handler handler
 import { StructError } from './main'
 
-const defaultErrorHandler = function(req ,res, err){
-  if(err){
+const defaultErrorHandler = (req ,res, err) => {
+  if (err) {
     res.statusCode = err.status || 500
-    if(err instanceof StructError){
-      res.json({error:err.message, path: err.path, dataPassed:err.data, valueReceived:err.value, typeExpected:err.type})
+    if (err instanceof StructError) {
+      res.json({error: err.message, path: err.path, dataPassed: err.data, valueReceived: err.value, typeExpected: err.type})
     } else {
       console.error(err)
-      res.json({error:err.message})
+      res.json({error: err.message})
     }
-
-  }else{
+  } else {
     res.statusCode = 404
-    res.json({error:`${req.method.toUpperCase()} - ${req.url} not found...`})
+    res.json({error: `${req.method.toUpperCase()} - ${req.url} not found...`})
   }
 }
 export default defaultErrorHandler

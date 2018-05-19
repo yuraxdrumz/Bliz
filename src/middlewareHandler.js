@@ -33,7 +33,9 @@ async function socketMiddlewareHandler(Promise, io, socket, msg, cb, arr){
   for(let item of arr){
     const { fn, timeout, throwError } = item
     await new Promise((resolve, reject) => {
-      fn(io, socket, msg, cb,next.bind(this, resolve, reject))
+      // args.push(next.bind(this, resolve, reject))
+      // fn.apply.bind(fn, null, args);
+      fn(io, socket, msg, cb, next.bind(this, resolve, reject))
       setTimeout(()=> throwError ? reject(`timeout of ${timeout}ms has passed...`) : resolve(`timeout of ${timeout}ms has passed...`), timeout)
     })      
     

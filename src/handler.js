@@ -1,35 +1,32 @@
-
 // main function
 function createHandler ({
-  request, 
+  request,
   response,
-  defaultHandler, 
-  midHandler, 
-  superStructObject, 
-  urlUtil, 
+  defaultHandler,
+  midHandler,
+  urlUtil,
   handleNestedRoutersUtil,
-  populateParamsUtil, 
-  populateQueryUtil, 
-  populateUrlOptions, 
-  _middleWares, 
+  populateParamsUtil,
+  populateQueryUtil,
+  populateUrlOptions,
+  _middleWares,
   _routersObject,
-  _injected, 
-  _Instance, 
+  _injected,
+  _Instance,
   Promise
 }) {
   // receive all middlewares from routers and apps if exist and concatanate them
   _middleWares = _middleWares.reduce((prev, curr) => prev.concat(curr), [])
-  const { struct, superstruct, StructError } = superStructObject
   // handler to be passed to http.createServer
-  async function handler(req,res){
+  async function handler (req, res) {
     // set proto of req and res to point to our req and res
     req.__proto__ = request
     res.__proto__ = response
     // expose request and response to each other
     response.req = req
     request.res = res
-    if(!req.params) req.params = {}
-    if(!req.query) req.query = {}
+    if (!req.params) req.params = {}
+    if (!req.query) req.query = {}
     // get url parts
     let { method, splitRest } = urlUtil(req.url, req.method)
     // check all url combinations possible
@@ -44,7 +41,7 @@ function createHandler ({
     // check routers middleware
     try {
       // if global middlewares exists, execute them
-      if (_middleWares){
+      if (_middleWares) {
         await midHandler(Promise, req, res, _middleWares)
       }
       // if routers middlewares exist, execute them
@@ -56,13 +53,13 @@ function createHandler ({
       return defaultHandler(req, res, middleWareError)
     }
     // something is not defined go to default handler
-    if(!canSkipBecauseParams){
-      if (!_routersObject[baseOfRequest])return defaultHandler(req, res)
-      if (!_routersObject[baseOfRequest][method])return defaultHandler(req, res)
+    if (!canSkipBecauseParams){
+      if (!_routersObject[baseOfRequest]) return defaultHandler(req, res)
+      if (!_routersObject[baseOfRequest][method]) return defaultHandler(req, res)
       if (!_routersObject[baseOfRequest][method][finalRest]) return defaultHandler(req, res)
     }
     // current route after all checks
-    const currentRoute = _routersObject[baseOfRequest][method][!canSkipBecauseParams ? finalRest : param ].getObjProps()
+    const currentRoute = _routersObject[ baseOfRequest ][ method ][ !canSkipBecauseParams ? finalRest : param ].getObjProps()
     // try router middleware => route middleware=> route handler=> if err check route err handler=>
     // if err in err handler or err handler not exists => router err handler => if not go to global handler
     try {
@@ -72,10 +69,10 @@ function createHandler ({
         await midHandler(Promise, req, res, middleWareArr)
       }
       // if validation schemes exist, execute them
-      if(describe && describe.incoming && describe.incoming.length > 0){
-        for(let i=0; i<describe.incoming.length; i++){
+      if (describe && describe.incoming && describe.incoming.length > 0) {
+        for (let i = 0; i < describe.incoming.length; i++) {
           let searchIn = ''
-          if(describe.incoming[i].in === 'path'){
+          if (describe.incoming[i].in === 'path') {
             searchIn = 'params'
           } else {
             searchIn = describe.incoming[i].in
@@ -85,25 +82,24 @@ function createHandler ({
       }
       // call handler with req, res and injected object from app.inject 
       const statusObject = {}
-      for(let schema of describe.outgoing){
+      for (let schema of describe.outgoing) {
         statusObject[schema.status] = schema.schema
       }
-      Object.assign(res, {schema: statusObject})     
+      Object.assign(res, {schema: statusObject})   
       handler(req, res, _injected)
     } catch (errorFromHandler) {
       // here, it is the same as with middlewares but backwards, try route err handler, next up try router err handler and finally try global middleware
-      try{
-        if(currentRoute.errHandler){
+      try {
+        if (currentRoute.errHandler) {
           currentRoute.errHandler(req, res, errorFromHandler)
-        }else if(_routersObject[baseOfRequest].routerErrorHandler){
+        } else if (_routersObject[baseOfRequest].routerErrorHandler) {
           _routersObject[baseOfRequest].routerErrorHandler(req, res, errorFromHandler)
-        }else{
+        } else {
           defaultHandler(req, res, errorFromHandler)
         }
-      }catch(errorFromErrorHandlers){
+      } catch (errorFromErrorHandlers){
         defaultHandler(req, res, errorFromErrorHandlers)
       }
-
     }
   }
   return { handler }
