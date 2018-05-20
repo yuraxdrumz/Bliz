@@ -1,11 +1,13 @@
+
+const next = (resolve, reject, timeout, ...args) => {
+  clearTimeout(timeout)
+  if(args.length > 0) return reject(args[0])
+  return resolve()
+}
+
 // handler for express middlewares with next...
 async function midHandler(Promise, req, res, arr){
   // next function to be injected in  middlewares with resolve nad reject of promise
-  function next(resolve, reject, timeout, ...args){
-    clearTimeout(timeout)
-    if(args.length > 0) return reject(args[0])
-    return resolve()
-  }
   // run on middleware array and wait for each sequentially
   // for(let item of arr){
   //   await new Promise((resolve, reject)=>{
@@ -23,12 +25,6 @@ async function midHandler(Promise, req, res, arr){
 }
 
 async function socketMiddlewareHandler(Promise, io, socket, msg, cb, arr){
- 
-  // next function to be injected in  middlewares with resolve nad reject of promise
-  function next(resolve, reject, ...args){
-    if(args.length > 0) return reject(args[0])
-    return resolve()
-  }
   // run on middleware array and wait for each sequentially
   for(let item of arr){
     const { fn, timeout, throwError } = item

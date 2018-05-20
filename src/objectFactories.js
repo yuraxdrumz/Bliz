@@ -44,6 +44,12 @@ const Listen = ({_createHandler, _useSockets, _socketRoutersObject, socketMiddle
               if(_socketMiddlewares && _socketMiddlewares.length > 0){
                 await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, _socketMiddlewares)
               }
+              // console.log(_socketRoutersObject, key)
+              const parentRoutersMiddlewares = key.split(_useSockets.delimiter).map(prefix=>_socketRoutersObject[prefix] ? _socketRoutersObject[prefix].middleWareArr : []).reduce((prev,curr)=>prev.concat(curr))
+              // console.log(parentRoutersMiddlewares)
+              if(parentRoutersMiddlewares && parentRoutersMiddlewares.length > 0){
+                await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, parentRoutersMiddlewares)
+              }
               if(_socketRoutersObject[key].middleWareArr && _socketRoutersObject[key].middleWareArr.length > 0){
                 await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, _socketRoutersObject[key].middleWareArr)
               }

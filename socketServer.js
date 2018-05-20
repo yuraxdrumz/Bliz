@@ -37,6 +37,10 @@ const socketRouter = app
 .createSocketRouter('teams')
 .event(listener2)
 .event(listener3)
+.middleware((io, socket, msg, cb, next)=>{
+  console.log('teams router middleware')
+  next()
+}, 5000)
 // .errHandler((io, socket, msg, e)=>{
 //   console.log(e)
 // })
@@ -47,6 +51,7 @@ const otherRouter = app
 .event(listener2)
 .event(listener3)
 .middleware((io, socket, msg, cb, next)=>{
+  console.log('prefix router middleware')
   next()
 }, 5000)
 
