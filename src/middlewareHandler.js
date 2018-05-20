@@ -1,26 +1,32 @@
 
-const next = (resolve, reject, timeout, ...args) => {
-  clearTimeout(timeout)
+const next = (resolve, reject, ...args) => {
   if(args.length > 0) return reject(args[0])
   return resolve()
 }
 
+const promiseTimeout = (promise, ms, throwError) => {
+
+  // Create a promise that rejects in <ms> milliseconds
+  let timeout = new Promise((resolve, reject) => {
+    let id = setTimeout(() => {
+      clearTimeout(id);
+      throwError ? reject('Timed out in '+ ms + 'ms.') : resolve('Timed out in '+ ms + 'ms.')
+    }, ms)
+  })
+
+  // Returns a race between our timeout and the passed in promise
+  return Promise.race([
+    promise,
+    timeout
+  ])
+}
+
 // handler for express middlewares with next...
 async function midHandler(Promise, req, res, arr){
-  // next function to be injected in  middlewares with resolve nad reject of promise
-  // run on middleware array and wait for each sequentially
-  // for(let item of arr){
-  //   await new Promise((resolve, reject)=>{
-  //     item(req,res,next.bind(this,resolve, reject))
-  //   })
-  // }
   for(let item of arr){
     const { fn, timeout, throwError } = item
-    await new Promise((resolve, reject) => {
-      const timeoutHolder = setTimeout(()=> throwError ? reject(`timeout of ${timeout}ms has passed...`) : resolve(`timeout of ${timeout}ms has passed...`), timeout)
-      fn(req, res, next.bind(this, resolve, reject, timeoutHolder))
-    })      
-    
+    const handlerPromise = new Promise((resolve, reject) => fn(req, res, next.bind(this, resolve, reject)))   
+    await promiseTimeout(handlerPromise, timeout, throwError)
   }
 }
 
@@ -28,13 +34,8 @@ async function socketMiddlewareHandler(Promise, io, socket, msg, cb, arr){
   // run on middleware array and wait for each sequentially
   for(let item of arr){
     const { fn, timeout, throwError } = item
-    await new Promise((resolve, reject) => {
-      // args.push(next.bind(this, resolve, reject))
-      // fn.apply.bind(fn, null, args);
-      fn(io, socket, msg, cb, next.bind(this, resolve, reject))
-      setTimeout(()=> throwError ? reject(`timeout of ${timeout}ms has passed...`) : resolve(`timeout of ${timeout}ms has passed...`), timeout)
-    })      
-    
+    const handlerPromise = new Promise((resolve, reject) => fn(io, socket, msg, cb, next.bind(this, resolve, reject)))  
+    await promiseTimeout(handlerPromise, timeout, throwError)  
   }
 }
 
