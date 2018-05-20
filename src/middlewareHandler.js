@@ -10,7 +10,8 @@ const promiseTimeout = (promise, ms, throwError) => {
   let timeout = new Promise((resolve, reject) => {
     let id = setTimeout(() => {
       clearTimeout(id);
-      throwError ? reject('Timed out in '+ ms + 'ms.') : resolve('Timed out in '+ ms + 'ms.')
+      const err = new Error('Timed out in '+ ms + 'ms.')
+      throwError ? reject(err) : resolve('Timed out in '+ ms + 'ms.')
     }, ms)
   })
 
@@ -35,7 +36,7 @@ async function socketMiddlewareHandler(Promise, io, socket, msg, cb, arr){
   for(let item of arr){
     const { fn, timeout, throwError } = item
     const handlerPromise = new Promise((resolve, reject) => fn(io, socket, msg, cb, next.bind(this, resolve, reject)))  
-    await promiseTimeout(handlerPromise, timeout, throwError)  
+    await promiseTimeout(handlerPromise, timeout, throwError)
   }
 }
 

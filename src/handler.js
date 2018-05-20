@@ -80,13 +80,13 @@ function createHandler ({
           describe.incoming[i].schema(req[searchIn])
         }
       }
-      // call handler with req, res and injected object from app.inject 
+      // call handler with req, res and injected object from app.inject
       const statusObject = {}
       for (let schema of describe.outgoing) {
         statusObject[schema.status] = schema.schema
       }
       Object.assign(res, {schema: statusObject})   
-      handler(req, res, _injected)
+      await handler(req, res, _injected)
     } catch (errorFromHandler) {
       // here, it is the same as with middlewares but backwards, try route err handler, next up try router err handler and finally try global middleware
       try {

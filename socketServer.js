@@ -65,11 +65,8 @@ app
   .inject({
     mongoose:()=>{console.log('mongoose called')}
   })
-  .middleware((req,res, next)=>{
-    console.log('request')
-  })
   .socketMiddleware((io, socket, msg, cb, next) => {
     console.log('global')
-    next()
-  }, 5000)
+    // next()
+  })
     .listen(4000)

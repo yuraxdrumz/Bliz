@@ -41,24 +41,28 @@ const Listen = ({_createHandler, _useSockets, _socketRoutersObject, socketMiddle
             // _socketRoutersObject[key].event[eventKey].handler()
             // console.log(`registering event : `, `${key}${_useSockets.delimiter}${eventKey}`)
             socket.on(`${key}${_useSockets.delimiter}${eventKey}`, async (msg, cb)=>{    
-              const chosenEvent = _socketRoutersObject[key].event[eventKey].getObjProps()
-              // if()
-              if(_socketMiddlewares && _socketMiddlewares.length > 0){
-                await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, _socketMiddlewares)
+              try{
+                const chosenEvent = _socketRoutersObject[key].event[eventKey].getObjProps()
+                // if()
+                if(_socketMiddlewares && _socketMiddlewares.length > 0){
+                  await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, _socketMiddlewares)
+                }
+                // console.log(_socketRoutersObject, key, `${key}${_useSockets.delimiter}${eventKey}`)
+                const parentRoutersMiddlewares = key.split(_useSockets.delimiter).map(prefix=>_socketRoutersObject[prefix] ? _socketRoutersObject[prefix].middleWareArr : []).reduce((prev,curr)=>prev.concat(curr))
+                // console.log(parentRoutersMiddlewares)
+                if(parentRoutersMiddlewares && parentRoutersMiddlewares.length > 0){
+                  await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, parentRoutersMiddlewares)
+                }
+                // if(_socketRoutersObject[key].middleWareArr && _socketRoutersObject[key].middleWareArr.length > 0){
+                //   await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, _socketRoutersObject[key].middleWareArr)
+                // }
+                if(chosenEvent.middleWareArr && chosenEvent.middleWareArr.length > 0){
+                  await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, chosenEvent.middleWareArr)
+                }
+                await chosenEvent.handler(injectedIo, socket, msg, cb, _injected)
+              }catch(e){
+                console.log(e)
               }
-              // console.log(_socketRoutersObject, key, `${key}${_useSockets.delimiter}${eventKey}`)
-              const parentRoutersMiddlewares = key.split(_useSockets.delimiter).map(prefix=>_socketRoutersObject[prefix] ? _socketRoutersObject[prefix].middleWareArr : []).reduce((prev,curr)=>prev.concat(curr))
-              // console.log(parentRoutersMiddlewares)
-              if(parentRoutersMiddlewares && parentRoutersMiddlewares.length > 0){
-                await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, parentRoutersMiddlewares)
-              }
-              // if(_socketRoutersObject[key].middleWareArr && _socketRoutersObject[key].middleWareArr.length > 0){
-              //   await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, _socketRoutersObject[key].middleWareArr)
-              // }
-              if(chosenEvent.middleWareArr && chosenEvent.middleWareArr.length > 0){
-                await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, chosenEvent.middleWareArr)
-              }
-              chosenEvent.handler(injectedIo, socket, msg, cb, _injected)
             })
           }
       
