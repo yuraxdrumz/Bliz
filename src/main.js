@@ -1,6 +1,7 @@
 import RouterCreator from './router'
 import SocketRouterCreator from './socketRouter'
 import SocketListenerCreator from './socketListener'
+import packgeJson from '../package.json'
 import PathCreator from './path'
 import { 
   Listen,
@@ -63,6 +64,7 @@ const BlizAppParams = {
   SocketRouterCreator,
   SocketListenerCreator,
   PathCreator, 
+  packgeJson,
   http, 
   print,
   populateObjectWithTreeUtil,
@@ -92,6 +94,7 @@ const BlizApp = (BlizAppParams) => {
     superStructObject, 
     socketMiddlewareHandler,
     RouterCreator, 
+    packgeJson,
     Listen, 
     print,
     defaultHandler, 
@@ -122,7 +125,7 @@ const BlizApp = (BlizAppParams) => {
     fs
   } = BlizAppParams
 
-  const _version = '0.0.1'
+  const _version = packgeJson.version
   const _Instance = {}
   const _loggerEntity = {sockets: {}, http: {}}
   const _middleWares = []

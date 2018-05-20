@@ -1,7 +1,7 @@
 {
   "name": "Bliz",
   "version": "0.0.1",
-  "description": "",
+  "description": "A fast, declarative framework for writing web servers, no taradiddles",
   "main": "server.js",
   "scripts": {
     "test": "jest",
