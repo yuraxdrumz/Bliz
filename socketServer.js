@@ -41,6 +41,10 @@ const socketRouter = app
   console.log('teams router middleware')
   next()
 }, 5000)
+.middleware((io, socket, msg, cb, next)=>{
+  console.log('another teams router middleware')
+  next()
+}, 5000)
 // .errHandler((io, socket, msg, e)=>{
 //   console.log(e)
 // })
@@ -60,13 +64,13 @@ const otherRouter = app
 app
   .sockets({enabled: true, io: io, delimiter: ':'})
   .registerSocketRouters(otherRouter)
-  .registerSocketRouters(socketRouter)
+  // .registerSocketRouters(socketRouter)
   .prettyPrint()
   .inject({
     mongoose:()=>{console.log('mongoose called')}
   })
   .socketMiddleware((io, socket, msg, cb, next) => {
     console.log('global')
-    // next()
+    next()
   })
     .listen(4000)

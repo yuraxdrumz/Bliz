@@ -24,7 +24,8 @@ import {
   populateUrlOptions,
   populateSubAppsUtil,
   populateSocketRoutersUtil,
-  populateObjectWithTreeUtil
+  populateObjectWithTreeUtil,
+  checkSubRouters
  } from './utils'
 
 import defaultHandler from './defaultHandler'
@@ -59,6 +60,7 @@ const BlizAppParams = {
   os,
   CreateObjectArray,
   Listen, 
+  checkSubRouters,
   defaultHandler, 
   midHandler, 
   SocketRouterCreator,
@@ -117,6 +119,7 @@ const BlizApp = (BlizAppParams) => {
     GetObjProps, 
     populateSubAppsUtil, 
     treeify, 
+    checkSubRouters,
     EventsCreator, 
     EventEmitter, 
     Promise, 
@@ -158,7 +161,7 @@ const BlizApp = (BlizAppParams) => {
     RegisterRouters({populateRoutersUtil, _socketSubAps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
     GetObjProps({_middleWares, _routersObject, _loggerEntity, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject, _socketMiddlewares, _version}),
-    Listen({_createHandler, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version})
+    Listen({_createHandler, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version})
   )
 }
 

@@ -1,6 +1,6 @@
 const { pathDescribe, mainDescribe, schemas } = require('./openApi')
 // receive an http and a handler and return a listen func
-const Listen = ({_createHandler, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version}) => ({
+const Listen = ({_createHandler, checkSubRouters, _useSockets, handleNestedSocketRoutersUtil, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version}) => ({
   createServer:(...args)=>{
     const { handler } = _createHandler()
     const server = http.createServer(handler)
@@ -29,10 +29,10 @@ const Listen = ({_createHandler, _useSockets, _socketRoutersObject, socketMiddle
           `Memory Free: ${( ((os.freemem()/1024/1024)/(os.totalmem()/1024/1024)) * 100 ).toFixed(0)}%, ${(os.freemem()/1024/1024).toFixed(0)} MB / ${(os.totalmem()/1024/1024).toFixed(0)} MB`,
         ])])        
       }
+
       // injectedIo.on('connction', )
       injectedIo.on('connection', (socket)=>{
         console.log(socket.id, ' connected')
-        
         const routersKeys = Object.keys(_socketRoutersObject)
         for(let key of routersKeys){
           const eventKeys = Object.keys(_socketRoutersObject[key].event)
@@ -48,10 +48,15 @@ const Listen = ({_createHandler, _useSockets, _socketRoutersObject, socketMiddle
                   await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, _socketMiddlewares)
                 }
                 // console.log(_socketRoutersObject, key, `${key}${_useSockets.delimiter}${eventKey}`)
-                const parentRoutersMiddlewares = key.split(_useSockets.delimiter).map(prefix=>_socketRoutersObject[prefix] ? _socketRoutersObject[prefix].middleWareArr : []).reduce((prev,curr)=>prev.concat(curr))
+                let combinedMiddlewareArray = []
+                key
+                .split(_useSockets.delimiter)
+                .map(prefix => _socketRoutersObject[prefix] ? checkSubRouters(_socketRoutersObject[prefix], combinedMiddlewareArray) : void(0))
+
+                combinedMiddlewareArray = combinedMiddlewareArray.reduce((prev, curr)=>prev.concat(curr))
                 // console.log(parentRoutersMiddlewares)
-                if(parentRoutersMiddlewares && parentRoutersMiddlewares.length > 0){
-                  await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, parentRoutersMiddlewares)
+                if(combinedMiddlewareArray && combinedMiddlewareArray.length > 0){
+                  await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, combinedMiddlewareArray)
                 }
                 // if(_socketRoutersObject[key].middleWareArr && _socketRoutersObject[key].middleWareArr.length > 0){
                 //   await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, _socketRoutersObject[key].middleWareArr)

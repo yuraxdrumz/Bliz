@@ -141,22 +141,29 @@ function populateQueryUtil(req, urlArray){
         req.query[keyValue[0]] = keyValue[1]
       })
     let urlToReturn = urlArray.substring(0, urlArray.indexOf('?'))
-    if(urlToReturn[urlToReturn.length - 1] === '/' && urlToReturn.length > 1){
-      urlToReturn = urlToReturn.substring(0, urlToReturn.length -1)
-    }
-    return urlToReturn
+    return checkBaseUtil(urlToReturn)
   }
 }
 
 // if //, slice /
 function checkBaseUtil(base){
   let newBase
-  if(base[base.length - 1] === '/' && base.length > 1) {
+  if (base[base.length - 1] === '/' && base.length > 1) {
     newBase = base.slice(0, base.length - 1)
-  }else{
+  } else {
     newBase = base
   }
   return newBase
+}
+
+const checkSubRouters = (router, array = []) => {
+  router = router.getObjProps ? router.getObjProps() : router
+  if(router.middleWareArr.length > 0){
+    array.push(router.middleWareArr)
+  }
+  if(router.subRouters.length > 0){
+    return router.subRouters.map(router => checkSubRouters(router, array))
+  }
 }
 
 // populate params util and replace params to match original route
@@ -215,5 +222,6 @@ export {
   populateObjectWithTreeUtil,
   populateQueryUtil,
   populateParamsUtil,
-  populateSocketRoutersUtil
+  populateSocketRoutersUtil,
+  checkSubRouters
 }
