@@ -98,6 +98,27 @@ const Listen = ({_createHandler, checkSubRouters, _useSockets, handleNestedSocke
   }
 })
 
+const Cluster = ({_version}) => ({
+  // stage 1
+    // get options
+    // get routers, schemas
+    // open redis client
+    // ask redis for bliz cluster version
+    // if same version - continue
+    // else - different versions between cluster servers, throw error (update server)
+  // stage 2
+    // create server hash
+    // write hash to redis
+  // stage 3
+    // open redis subscriber for divide work
+    // open redis subscriber for receive work
+  // stage 4
+    // when query comes, round robin or options to choose random server (subscribers / hash ??)
+    // fire divide work event to chosen server
+    // if chosen master
+    // divide work totalSchemas / registered servers on cluster
+})
+
 // pretty print all app routes
 const PrettyPrint = (treeifyDep, entity, socketEntity, chainLink, _useSockets, _loggerEntity, populateObjectWithTreeUtil) =>({
   prettyPrint: (logger = console.log) =>{

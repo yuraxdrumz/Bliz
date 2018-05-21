@@ -142,6 +142,7 @@ const BlizApp = (BlizAppParams) => {
   const _useSockets = {enabled: false, delimiter: ':'}
   const _options = {}
   const _describe = {}
+  const _graphQlSchemas = {}
   const _createHandler = CreateHandler.bind(this, { request, response ,defaultHandler, midHandler, superStructObject, urlUtil, handleNestedRoutersUtil, populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, Promise })
   const _subApps = []
   const _socketSubAps = []
@@ -162,7 +163,7 @@ const BlizApp = (BlizAppParams) => {
     CreateArray('subApp', _subApps, _Instance),
     CreateSwagger(stringify, _Instance, fs),
     PrettyPrint(treeify, _routersObject, _socketRoutersObject, _Instance, _useSockets, _loggerEntity, populateObjectWithTreeUtil),
-    RegisterRouters({populateRoutersUtil, _socketSubAps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
+    RegisterRouters({_graphQlSchemas, populateRoutersUtil, _socketSubAps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
     GetObjProps({_middleWares, _routersObject, _loggerEntity, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject, _socketMiddlewares, _version}),
     Listen({_createHandler, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version})

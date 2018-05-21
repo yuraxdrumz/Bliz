@@ -7,7 +7,8 @@ const RegisterRouters = ({
   _routersObject, 
   _socketRoutersObject,
   _subApps, 
-  _Instance
+  _Instance,
+  _graphQlSchemas
 }) => ({
   registerRouters:(...routers)=>{
     // populate subApps object with sub apps passed
@@ -25,6 +26,7 @@ const RegisterRouters = ({
   },
   registerGraphQlSchemas:(...schemas)=>{
     // console.log(schemas)
+    // _graphQlSchemas, schemas
     return _Instance
   }
 })

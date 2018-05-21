@@ -1,6 +1,4 @@
-import Bliz, { struct, superstruct } from './src/main'
-import path from 'path'
-import io from 'socket.io'
+import Bliz from './src/main'
 
 const app = Bliz()
 
@@ -36,7 +34,7 @@ const UserSchema = app
     `type User {
         first_name: String!
         last_name: String!
-        posts: [Posts]
+        posts: [Post]
     }
     type newUser {
         first_name: String!
@@ -70,6 +68,5 @@ const UserSchema = app
     .query(`User(id: Int!): User`)
 
 app
-    .registerGraphQlSchemas(UserSchema)
-    .registerGraphQlSchemas(PostSchema)
+    .registerGraphQlSchemas(UserSchema, PostSchema)
     .listen(4000)
