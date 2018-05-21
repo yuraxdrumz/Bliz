@@ -6,6 +6,7 @@ const app = Bliz()
 
 const UserSchema = app
     .createGraphQlSchema('User')
+    .queryType(`User(id: Int!): User`)
     .type(
     `type User {
         first_name: String!
@@ -21,6 +22,7 @@ const UserSchema = app
             }
         }
     })
+    .mutation(`createUser(input: newUser): User`)
 app
     .registerGraphQlSchemas(UserSchema)
     .listen(4000)
