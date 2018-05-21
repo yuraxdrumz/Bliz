@@ -3,6 +3,7 @@ import SocketRouterCreator from './socketRouter'
 import SocketListenerCreator from './socketListener'
 import packgeJson from '../package.json'
 import PathCreator from './path'
+import GraphQlCreator from './graphQlSchema'
 import { 
   Listen,
   CreateArray,
@@ -67,6 +68,7 @@ const BlizAppParams = {
   SocketListenerCreator,
   PathCreator, 
   packgeJson,
+  GraphQlCreator,
   http, 
   print,
   populateObjectWithTreeUtil,
@@ -103,6 +105,7 @@ const BlizApp = (BlizAppParams) => {
     midHandler, 
     PathCreator, 
     os,
+    GraphQlCreator,
     SocketListenerCreator,
     http, 
     CreateObjectArray,
@@ -145,6 +148,7 @@ const BlizApp = (BlizAppParams) => {
 
   return Object.assign(
     _Instance,
+    CreateNewObjOf('GraphQlSchema', GraphQlCreator),
     CreateNewObjOf('SocketRouter', SocketRouterCreator, treeify),
     CreateNewObjOf('SocketListener', SocketListenerCreator, treeify),
     CreateNewObjOf('Router', RouterCreator, treeify),

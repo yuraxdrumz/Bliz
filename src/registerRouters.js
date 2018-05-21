@@ -22,6 +22,10 @@ const RegisterRouters = ({
     populateSocketRoutersUtil(_socketRoutersObject, routers, null, delimiter)
     // console.log(_socketRoutersObject)
     return _Instance
+  },
+  registerGraphQlSchemas:(...schemas)=>{
+    // console.log(schemas)
+    return _Instance
   }
 })
 export default RegisterRouters

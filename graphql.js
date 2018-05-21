@@ -5,7 +5,8 @@ import io from 'socket.io'
 const app = Bliz()
 
 const UserSchema = app
-    .createGraphQlSchema(
+    .createGraphQlSchema('User')
+    .type(
     `type User {
         first_name: String!
         last_name: String!
@@ -20,13 +21,6 @@ const UserSchema = app
             }
         }
     })
-
-
-
 app
-    .registerSchemas(UserSchema)
-    .prettyPrint()
-    .inject({
-        mongoose:()=>{console.log('mongoose called')}
-    })
+    .registerGraphQlSchemas(UserSchema)
     .listen(4000)
