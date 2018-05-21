@@ -5,13 +5,16 @@ import io from 'socket.io'
 const app = Bliz()
 
 const UserSchema = app
-    .createGraphQlSchema('User')
-    .queryType(`User(id: Int!): User`)
-    .type(
+    .createGraphQlSchema(
     `type User {
         first_name: String!
         last_name: String!
-    }`)
+    }
+    type newUser {
+        first_name: String!
+        last_name: String
+    }
+    `)
     .resolver({
         User:{
             first_name(user){
@@ -23,6 +26,10 @@ const UserSchema = app
         }
     })
     .mutation(`createUser(input: newUser): User`)
+    .query(`User(id: Int!): User`)
+
+console.log(UserSchema.getObjProps())
+
 app
     .registerGraphQlSchemas(UserSchema)
     .listen(4000)
