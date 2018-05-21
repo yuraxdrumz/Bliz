@@ -8,20 +8,14 @@ res.status = function(status){
   return this
 }
 
-res.addHeader = function(header, value){
-  this.setHeader(header, value)
-  return this
-}
-
-
 res.json = function(data){
   // console.log(this.req.headers)
-  this.addHeader('Content-Type','application/json')
-  this.addHeader('X-Powered-By', 'Bliz')
+  this.setHeader('Content-Type','application/json')
+  this.setHeader('X-Powered-By', 'Bliz')
   const stringified = JSON.stringify(data, null, 3)
   const generatedEtag = etag(stringified)
   // console.log(generatedEtag, this.req.headers.etag)
-  this.addHeader('ETag', generatedEtag)
+  this.setHeader('ETag', generatedEtag)
   this.end(stringified)
 }
 

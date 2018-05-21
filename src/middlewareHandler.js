@@ -1,5 +1,5 @@
 
-const next = (resolve, reject, ...args) => {
+function next(resolve, reject, ...args) {
   if(args.length > 0) return reject(args[0])
   return resolve()
 }
@@ -27,7 +27,7 @@ async function midHandler(Promise, req, res, arr){
   for(let item of arr){
     const { fn, timeout, throwError } = item
     const handlerPromise = new Promise((resolve, reject) => fn(req, res, next.bind(this, resolve, reject)))   
-    await promiseTimeout(handlerPromise, timeout, throwError)
+    const data = await promiseTimeout(handlerPromise, timeout, throwError)
   }
 }
 

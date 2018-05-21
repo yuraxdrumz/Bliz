@@ -5,7 +5,8 @@ import packgeJson from '../package.json'
 import PathCreator from './path'
 import GraphQlCreator from './graphQlSchema'
 import socketHandler from './socketHandler'
-
+import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
+import bodyParser from 'body-parser'
 import { 
   Listen,
   CreateArray,
@@ -63,6 +64,9 @@ const BlizAppParams = {
   os,
   CreateObjectArray,
   Listen, 
+  graphiqlExpress,
+  graphqlExpress,
+  bodyParser,
   socketHandler,
   checkSubRouters,
   defaultHandler, 
@@ -109,6 +113,9 @@ const BlizApp = (BlizAppParams) => {
     PathCreator, 
     os,
     GraphQlCreator,
+    graphiqlExpress,
+    graphqlExpress,
+    bodyParser,
     SocketListenerCreator,
     http, 
     socketHandler,
@@ -144,10 +151,12 @@ const BlizApp = (BlizAppParams) => {
   const _socketRoutersObject = {}
   const _injected = {}
   const _useSockets = {enabled: false, delimiter: ':'}
+  const _useGraphql = {enabled: false, _addedGraphRoute: false, graphqlRoute:'/graphql', graphiqlRoute: '/graphiql'}
+  const _useSwagger = {enabled: false}
   const _options = {}
   const _describe = {}
   const _graphQlSchemas = {}
-  const _createHandler = CreateHandler.bind(this, { request, response ,defaultHandler, midHandler, superStructObject, urlUtil, handleNestedRoutersUtil, populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, Promise })
+  const _createHandler = CreateHandler.bind(this, { request, response ,defaultHandler, midHandler, superStructObject, urlUtil, handleNestedRoutersUtil, populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, Promise, _useSwagger })
   const _subApps = []
   const _socketSubAps = []
 
@@ -159,18 +168,19 @@ const BlizApp = (BlizAppParams) => {
     CreateNewObjOf('Router', RouterCreator, treeify),
     CreateNewObjOf('Path', PathCreator, treeify),
     AssignHandler('sockets', _useSockets, _Instance, true),
+    AssignHandler('graphql', _useGraphql, _Instance, true),
     AssignHandler('describe', _describe, _Instance, true),
     AssignHandler('options', _options, _Instance, true),
     AssignHandler('inject', _injected, _Instance, true),
     CreateObjectArray('middleware',_middleWares, _Instance),
     CreateObjectArray('socketMiddleware', _socketMiddlewares, _Instance),
     CreateArray('subApp', _subApps, _Instance),
-    CreateSwagger(stringify, _Instance, fs),
+    CreateSwagger(stringify, _Instance, fs, _useSwagger),
     PrettyPrint(treeify, _routersObject, _socketRoutersObject, _Instance, _useSockets, _loggerEntity, populateObjectWithTreeUtil),
-    RegisterRouters({_graphQlSchemas, populateRoutersUtil, _socketSubAps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
+    RegisterRouters({_graphQlSchemas, graphiqlExpress, graphqlExpress, bodyParser, _useGraphql, populateRoutersUtil, _socketSubAps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
     GetObjProps({_middleWares, _routersObject, _loggerEntity, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject, _socketMiddlewares, _version}),
-    Listen({_createHandler, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version, socketHandler})
+    Listen({_createHandler, _Instance, _useGraphql, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version, socketHandler})
   )
 }
 

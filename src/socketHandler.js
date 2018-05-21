@@ -1,7 +1,6 @@
 
 
 const socketHandler = ({_useSockets, server, _version, args, os, _socketRoutersObject, _injected, _socketMiddlewares, socketMiddlewareHandler, checkSubRouters, print}) => {
-  if(_useSockets.enabled && _useSockets.io){
     const injectedIo = _useSockets.io(server)
     if(args.length > 1){
       server.listen.apply(server, args)
@@ -67,21 +66,6 @@ const socketHandler = ({_useSockets, server, _version, args, os, _socketRoutersO
 
     })
     return injectedIo
-  } else {
-    if (args.length > 1) {
-      return server.listen.apply(server, args)
-    } else {
-      return server.listen.apply(server, [
-        args[0],
-        ()=>print([`Listening on Bliz server ${_version} on port ${args[0]}`,
-        `Platform: ${os.platform()}`,
-        `Hostname: ${os.hostname()}`,
-        `Architecture: ${os.arch()}`,
-        `CPU Cores: ${os.cpus().length}`,
-        `Memory Free: ${( ((os.freemem()/1024/1024)/(os.totalmem()/1024/1024)) * 100 ).toFixed(0)}%, ${(os.freemem()/1024/1024).toFixed(0)} MB / ${(os.totalmem()/1024/1024).toFixed(0)} MB`
-      ])])         
-    }
-  }
 }
 
 export default socketHandler

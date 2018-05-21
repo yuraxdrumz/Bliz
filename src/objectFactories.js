@@ -1,6 +1,6 @@
 const { pathDescribe, mainDescribe, schemas } = require('./openApi')
 // receive an http and a handler and return a listen func
-const Listen = ({_createHandler, checkSubRouters, _useSockets, socketHandler, handleNestedSocketRoutersUtil, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version}) => ({
+const Listen = ({_createHandler, checkSubRouters, _useGraphql, _useSockets, socketHandler, handleNestedSocketRoutersUtil, _socketRoutersObject, socketMiddlewareHandler, _injected, _Instance, _socketMiddlewares, http, print, os, _version}) => ({
   createServer:(...args)=>{
     const { handler } = _createHandler()
     const server = http.createServer(handler)
@@ -14,7 +14,29 @@ const Listen = ({_createHandler, checkSubRouters, _useSockets, socketHandler, ha
   listen: (...args) => {
     const { handler } = _createHandler()
     const server = http.createServer(handler)
-    return socketHandler({_useSockets, server, _version, args, os, _socketRoutersObject, _socketMiddlewares, _injected, socketMiddlewareHandler, checkSubRouters, print})
+    if(_useSockets.enabled && _useSockets.io){
+      return socketHandler({_useSockets, server, _version, args, os, _socketRoutersObject, _socketMiddlewares, _injected, socketMiddlewareHandler, checkSubRouters, print})
+    } 
+    //  else if (_useGraphql.enabled) {
+    //   // graphql
+
+
+    // }
+    else {
+      if (args.length > 1) {
+        return server.listen.apply(server, args)
+      } else {
+        return server.listen.apply(server, [
+          args[0],
+          ()=>print([`Listening on Bliz server ${_version} on port ${args[0]}`,
+          `Platform: ${os.platform()}`,
+          `Hostname: ${os.hostname()}`,
+          `Architecture: ${os.arch()}`,
+          `CPU Cores: ${os.cpus().length}`,
+          `Memory Free: ${( ((os.freemem()/1024/1024)/(os.totalmem()/1024/1024)) * 100 ).toFixed(0)}%, ${(os.freemem()/1024/1024).toFixed(0)} MB / ${(os.totalmem()/1024/1024).toFixed(0)} MB`
+        ])])         
+      }
+    }
   }
 })
 
@@ -59,8 +81,9 @@ const Method = (name, object, chainLink) => ({
 })
 
 // create swagger yaml
-const CreateSwagger = (yamlCreator, chainLink, fs, ...args) => ({
+const CreateSwagger = (yamlCreator, chainLink, fs, _useSwagger) => ({
   swagger: swaggerOptions => {
+    _useSwagger.enabled = true
     let yaml = ''
     const {_routersObject, _describe } = chainLink.getObjProps()
     yaml += yamlCreator(mainDescribe(_describe))
