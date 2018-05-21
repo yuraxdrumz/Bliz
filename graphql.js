@@ -71,4 +71,5 @@ const UserSchema = app
 
 app
     .registerGraphQlSchemas(UserSchema)
+    .registerGraphQlSchemas(PostSchema)
     .listen(4000)
