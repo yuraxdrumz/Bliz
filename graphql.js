@@ -16,13 +16,13 @@ const PostSchema = app.createGraphQlSchema(`
         }
     },
     Post:{
-        name(post){
+        name(post, args, context, info){
             return post.name
         },
-        id(post){
+        id(post, args, context, info){
             return post.id
         },
-        data(post){
+        data(post, args, context, info){
             return post.data
         }
     }

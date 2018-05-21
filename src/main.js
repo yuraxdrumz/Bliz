@@ -4,6 +4,8 @@ import SocketListenerCreator from './socketListener'
 import packgeJson from '../package.json'
 import PathCreator from './path'
 import GraphQlCreator from './graphQlSchema'
+import socketHandler from './socketHandler'
+
 import { 
   Listen,
   CreateArray,
@@ -61,6 +63,7 @@ const BlizAppParams = {
   os,
   CreateObjectArray,
   Listen, 
+  socketHandler,
   checkSubRouters,
   defaultHandler, 
   midHandler, 
@@ -108,6 +111,7 @@ const BlizApp = (BlizAppParams) => {
     GraphQlCreator,
     SocketListenerCreator,
     http, 
+    socketHandler,
     CreateObjectArray,
     urlUtil, 
     SocketRouterCreator,
@@ -166,7 +170,7 @@ const BlizApp = (BlizAppParams) => {
     RegisterRouters({_graphQlSchemas, populateRoutersUtil, _socketSubAps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
     GetObjProps({_middleWares, _routersObject, _loggerEntity, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject, _socketMiddlewares, _version}),
-    Listen({_createHandler, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version})
+    Listen({_createHandler, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version, socketHandler})
   )
 }
 
