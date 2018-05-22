@@ -4,7 +4,7 @@ import {
     AssignHandler,
     GetObjProps,
     Method
-  } from './objectFactories'
+  } from '../objectFactories'
   
   const SocketRouterCreator = base => {
     const _RouterReturn = {}

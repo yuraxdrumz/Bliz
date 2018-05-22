@@ -4,8 +4,8 @@ import {
   AssignHandler,
   GetObjProps,
   Method
-} from './objectFactories'
-import { checkBaseUtil } from './utils'
+} from '../objectFactories'
+import { checkBaseUtil } from '../utils'
 
 const RouterCreator = base => {
   const _checkedBase = checkBaseUtil(base)

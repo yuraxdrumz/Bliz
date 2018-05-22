@@ -1,5 +1,5 @@
 // default error handler handler
-import { StructError } from './main'
+import { StructError } from '../main'
 
 const defaultErrorHandler = (req ,res, err) => {
   if (err) {

@@ -13,6 +13,7 @@ const RegisterRouters = ({
   graphqlExpress,
   graphiqlExpress,
   bodyParser,
+  _injected,
   makeExecutableSchema
 }) => ({
   registerRouters:(...routers)=>{
@@ -37,6 +38,7 @@ const RegisterRouters = ({
     let resolvers = {Query: {}, Mutation: {}}
     schemas.map(schema=>{
       const schemaProps = schema.getObjProps()
+      Object.assign(_graphQlSchemas, {[schemaProps.query]: schemaProps})
       Query += `\t${schemaProps.query}\n`
       Mutation += `\t${schemaProps.mutation}\n`
       Types += `${schemaProps.type}\n`
@@ -61,7 +63,16 @@ const RegisterRouters = ({
     const graphiqlRoute = _Instance.createPath(_useGraphql.graphiqlRoute).handler(graphiqlExpress({ endpointURL: _useGraphql.graphqlRoute }))
     const graphqlRoute = _Instance
     .createPath(_useGraphql.graphqlRoute)
-    .handler(graphqlExpress({schema: executableSchema, rootValue: resolvers}))
+    .handler(graphqlExpress({
+      schema: executableSchema, 
+      rootValue: resolvers, 
+      logger:{ log: e => console.log(`Error rom graphql: `, e)}, 
+      context: _injected,
+      tracing: true,
+      cacheControl: {
+        defaultMaxAge: 5
+      }
+    }))
     const router = _Instance.createRouter('/').get(graphqlRoute).post(graphqlRoute).get(graphiqlRoute).middleware(bodyParser.json())
     _Instance.registerRouters(router)
     return _Instance

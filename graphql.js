@@ -69,5 +69,8 @@ const UserSchema = app
 app
     .graphql({enabled: true})
     .registerGraphQlSchemas(UserSchema, PostSchema)
+    .inject({
+        UserModel: {}
+    })
     .prettyPrint()
     .listen(4000)

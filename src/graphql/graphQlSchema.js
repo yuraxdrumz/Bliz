@@ -3,8 +3,8 @@ import {
     AssignHandler,
     GetObjProps,
     CreateObjectArray
-  } from './objectFactories'
-  import { checkBaseUtil } from './utils'
+  } from '../objectFactories'
+  import { checkBaseUtil } from '../utils'
   
   const GraphQlSchemaCreator = type => {
     const _graphql = {}

@@ -1,4 +1,4 @@
-const { pathDescribe, mainDescribe, schemas } = require('./openApi')
+const { pathDescribe, mainDescribe, schemas } = require('./http/openApi')
 // receive an http and a handler and return a listen func
 const Listen = ({_createHandler, checkSubRouters, _useGraphql, _useSockets, socketHandler, handleNestedSocketRoutersUtil, _socketRoutersObject, socketMiddlewareHandler, _injected, _Instance, _socketMiddlewares, http, print, os, _version}) => ({
   createServer:(...args)=>{
@@ -62,7 +62,7 @@ const Cluster = ({_version}) => ({
 })
 
 // pretty print all app routes
-const PrettyPrint = (treeifyDep, entity, socketEntity, chainLink, _useSockets, _loggerEntity, populateObjectWithTreeUtil) =>({
+const PrettyPrint = (treeifyDep, _graphQlSchemas, entity, socketEntity, chainLink, _useSockets, _loggerEntity, populateObjectWithTreeUtil) =>({
   prettyPrint: (logger = console.log) =>{
     populateObjectWithTreeUtil(entity, ['get','post','put','del'], _loggerEntity.http)
     populateObjectWithTreeUtil(socketEntity, ['event'], _loggerEntity.sockets, _useSockets.delimiter)
