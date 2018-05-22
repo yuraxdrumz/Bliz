@@ -154,12 +154,14 @@ const BlizApp = (BlizAppParams) => {
   const _routersObject = {}
   const _socketRoutersObject = {}
   const _injected = {}
+  const _graphqlMockServer = null
   const _useSockets = {enabled: false, delimiter: ':'}
-  const _useGraphql = {enabled: false, _addedGraphRoute: false, graphqlRoute:'/graphql', graphiqlRoute: '/graphiql'}
+  const _useGraphql = {enabled: false, _addedGraphRoute: false, graphqlRoute:'/graphql', graphiqlRoute: '/graphiql', _graphQlExecutableSchema: null}
   const _useSwagger = {enabled: false}
   const _options = {}
   const _describe = {}
   const _graphQlSchemas = {}
+  const _graphQlEnums = []
   const _createHandler = CreateHandler.bind(this, { request, response ,defaultHandler, midHandler, superStructObject, urlUtil, handleNestedRoutersUtil, populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, Promise, _useSwagger })
   const _subApps = []
   const _socketSubAps = []
@@ -179,9 +181,10 @@ const BlizApp = (BlizAppParams) => {
     CreateObjectArray('middleware',_middleWares, _Instance),
     CreateObjectArray('socketMiddleware', _socketMiddlewares, _Instance),
     CreateArray('subApp', _subApps, _Instance),
+    CreateArray('enum', _graphQlEnums, _Instance),
     CreateSwagger(stringify, _Instance, fs, _useSwagger),
     PrettyPrint(treeify, _graphQlSchemas, _routersObject, _socketRoutersObject, _Instance, _useSockets, _loggerEntity, populateObjectWithTreeUtil),
-    RegisterRouters({_graphQlSchemas, _injected, makeExecutableSchema, graphiqlExpress, graphqlExpress, bodyParser, _useGraphql, populateRoutersUtil, _socketSubAps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
+    RegisterRouters({_graphQlSchemas, _useGraphql, _graphqlMockServer, _graphQlEnums, _injected, makeExecutableSchema, graphiqlExpress, graphqlExpress, bodyParser, _useGraphql, populateRoutersUtil, _socketSubAps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
     GetObjProps({_middleWares, _routersObject, _loggerEntity, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject, _socketMiddlewares, _version}),
     Listen({_createHandler, _Instance, _useGraphql, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version, socketHandler})

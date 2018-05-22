@@ -33,6 +33,7 @@ const UserSchema = app
     `type User {
         first_name: String!
         last_name: String!
+        height: Height!
         posts: [Post]
     }
     input newUser {
@@ -54,20 +55,38 @@ const UserSchema = app
                 return user.last_name
             },
             posts(user, args, context, info){
-                return [{name:'asddsadas', id:1, data:'asadsdsdas'}]
+                return [{name:'post', id:1, data:'data'}]
             }
         },
         Mutation:{
             createUser(root, { input }, context){
                 return input
-            }
+            },
+            deleteUser(root, args, context){
+                return {first_name: args.first_name, last_name: 'whatever'}
+            },
         }
     })
-    .mutation(`createUser(input: newUser): User`)
+    .mutation(`
+        createUser(input: newUser): User
+        deleteUser(first_name: String!): User
+    `)
     .query(`User(id: Int!): User`)
 
 app
     .graphql({enabled: true})
+    .enum(`
+    AllowedColor {
+        RED
+        GREEN
+        BLUE
+    }`)
+    .enum(`
+    Height {
+        one 
+        two
+        three
+    }`)
     .registerGraphQlSchemas(UserSchema, PostSchema)
     .inject({
         UserModel: {}

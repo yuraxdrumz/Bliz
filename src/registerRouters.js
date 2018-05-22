@@ -13,8 +13,13 @@ const RegisterRouters = ({
   graphqlExpress,
   graphiqlExpress,
   bodyParser,
+  _graphQlEnums,
   _injected,
-  makeExecutableSchema
+  makeExecutableSchema,
+  graphql,
+  mockServer,
+  _graphQlExecutableSchema,
+  _graphqlMockServer
 }) => ({
   registerRouters:(...routers)=>{
     // populate subApps object with sub apps passed
@@ -31,12 +36,20 @@ const RegisterRouters = ({
     // console.log(_socketRoutersObject)
     return _Instance
   },
-  registerGraphQlSchemas:(...schemas)=>{
+  registerGraphQlSchemas: (...schemas)=>{
     let Query = `type Query{\n`
     let Mutation = `type Mutation{\n`
     let Types = ``
+    let Enums = ``
     let resolvers = {Query: {}, Mutation: {}}
-    schemas.map(schema=>{
+    _graphQlEnums.map( Enum =>{
+      if (Enum.includes('enum')) {
+        Enums += `${Enum}\n`
+      } else {
+        Enums += `enum ${Enum}\n`
+      }
+    })
+    schemas.map( schema => {
       const schemaProps = schema.getObjProps()
       Object.assign(_graphQlSchemas, {[schemaProps.query]: schemaProps})
       Query += `\t${schemaProps.query}\n`
@@ -58,15 +71,16 @@ const RegisterRouters = ({
     })
     Query += '}'
     Mutation += '}'
-    const typeDefs = `${Types}\n${Query}\n${Mutation}`
+    const typeDefs = `${Enums}\n${Types}\n${Query}\n${Mutation}`
     const executableSchema = makeExecutableSchema({typeDefs, resolvers})
+    _useGraphql._graphQlExecutableSchema = executableSchema
     const graphiqlRoute = _Instance.createPath(_useGraphql.graphiqlRoute).handler(graphiqlExpress({ endpointURL: _useGraphql.graphqlRoute }))
     const graphqlRoute = _Instance
     .createPath(_useGraphql.graphqlRoute)
     .handler(graphqlExpress({
       schema: executableSchema, 
       rootValue: resolvers, 
-      logger:{ log: e => console.log(`Error rom graphql: `, e)}, 
+      logger:{ log: e => console.log(`Error from graphql: `, e)}, 
       context: _injected,
       tracing: true,
       cacheControl: {

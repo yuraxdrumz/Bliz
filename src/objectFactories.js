@@ -17,11 +17,6 @@ const Listen = ({_createHandler, checkSubRouters, _useGraphql, _useSockets, sock
     if(_useSockets.enabled && _useSockets.io){
       return socketHandler({_useSockets, server, _version, args, os, _socketRoutersObject, _socketMiddlewares, _injected, socketMiddlewareHandler, checkSubRouters, print})
     } 
-    //  else if (_useGraphql.enabled) {
-    //   // graphql
-
-
-    // }
     else {
       if (args.length > 1) {
         return server.listen.apply(server, args)
@@ -33,7 +28,7 @@ const Listen = ({_createHandler, checkSubRouters, _useGraphql, _useSockets, sock
           `Hostname: ${os.hostname()}`,
           `Architecture: ${os.arch()}`,
           `CPU Cores: ${os.cpus().length}`,
-          `Memory Free: ${( ((os.freemem()/1024/1024)/(os.totalmem()/1024/1024)) * 100 ).toFixed(0)}%, ${(os.freemem()/1024/1024).toFixed(0)} MB / ${(os.totalmem()/1024/1024).toFixed(0)} MB`
+          `Memory Free: ${( (os.freemem()/os.totalmem()) * 100 ).toFixed(0)}%, ${(os.freemem()/1024/1024).toFixed(0)} MB / ${(os.totalmem()/1024/1024).toFixed(0)} MB`
         ])])         
       }
     }
