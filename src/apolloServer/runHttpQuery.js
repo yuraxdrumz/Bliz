@@ -28,7 +28,7 @@ function isQueryOperation(query, operationName) {
 }
 
 export async function runHttpQuery( handlerArguments, request ) {
-  let isGetRequest = true;
+  let isGetRequest = false;
   let optionsObject;
 
   try {
@@ -79,10 +79,10 @@ export async function runHttpQuery( handlerArguments, request ) {
     requestPayload = [requestPayload];
   }
   const requests = requestPayload.map(requestParams => {
+
     try {
       let query = requestParams.query
       let extensions = requestParams.extensions
-
       if (isGetRequest && extensions) {
         // For GET requests, we have to JSON-parse extensions. (For POST
         // requests they get parsed as part of parsing the larger body they're
@@ -167,7 +167,6 @@ export async function runHttpQuery( handlerArguments, request ) {
           context,
         );
       }
-
       let params = {
         schema: optionsObject.schema,
         query: query,
@@ -188,7 +187,6 @@ export async function runHttpQuery( handlerArguments, request ) {
       if (optionsObject.formatParams) {
         params = optionsObject.formatParams(params);
       }
-
       return runQuery(params);
     } catch (e) {
       // Populate any HttpQueryError to our handler which should

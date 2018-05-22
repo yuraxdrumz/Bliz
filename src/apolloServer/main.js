@@ -35,9 +35,9 @@ export function graphqlExpress(options) {
         res.end();
       },
       (error) => {
-        if ('HttpQueryError' !== error.name) {
-          throw error
-        }
+        // if ('HttpQueryError' !== error.name) {
+        //   throw error
+        // }
 
         if (error.headers) {
           Object.keys(error.headers).forEach(header => {
@@ -45,7 +45,7 @@ export function graphqlExpress(options) {
           });
         }
 
-        res.statusCode = error.statusCode;
+        res.statusCode = error.statusCode || 500
         res.write(error.message);
         res.end();
       },

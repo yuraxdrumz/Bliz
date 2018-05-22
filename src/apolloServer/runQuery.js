@@ -96,18 +96,13 @@ function format(errors, formatter) {
 
 function doRunQuery(options) {
   let documentAST
-
   const logFunction =
-options.logFunction ||
-    function() {
-      return null;
-    };
+options.logFunction || function(...args){return args}
   const debugDefault =
     process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test';
   const debug = options.debug !== undefined ? options.debug : debugDefault
 
   logFunction({ action: LogAction.request, step: LogStep.start })
-
   const context = options.context || {}
   let extensions = [];
   if (options.tracing) {
@@ -127,7 +122,6 @@ options.logFunction ||
 
     extensionStack.requestDidStart();
   }
-
   const qry =
     typeof options.query === 'string' ? options.query : print(options.query);
   logFunction({
@@ -164,25 +158,23 @@ options.logFunction ||
     }
   } else {
     documentAST = options.query;
-  
+    let rules = specifiedRules;
+    if (options.validationRules) {
+      rules = rules.concat(options.validationRules);
+    }
+    logFunction({ action: LogAction.validation, step: LogStep.start });
+    const validationErrors = validate(options.schema, documentAST, rules);
+    logFunction({ action: LogAction.validation, step: LogStep.end });
+    if (validationErrors.length) {
+      return Promise.resolve({
+        errors: format(validationErrors, options.formatError),
+      });
+    }
 
-  let rules = specifiedRules;
-  if (options.validationRules) {
-    rules = rules.concat(options.validationRules);
+    if (extensionStack) {
+      extensionStack.executionDidStart();
+    }
   }
-  logFunction({ action: LogAction.validation, step: LogStep.start });
-  const validationErrors = validate(options.schema, documentAST, rules);
-  logFunction({ action: LogAction.validation, step: LogStep.end });
-  if (validationErrors.length) {
-    return Promise.resolve({
-      errors: format(validationErrors, options.formatError),
-    });
-  }
-
-  if (extensionStack) {
-    extensionStack.executionDidStart();
-  }
-
   try {
     logFunction({ action: LogAction.execute, step: LogStep.start });
     return Promise.resolve(
@@ -229,4 +221,4 @@ options.logFunction ||
     });
   }
 }
-}
+

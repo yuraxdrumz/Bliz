@@ -6,6 +6,8 @@ import PathCreator from './path'
 import GraphQlCreator from './graphQlSchema'
 import socketHandler from './socketHandler'
 import { graphqlExpress, graphiqlExpress } from './apolloServer/main'
+import { makeExecutableSchema } from 'graphql-tools'
+
 import bodyParser from 'body-parser'
 import { 
   Listen,
@@ -71,6 +73,7 @@ const BlizAppParams = {
   checkSubRouters,
   defaultHandler, 
   midHandler, 
+  makeExecutableSchema,
   SocketRouterCreator,
   SocketListenerCreator,
   PathCreator, 
@@ -121,6 +124,7 @@ const BlizApp = (BlizAppParams) => {
     socketHandler,
     CreateObjectArray,
     urlUtil, 
+    makeExecutableSchema,
     SocketRouterCreator,
     populateObjectWithTreeUtil,
     populateRoutersUtil, 
@@ -177,7 +181,7 @@ const BlizApp = (BlizAppParams) => {
     CreateArray('subApp', _subApps, _Instance),
     CreateSwagger(stringify, _Instance, fs, _useSwagger),
     PrettyPrint(treeify, _routersObject, _socketRoutersObject, _Instance, _useSockets, _loggerEntity, populateObjectWithTreeUtil),
-    RegisterRouters({_graphQlSchemas, graphiqlExpress, graphqlExpress, bodyParser, _useGraphql, populateRoutersUtil, _socketSubAps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
+    RegisterRouters({_graphQlSchemas, makeExecutableSchema, graphiqlExpress, graphqlExpress, bodyParser, _useGraphql, populateRoutersUtil, _socketSubAps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
     GetObjProps({_middleWares, _routersObject, _loggerEntity, _subApps, _injected, _options, _describe, _useSockets, _socketRoutersObject, _socketMiddlewares, _version}),
     Listen({_createHandler, _Instance, _useGraphql, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version, socketHandler})
