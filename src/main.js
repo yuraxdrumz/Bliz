@@ -5,7 +5,7 @@ import packgeJson from '../package.json'
 import PathCreator from './path'
 import GraphQlCreator from './graphQlSchema'
 import socketHandler from './socketHandler'
-import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
+import { graphqlExpress, graphiqlExpress } from './apolloServer/main'
 import bodyParser from 'body-parser'
 import { 
   Listen,
