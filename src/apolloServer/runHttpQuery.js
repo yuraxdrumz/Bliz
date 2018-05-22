@@ -11,23 +11,9 @@ import {
   resolveGraphqlOptions,
 } from './graphqlOptions';
 
-export interface HttpQueryRequest {
-  method: string;
-  query: Record<string, any>;
-  options: GraphQLOptions | Function;
-}
-
 export class HttpQueryError extends Error {
-  public statusCode: number;
-  public isGraphQLError: boolean;
-  public headers: { [key: string]: string };
 
-  constructor(
-    statusCode: number,
-    message: string,
-    isGraphQLError: boolean = false,
-    headers?: { [key: string]: string },
-  ) {
+  constructor(statusCode, message, isGraphQLError = false, headers) {
     super(message);
     this.name = 'HttpQueryError';
     this.statusCode = statusCode;
@@ -36,17 +22,14 @@ export class HttpQueryError extends Error {
   }
 }
 
-function isQueryOperation(query: DocumentNode, operationName: string) {
+function isQueryOperation(query, operationName) {
   const operationAST = getOperationAST(query, operationName);
   return operationAST.operation === 'query';
 }
 
-export async function runHttpQuery(
-  handlerArguments: Array<any>,
-  request: HttpQueryRequest,
-): Promise<string> {
-  let isGetRequest: boolean = false;
-  let optionsObject: GraphQLOptions;
+export async function runHttpQuery( handlerArguments, request ) {
+  let isGetRequest = true;
+  let optionsObject;
 
   try {
     optionsObject = await resolveGraphqlOptions(
@@ -58,7 +41,6 @@ export async function runHttpQuery(
   }
   const formatErrorFn = optionsObject.formatError || formatError;
   let requestPayload;
-
   switch (request.method) {
     case 'POST':
       if (!request.query || Object.keys(request.query).length === 0) {
@@ -67,7 +49,6 @@ export async function runHttpQuery(
           'POST body missing. Did you forget use body-parser middleware?',
         );
       }
-
       requestPayload = request.query;
       break;
     case 'GET':
@@ -97,11 +78,10 @@ export async function runHttpQuery(
     isBatch = false;
     requestPayload = [requestPayload];
   }
-
-  const requests: Array<ExecutionResult> = requestPayload.map(requestParams => {
+  const requests = requestPayload.map(requestParams => {
     try {
-      let query = requestParams.query;
-      let extensions = requestParams.extensions;
+      let query = requestParams.query
+      let extensions = requestParams.extensions
 
       if (isGetRequest && extensions) {
         // For GET requests, we have to JSON-parse extensions. (For POST
@@ -202,7 +182,7 @@ export async function runHttpQuery(
         fieldResolver: optionsObject.fieldResolver,
         debug: optionsObject.debug,
         tracing: optionsObject.tracing,
-        cacheControl: optionsObject.cacheControl,
+        cacheControl: optionsObject.cacheControl
       };
 
       if (optionsObject.formatParams) {

@@ -24,66 +24,61 @@ import {
   CacheControlExtensionOptions,
 } from 'apollo-cache-control';
 
-export interface GraphQLResponse {
-  data?: object;
-  errors?: Array<GraphQLError & object>;
-  extensions?: object;
+export const GraphQLResponse = {
+  data: {},
+  errors: [],
+  extensions: {}
 }
 
-export enum LogAction {
-  request,
-  parse,
-  validation,
-  execute,
+export const LogAction = {
+  request: '',
+  parse: '',
+  validation: '',
+  execute: '',
 }
 
-export enum LogStep {
-  start,
-  end,
-  status,
+export const LogStep = {
+  start: '',
+  end: '',
+  status: '',
 }
 
-export interface LogMessage {
-  action: LogAction;
-  step: LogStep;
-  key?: string;
-  data?: Object;
+export const LogMessage = {
+  action: LogAction,
+  step: LogStep,
+  key: '',
+  data: {}
 }
 
-export interface LogFunction {
-  (message: LogMessage);
+export function LogFunction (message) {}
+
+export const QueryOptions = {
+  schema: {},
+  query: '',
+  rootValue: {},
+  context: {},
+  variables: {},
+  operationName: '',
+  logFunction: LogFunction,
+  validationRules: [],
+  fieldResolver: {},
+  formatError: Function,
+  formatResponse: Function,
+  debug: false,
+  tracing: false,
+  cacheControl: false
 }
 
-export interface QueryOptions {
-  schema: GraphQLSchema;
-  query: string | DocumentNode;
-  rootValue?: any;
-  context?: any;
-  variables?: { [key: string]: any };
-  operationName?: string;
-  logFunction?: LogFunction;
-  validationRules?: Array<(context: ValidationContext) => any>;
-  fieldResolver?: GraphQLFieldResolver<any, any>;
-  // WARNING: these extra validation rules are only applied to queries
-  // submitted as string, not those submitted as Document!
-
-  formatError?: Function;
-  formatResponse?: Function;
-  debug?: boolean;
-  tracing?: boolean;
-  cacheControl?: boolean | CacheControlExtensionOptions;
-}
-
-export function runQuery(options: QueryOptions): Promise<GraphQLResponse> {
+export function runQuery(options) {
   // Fiber-aware Promises run their .then callbacks in Fibers.
   return Promise.resolve().then(() => doRunQuery(options));
 }
 
-function printStackTrace(error: Error) {
+function printStackTrace(error) {
   console.error(error.stack);
 }
 
-function format(errors: Array<Error>, formatter?: Function): Array<Error> {
+function format(errors, formatter) {
   return errors.map(error => {
     if (formatter !== undefined) {
       try {
@@ -96,24 +91,24 @@ function format(errors: Array<Error>, formatter?: Function): Array<Error> {
     } else {
       return formatError(error);
     }
-  }) as Array<Error>;
+  })
 }
 
-function doRunQuery(options: QueryOptions): Promise<GraphQLResponse> {
-  let documentAST: DocumentNode;
+function doRunQuery(options) {
+  let documentAST
 
   const logFunction =
-    options.logFunction ||
+options.logFunction ||
     function() {
       return null;
     };
   const debugDefault =
     process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test';
-  const debug = options.debug !== undefined ? options.debug : debugDefault;
+  const debug = options.debug !== undefined ? options.debug : debugDefault
 
-  logFunction({ action: LogAction.request, step: LogStep.start });
+  logFunction({ action: LogAction.request, step: LogStep.start })
 
-  const context = options.context || {};
+  const context = options.context || {}
   let extensions = [];
   if (options.tracing) {
     extensions.push(TracingExtension);
@@ -127,8 +122,8 @@ function doRunQuery(options: QueryOptions): Promise<GraphQLResponse> {
     extensions.length > 0 && new GraphQLExtensionStack(extensions);
 
   if (extensionStack) {
-    context._extensionStack = extensionStack;
-    enableGraphQLExtensions(options.schema);
+    context._extensionStack = extensionStack
+    enableGraphQLExtensions(options.schema)
 
     extensionStack.requestDidStart();
   }
@@ -159,7 +154,7 @@ function doRunQuery(options: QueryOptions): Promise<GraphQLResponse> {
   if (typeof options.query === 'string') {
     try {
       logFunction({ action: LogAction.parse, step: LogStep.start });
-      documentAST = parse(options.query as string);
+      documentAST = parse(options.query);
       logFunction({ action: LogAction.parse, step: LogStep.end });
     } catch (syntaxError) {
       logFunction({ action: LogAction.parse, step: LogStep.end });
@@ -168,8 +163,8 @@ function doRunQuery(options: QueryOptions): Promise<GraphQLResponse> {
       });
     }
   } else {
-    documentAST = options.query as DocumentNode;
-  }
+    documentAST = options.query;
+  
 
   let rules = specifiedRules;
   if (options.validationRules) {
@@ -204,7 +199,7 @@ function doRunQuery(options: QueryOptions): Promise<GraphQLResponse> {
       logFunction({ action: LogAction.execute, step: LogStep.end });
       logFunction({ action: LogAction.request, step: LogStep.end });
 
-      let response: GraphQLResponse = {
+      let response = {
         data: result.data,
       };
 
@@ -224,7 +219,6 @@ function doRunQuery(options: QueryOptions): Promise<GraphQLResponse> {
       if (options.formatResponse) {
         response = options.formatResponse(response, options);
       }
-
       return response;
     });
   } catch (executionError) {
@@ -234,4 +228,5 @@ function doRunQuery(options: QueryOptions): Promise<GraphQLResponse> {
       errors: format([executionError], options.formatError),
     });
   }
+}
 }
