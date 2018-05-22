@@ -5,7 +5,7 @@ import {
   
 const GraphQlSchemaCreator = type => {
     const _graphql = {}
-    const pathData = {
+    const _pathData = {
         type,
         resolver: {},
         mutation:``,
@@ -14,11 +14,11 @@ const GraphQlSchemaCreator = type => {
     }
     return Object.assign(
         _graphql,
-        AssignHandler('resolver', pathData.resolver, _graphql, true),
-        AssignHandler('mockSchema', pathData, _graphql),
-        AssignHandler('mutation', pathData, _graphql),
-        AssignHandler('query', pathData, _graphql),
-        GetObjProps(pathData),
+        AssignHandler('resolver', _pathData.resolver, _graphql, true),
+        AssignHandler('mockSchema', _pathData, _graphql),
+        AssignHandler('mutation', _pathData, _graphql),
+        AssignHandler('query', _pathData, _graphql),
+        GetObjProps(_pathData),
     )
 }
 
