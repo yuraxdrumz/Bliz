@@ -1,25 +1,22 @@
 import {
-    CreateArray,
     CreateObjectArray,
     AssignHandler,
     GetObjProps
-  } from '../objectFactories'
-  
+} from '../objectFactories'
+
 const CreateSocketListener = path => {
   const _PathReturn = {}
   const pathData = {
-    middleWareArr:[],
+    middleWareArr: [],
     path,
-    handler:null,
-    errHandler:null,
-    parent: null
+    handler: null,
+    errHandler: null
   }
   return Object.assign(
     _PathReturn,
-    AssignHandler('parent', pathData.parent, _PathReturn, true),
-    CreateObjectArray('middleware', pathData.middleWareArr, _PathReturn),
-    AssignHandler('handler', pathData, _PathReturn),
-    AssignHandler('errHandler', pathData, _PathReturn),
+    CreateObjectArray({name: 'middleware', arr: pathData.middleWareArr, chainLink: _PathReturn}),
+    AssignHandler({name: 'handler', obj: pathData, chainLink: _PathReturn}),
+    AssignHandler({name: 'errHandler', obj: pathData, chainLink: _PathReturn}),
     GetObjProps(pathData)
   )
 }

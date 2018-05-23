@@ -1,6 +1,6 @@
 const { pathDescribe, mainDescribe, schemas } = require('./http/openApi')
 // receive an http and a handler and return a listen func
-const Listen = ({_createHandler, checkSubRouters, _useGraphql, _useSockets, socketHandler, handleNestedSocketRoutersUtil, _socketRoutersObject, socketMiddlewareHandler, _injected, _Instance, _socketMiddlewares, http, print, os, _version}) => ({
+const Listen = ({_createHandler, io, checkSubRouters, _useGraphql, _useSockets, socketHandler, handleNestedSocketRoutersUtil, _socketRoutersObject, socketMiddlewareHandler, _injected, _Instance, _socketMiddlewares, http, print, os, _version}) => ({
   createServer:(...args)=>{
     const { handler } = _createHandler()
     const server = http.createServer(handler)
@@ -14,7 +14,8 @@ const Listen = ({_createHandler, checkSubRouters, _useGraphql, _useSockets, sock
   listen: (...args) => {
     const { handler } = _createHandler()
     const server = http.createServer(handler)
-    if(_useSockets.enabled && _useSockets.io){
+    if(_useSockets.enabled){
+      _useSockets.io = io
       return socketHandler({_useSockets, server, _version, args, os, _socketRoutersObject, _socketMiddlewares, _injected, socketMiddlewareHandler, checkSubRouters, print})
     } 
     else {
@@ -57,11 +58,13 @@ const Cluster = ({_version}) => ({
 })
 
 // pretty print all app routes
-const PrettyPrint = (treeifyDep, _graphQlSchemas, entity, socketEntity, chainLink, _useSockets, _loggerEntity, populateObjectWithTreeUtil) =>({
+const PrettyPrint = ({httpObject, socketsObject, chainLink, dependencies: {treeify, _useSockets, _loggerEntity, populateObjectWithTreeUtil}}) => ({
   prettyPrint: (logger = console.log) =>{
-    populateObjectWithTreeUtil(entity, ['get','post','put','del'], _loggerEntity.http)
-    populateObjectWithTreeUtil(socketEntity, ['event'], _loggerEntity.sockets, _useSockets.delimiter)
-    logger(treeifyDep.asTree(_loggerEntity))
+    process.nextTick(()=>{
+      populateObjectWithTreeUtil(httpObject, ['get','post','put','del'], _loggerEntity.http)
+      populateObjectWithTreeUtil(socketsObject, ['event'], _loggerEntity.sockets, _useSockets.delimiter)
+      logger(treeify.asTree(_loggerEntity))
+    })
     return chainLink
   }
 })
@@ -76,9 +79,9 @@ const Method = (name, object, chainLink) => ({
 })
 
 // create swagger yaml
-const CreateSwagger = (yamlCreator, chainLink, fs, _useSwagger) => ({
-  swagger: swaggerOptions => {
-    _useSwagger.enabled = true
+const CreateSwagger = ({swaggerObject, dependencies: {yamlCreator, chainLink, fs}}) => ({
+  swagger: (swaggerOptions) => {
+    swaggerObject.enabled = true
     let yaml = ''
     const {_routersObject, _describe } = chainLink.getObjProps()
     yaml += yamlCreator(mainDescribe(_describe))
@@ -131,10 +134,9 @@ const CreateSwagger = (yamlCreator, chainLink, fs, _useSwagger) => ({
 
 
 // assign creator
-const AssignHandler = (name, object, chainLink, override = false) =>({
+const AssignHandler = ({name, obj, chainLink, override = false}) =>({
   [name]: data =>{
-    // console.log(`DATA BEFORE: `, name, object, data)
-    override ? Object.assign(object, data) : object[name] = data
+    override ? Object.assign(obj, data) : obj[name] = data
     // console.log(`DATA AFTER: `, object, name, data)
     return chainLink
   }
@@ -152,16 +154,16 @@ const EventsCreator = EventEmitter =>({
 
 // when called, receives an object
 // returns new object
-const CreateNewObjOf = (name, obj, ...deps) => ({
+const CreateNewObjOf = ({name, obj, dependencies = {}}) => ({
   [`create${name}`]: data =>{
     return Object.assign(
       {},
-      obj(data, deps)
+      obj(data, ...dependencies)
     )
   }
 })
 // pushes data to array
-const CreateArray = (name, arr, chainLink) => ({
+const CreateArray = ({name, arr, chainLink}) => ({
   [name]: data => {
     arr.push(data)
     return chainLink
@@ -169,7 +171,7 @@ const CreateArray = (name, arr, chainLink) => ({
 })
 
 // pushes data to array
-const CreateObjectArray = (name, arr, chainLink) => ({
+const CreateObjectArray = ({name, arr, chainLink}) => ({
   [name]: (fn, timeout = 5000, throwError = true) => {
     arr.push({fn, timeout, throwError})
     return chainLink

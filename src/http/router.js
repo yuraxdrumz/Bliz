@@ -8,28 +8,27 @@ import {
 import { checkBaseUtil } from '../utils'
 
 const RouterCreator = base => {
-  const _checkedBase = checkBaseUtil(base)
   const _RouterReturn = {}
-  const routerData = {
-    base: _checkedBase,
+  const _routerData = {
+    base: checkBaseUtil(base),
     get: {},
     post: {},
-    put : {},
-    del : {},
-    middleWareArr : [],
+    put: {},
+    del: {},
+    middleWareArr: [],
     subRouters: [],
     routerErrorHandler: null
   }
   return Object.assign(
     _RouterReturn,
-    Method('get', routerData, _RouterReturn),
-    Method('post', routerData, _RouterReturn),
-    Method('put', routerData, _RouterReturn),
-    Method('del', routerData, _RouterReturn),
-    AssignHandler('routerErrorHandler', routerData, _RouterReturn),
-    CreateObjectArray('middleware', routerData.middleWareArr, _RouterReturn),
-    CreateArray('subRouter', routerData.subRouters, _RouterReturn),
-    GetObjProps(routerData)
+    Method('get', _routerData, _RouterReturn),
+    Method('post', _routerData, _RouterReturn),
+    Method('put', _routerData, _RouterReturn),
+    Method('del', _routerData, _RouterReturn),
+    AssignHandler({name: 'routerErrorHandler', obj: _routerData, chainLink: _RouterReturn}),
+    CreateObjectArray({name: 'middleware', arr: _routerData.middleWareArr, chainLink: _RouterReturn}),
+    CreateArray({name: 'subRouter', obj: _routerData.subRouters, chainLink: _RouterReturn}),
+    GetObjProps(_routerData)
   )
 }
 

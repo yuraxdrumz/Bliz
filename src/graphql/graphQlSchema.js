@@ -14,10 +14,10 @@ const GraphQlSchemaCreator = type => {
     }
     return Object.assign(
         _graphql,
-        AssignHandler('resolver', _pathData.resolver, _graphql, true),
-        AssignHandler('mockSchema', _pathData, _graphql),
-        AssignHandler('mutation', _pathData, _graphql),
-        AssignHandler('query', _pathData, _graphql),
+        AssignHandler({name: 'resolver', obj: _pathData.resolver, chainLink: _graphql, override: true}),
+        AssignHandler({name: 'mockSchema', obj: _pathData, chainLink: _graphql}),
+        AssignHandler({name: 'mutation', obj: _pathData, chainLink: _graphql}),
+        AssignHandler({name: 'query', obj: _pathData, chainLink: _graphql}),
         GetObjProps(_pathData),
     )
 }
