@@ -9,7 +9,7 @@ export default function graphQlHandler ({schemas, server, args, enums, _useGraph
   let Subscription = `type Subscription{\n`
   let Types = ``
   let Enums = ``
-  let resolvers = {Query: {}, Mutation: {}}
+  let resolvers = {Query: {}, Mutation: {}, Subscription:{}}
   enums.map(Enum => {
     if (Enum.includes('enum')) {
       Enums += `${Enum}\n`
@@ -23,23 +23,18 @@ export default function graphQlHandler ({schemas, server, args, enums, _useGraph
     Mutation += `\t${schemaProps.mutation}\n`
     Subscription += `\t${schemaProps.subscription}\n`
     Types += `${schemaProps.type}\n`
-    if (schemaProps.resolver.Query) {
-      const { Query, ...props } = schemaProps.resolver
-      Object.assign(resolvers.Query, Query)
+    if (schemaProps.resolver) {
+      const { Query, Mutation, Subscription, ...props } = schemaProps.resolver
+      if(Query){
+        Object.assign(resolvers.Query, Query)
+      }
+      if(Mutation){
+        Object.assign(resolvers.Mutation, Mutation(pubsub))
+      }
+      if(Subscription){
+        Object.assign(resolvers.Subscription, Subscription(pubsub))
+      }
       Object.assign(resolvers, props)
-    } 
-    if (schemaProps.resolver.Mutation){
-      const { Mutation, ...props } = schemaProps.resolver
-      Object.assign(resolvers.Mutation, Mutation(pubsub))
-      Object.assign(resolvers, props)
-    } 
-    if (schemaProps.resolver.Subscription){
-      const { Subscription, ...props } = schemaProps.resolver
-      Object.assign(resolvers.Subscription, Subscription(pubsub))
-      Object.assign(resolvers, props)
-    } 
-    if(!schemaProps.resolver.Mutation && !schemaProps.resolver.Query) {
-      Object.assign(resolvers, schemaProps.resolver)
     }
   })
   Query += '}'
@@ -52,9 +47,9 @@ export default function graphQlHandler ({schemas, server, args, enums, _useGraph
   const graphqlRoute = _Instance
   .createPath(_useGraphql.graphqlRoute)
   .handler(graphqlExpress({
-    schema: executableSchema, 
-    rootValue: resolvers, 
-    logger:{ log: e => console.log(`Error from graphql: `, e)}, 
+    schema: executableSchema,
+    rootValue: resolvers,
+    logger:{ log: e => console.log(`Error from graphql: `, e)},
     context: _injected,
     tracing: true,
     cacheControl: {
@@ -84,7 +79,7 @@ export default function graphQlHandler ({schemas, server, args, enums, _useGraph
       `Architecture: ${os.arch()}`,
       `CPU Cores: ${os.cpus().length}`,
       `Memory Free: ${( ((os.freemem()/1024/1024)/(os.totalmem()/1024/1024)) * 100 ).toFixed(0)}%, ${(os.freemem()/1024/1024).toFixed(0)} MB / ${(os.totalmem()/1024/1024).toFixed(0)} MB`,
-    ])])     
+    ])])
     SubscriptionServer.create({
       execute,
       subscribe,
@@ -93,6 +88,6 @@ export default function graphQlHandler ({schemas, server, args, enums, _useGraph
       server: server,
       path: '/subscriptions'
     });
-    return server   
+    return server
   }
 }

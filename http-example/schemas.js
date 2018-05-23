@@ -1,7 +1,14 @@
 import { struct } from '../src/main'
 
+const haimSchema = struct({
+  name: 'string',
+  last_name: 'string',
+  address: 'string?'
+})
+
 export const paramSchema = struct({
-  param: 'string?'
+  param: 'string?',
+  haim: haimSchema
 })
 export const statusSchema = struct({
   status: 'string'

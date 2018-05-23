@@ -1,7 +1,7 @@
 const resolver = {
   Query:{
       User(obj, args, context, info){
-          return {first_name:'Yura', last_name:'Khomyakov'}
+          return {first_name:'Yura', last_name:'Khomyakov', height:11}
       }
   },
   User:{

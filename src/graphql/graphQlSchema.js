@@ -2,7 +2,7 @@ import {
     AssignHandler,
     GetObjProps
   } from '../objectFactories'
-  
+
 const GraphQlSchemaCreator = type => {
     const _graphql = {}
     const _pathData = {

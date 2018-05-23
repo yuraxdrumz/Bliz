@@ -4,7 +4,7 @@ import team2 from './team2.listener'
 
 export default function prefixRouter (app){
   return app
-    .createSocketRouter('prefix')
+    .createSocketRouter('haim')
     .socketSubRouter(teamsRouter(app))
     .event(team1(app))
     .event(team2(app))
