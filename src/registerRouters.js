@@ -19,14 +19,14 @@ const RegisterRouters = ({
   _subApps, 
   _Instance
 }) => ({
-  registerRouters:(...routers)=>{
+  registerRouters: (...routers) => {
     // populate subApps object with sub apps passed
     populateSubAppsUtil(_middleWares, _routersObject, _subApps)
     // populate globalRoutesObject with routers passed
     populateRoutersUtil(_routersObject, routers)
     return _Instance
   },
-  registerSocketRouters:(...routers)=>{
+  registerSocketRouters: (...routers) => {
     // console.log(routers)
     // TODO: add sub apps socket routers
     const delimiter = _useSockets.delimiter
@@ -34,59 +34,8 @@ const RegisterRouters = ({
     // console.log(_socketRoutersObject)
     return _Instance
   },
-  registerGraphQlSchemas: (...schemas)=>{
-    let Query = `type Query{\n`
-    let Mutation = `type Mutation{\n`
-    let Types = ``
-    let Enums = ``
-    let resolvers = {Query: {}, Mutation: {}}
-    _graphQlEnums.map( Enum =>{
-      if (Enum.includes('enum')) {
-        Enums += `${Enum}\n`
-      } else {
-        Enums += `enum ${Enum}\n`
-      }
-    })
-    schemas.map( schema => {
-      const schemaProps = schema.getObjProps()
-      Object.assign(_graphQlSchemas, {[schemaProps.query]: schemaProps})
-      Query += `\t${schemaProps.query}\n`
-      Mutation += `\t${schemaProps.mutation}\n`
-      Types += `${schemaProps.type}\n`
-      if(schemaProps.resolver.Query){
-        const { Query, ...props } = schemaProps.resolver
-        Object.assign(resolvers.Query, Query)
-        Object.assign(resolvers, props)
-      } 
-      if (schemaProps.resolver.Mutation){
-        const { Mutation, ...props } = schemaProps.resolver
-        Object.assign(resolvers.Mutation, Mutation)
-        Object.assign(resolvers, props)
-      } 
-      if(!schemaProps.resolver.Mutation && !schemaProps.resolver.Query) {
-        Object.assign(resolvers, schemaProps.resolver)
-      }
-    })
-    Query += '}'
-    Mutation += '}'
-    const typeDefs = `${Enums}\n${Types}\n${Query}\n${Mutation}`
-    const executableSchema = makeExecutableSchema({typeDefs, resolvers})
-    _useGraphql._graphQlExecutableSchema = executableSchema
-    const graphiqlRoute = _Instance.createPath(_useGraphql.graphiqlRoute).handler(graphiqlExpress({ endpointURL: _useGraphql.graphqlRoute }))
-    const graphqlRoute = _Instance
-    .createPath(_useGraphql.graphqlRoute)
-    .handler(graphqlExpress({
-      schema: executableSchema, 
-      rootValue: resolvers, 
-      logger:{ log: e => console.log(`Error from graphql: `, e)}, 
-      context: _injected,
-      tracing: true,
-      cacheControl: {
-        defaultMaxAge: 5
-      }
-    }))
-    const router = _Instance.createRouter('/').get(graphqlRoute).post(graphqlRoute).get(graphiqlRoute).middleware(bodyParser.json())
-    _Instance.registerRouters(router)
+  registerGraphQlSchemas: (...schemas) => {
+    Object.assign(_graphQlSchemas, {schemas})
     return _Instance
   }
 })

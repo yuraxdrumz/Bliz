@@ -1,6 +1,6 @@
 const { pathDescribe, mainDescribe, schemas } = require('./http/openApi')
 // receive an http and a handler and return a listen func
-const Listen = ({_createHandler, io, checkSubRouters, _useGraphql, _useSockets, socketHandler, handleNestedSocketRoutersUtil, _socketRoutersObject, socketMiddlewareHandler, _injected, _Instance, _socketMiddlewares, http, print, os, _version}) => ({
+const Listen = ({_createHandler, _version, os, print, makeExecutableSchema, bodyParser, graphiqlExpress, graphqlExpress, _graphQlEnums, _graphQlSchemas, graphqlHandler, io, checkSubRouters, _useGraphql, _useSockets, socketHandler, handleNestedSocketRoutersUtil, _socketRoutersObject, socketMiddlewareHandler, _injected, _Instance, _socketMiddlewares, http}) => ({
   createServer:(...args)=>{
     const { handler } = _createHandler()
     const server = http.createServer(handler)
@@ -17,6 +17,8 @@ const Listen = ({_createHandler, io, checkSubRouters, _useGraphql, _useSockets, 
     if(_useSockets.enabled){
       _useSockets.io = io
       return socketHandler({_useSockets, server, _version, args, os, _socketRoutersObject, _socketMiddlewares, _injected, socketMiddlewareHandler, checkSubRouters, print})
+    } else if (_useGraphql.enabled){
+      return graphqlHandler({schemas: _graphQlSchemas.schemas, enums: _graphQlEnums, server, _useGraphql, _Instance, _injected, args, dependencies: { makeExecutableSchema, _version, os, print, bodyParser, graphiqlExpress, graphqlExpress }})
     } 
     else {
       if (args.length > 1) {

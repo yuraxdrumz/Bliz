@@ -5,10 +5,10 @@ import UserSchema from './User'
 const app = Bliz()
 
 app
+    .prettyPrint()
     .graphql({enabled: true})
     .registerGraphQlSchemas(UserSchema(app), PostSchema(app))
     .inject({
         UserModel: {}
     })
-    .prettyPrint()
     .listen(4000)

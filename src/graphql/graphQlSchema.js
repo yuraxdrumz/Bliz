@@ -9,6 +9,7 @@ const GraphQlSchemaCreator = type => {
         type,
         resolver: {},
         mutation:``,
+        subscription:``,
         mockSchema: null,
         query:``
     }
@@ -17,6 +18,7 @@ const GraphQlSchemaCreator = type => {
         AssignHandler({name: 'resolver', obj: _pathData.resolver, chainLink: _graphql, override: true}),
         AssignHandler({name: 'mockSchema', obj: _pathData, chainLink: _graphql}),
         AssignHandler({name: 'mutation', obj: _pathData, chainLink: _graphql}),
+        AssignHandler({name: 'subscription', obj: _pathData, chainLink: _graphql}),
         AssignHandler({name: 'query', obj: _pathData, chainLink: _graphql}),
         GetObjProps(_pathData),
     )

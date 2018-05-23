@@ -15,14 +15,14 @@ const resolver = {
           return [{name:'post', id:1, data:'data'}]
       }
   },
-  Mutation:{
+  Mutation: (pubsub) => ({
       createUser(root, { input }, context){
           return input
       },
       deleteUser(root, args, context){
           return {first_name: args.first_name, last_name: 'whatever'}
       },
-  }
+  })
 }
 
 export default resolver

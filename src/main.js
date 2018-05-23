@@ -12,6 +12,7 @@ import SocketListenerCreator from './sockets/socketListener'
 import socketHandler from './sockets/socketHandler'
 
 import GraphQlCreator from './graphql/graphQlSchema'
+import graphqlHandler from './graphql/graphQlHandler'
 import { graphqlExpress, graphiqlExpress } from './apolloServer/main'
 import { makeExecutableSchema } from 'graphql-tools'
 
@@ -44,7 +45,8 @@ const httpDependencies = {
 const graphqlDependencies = {
   GraphQlCreator,
   graphqlExpress,
-  graphiqlExpress
+  graphiqlExpress,
+  graphqlHandler
 }
 
 const socketDependencies = {
@@ -89,6 +91,7 @@ const BlizApp = (BlizAppParams) => {
 
   const { 
     GraphQlCreator, 
+    graphqlHandler,
     treeify, 
     SocketRouterCreator, 
     SocketListenerCreator, 
@@ -187,7 +190,7 @@ const BlizApp = (BlizAppParams) => {
     RegisterRouters({_graphQlSchemas, _useGraphql, _graphQlEnums, _injected, makeExecutableSchema, graphiqlExpress, graphqlExpress, bodyParser, populateRoutersUtil, _socketSubApps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
     GetObjProps(_appData),
-    Listen({_createHandler, io, _Instance, _useGraphql, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version, socketHandler})
+    Listen({_createHandler, _version, os, print, makeExecutableSchema, bodyParser, graphiqlExpress, graphqlExpress, _graphQlEnums, _graphQlSchemas, graphqlHandler, io, _Instance, _useGraphql, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version, socketHandler})
   )
 }
 

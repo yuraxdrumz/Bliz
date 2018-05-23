@@ -14,7 +14,13 @@ const resolver = {
       data(post, args, context, info){
           return post.data
       }
-  }
+  },
+  Mutation: (pubsub) => ({
+    Post(obj, args, context, info){
+        pubsub.publish('POST_ADDED', {postAdded: args.input});
+        return {...args.input}
+    }
+  })
 }
 
 export default resolver
