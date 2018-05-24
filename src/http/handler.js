@@ -13,11 +13,10 @@ function createHandler ({
   _routersObject,
   _injected,
   _Instance,
-  Promise,
-  _useSwagger
+  Promise
 }) {
-    // receive all middlewares from routers and apps if exist and concatanate them
-    _middleWares = _middleWares.reduce((prev, curr) => prev.concat(curr), [])
+  // receive all middlewares from routers and apps if exist and concatanate them
+  _middleWares = _middleWares.reduce((prev, curr) => prev.concat(curr), [])
   // handler to be passed to http.createServer
   async function handler (req, res, next) {
     // set proto of req and res to point to our req and res
@@ -89,13 +88,8 @@ function createHandler ({
         }
         Object.assign(res, {schema: statusObject})   
       }
-    
-      function nextFn(...args){
-        if(args.length > 0 ){
-          return defaultHandler(req, res, args[0])
-        }
-      }
-      await handler(req, res, nextFn, _injected)
+  
+      await handler(req, res, _injected)
     } catch (errorFromHandler) {
       // here, it is the same as with middlewares but backwards, try route err handler, next up try router err handler and finally try global middleware
       try {

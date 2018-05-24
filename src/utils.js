@@ -13,6 +13,29 @@ function urlUtil(url, methodUpperCase){
   }
 }
 
+// export const getIntrospectSchema = (createHttpLink, fetch, introspectSchema, makeRemoteExecutableSchema) => async (uri, subUri) => {
+//   const httpLink = new HttpLink({ uri, fetch });
+//   const wsLink = new SubscriptionClient(subUri,{
+//       reconnect: true
+//   }, ws);
+
+//   const link = split(
+//       ({query}) => {
+//           const {kind, operation} = getMainDefinition(query);
+//           return kind === 'OperationDefinition' && operation === 'subscription'
+//       },
+//       wsLink,
+//       httpLink,
+//   );
+//   const schema = await introspectSchema(httpLink);
+
+//   const executableSchema = makeRemoteExecutableSchema({
+//       schema,
+//       link,
+//   });
+//   return executableSchema;
+// }
+
 const getIntrospectSchema = (createHttpLink, fetch, introspectSchema, makeRemoteExecutableSchema) => async (url) => {
   // Create a link to a GraphQL instance by passing fetch instance and url
   const makeDatabaseServiceLink = () => createHttpLink({
@@ -68,6 +91,7 @@ function populateSocketRoutersUtil(obj, routers, parent = null, delimiter){
 
 // recurse on routers object and populate obj passed
 function populateRoutersUtil(obj, routers, parent = null){
+  // console.log(obj, routers, parent)
   const innerRouterObj = {}
   routers.map( router => {
     let list = router.getObjProps()

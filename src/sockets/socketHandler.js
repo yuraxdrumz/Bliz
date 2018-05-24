@@ -1,6 +1,6 @@
 
 
-const socketHandler = ({_useSockets, _Instance, server, _version, args, os, _socketRoutersObject, _injected, _socketMiddlewares, socketMiddlewareHandler, checkSubRouters, print}) => {
+const socketHandler = ({_useSockets, _Instance, _injected, server, _version, args, os, print, socketMiddlewareHandler, checkSubRouters}) => {
     const injectedIo = _useSockets.io(server)
     if(args.length > 1){
       server.listen.apply(server, args)
@@ -19,25 +19,25 @@ const socketHandler = ({_useSockets, _Instance, server, _version, args, os, _soc
     // injectedIo.on('connction', )
     injectedIo.on('connection', (socket)=>{
       console.log(socket.id, ' connected')
-      const routersKeys = Object.keys(_socketRoutersObject)
+      const routersKeys = Object.keys(_useSockets._socketRoutersObject)
       for(let key of routersKeys){
-        const eventKeys = Object.keys(_socketRoutersObject[key].event)
+        const eventKeys = Object.keys(_useSockets._socketRoutersObject[key].event)
         for(let eventKey of eventKeys){
           // console.log(key)
           // _socketRoutersObject[key].event[eventKey].handler()
           // console.log(`registering event : `, `${key}${_useSockets.delimiter}${eventKey}`)
           socket.on(`${key}${_useSockets.delimiter}${eventKey}`, async (msg, cb)=>{    
             try{
-              const chosenEvent = _socketRoutersObject[key].event[eventKey].getObjProps()
+              const chosenEvent = _useSockets._socketRoutersObject[key].event[eventKey].getObjProps()
               // if()
-              if(_socketMiddlewares && _socketMiddlewares.length > 0){
-                await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, _socketMiddlewares)
+              if(_useSockets._socketMiddlewares && _useSockets._socketMiddlewares.length > 0){
+                await socketMiddlewareHandler(Promise, injectedIo, socket, msg, cb, _useSockets._socketMiddlewares)
               }
               // console.log(_socketRoutersObject, key, `${key}${_useSockets.delimiter}${eventKey}`)
               let combinedMiddlewareArray = []
               key
               .split(_useSockets.delimiter)
-              .map(prefix => _socketRoutersObject[prefix] ? checkSubRouters(_socketRoutersObject[prefix], combinedMiddlewareArray) : void(0))
+              .map(prefix => _useSockets._socketRoutersObject[prefix] ? checkSubRouters(_useSockets._socketRoutersObject[prefix], combinedMiddlewareArray) : void(0))
 
               combinedMiddlewareArray = combinedMiddlewareArray.reduce((prev, curr)=>prev.concat(curr))
               // console.log(parentRoutersMiddlewares)

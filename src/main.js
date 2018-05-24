@@ -25,6 +25,7 @@ import { createHttpLink } from 'apollo-link-http'
 import * as factories from './objectFactories'
 import * as utils from './utils'
 import RegisterRouters from './registerRouters'
+import { pathDescribe, mainDescribe, schemas } from './http/openApi'
 import bodyParser from 'body-parser'
 import http from 'http'
 import fs from 'fs'
@@ -44,7 +45,10 @@ const httpDependencies = {
   CreateHandler,
   request,
   response,
-  midHandler
+  midHandler,
+  pathDescribe, 
+  mainDescribe, 
+  schemas
 }
 
 const graphqlDependencies = {
@@ -88,7 +92,9 @@ const appDependencies = {
   Promise,
   stringify,
   print,
-  os
+  os,
+  packgeJson,
+  RegisterRouters
 }
 
 const BlizAppParams = {
@@ -104,73 +110,28 @@ const BlizAppParams = {
 // main instance creator, returns an instance of bliz app
 const BlizApp = (BlizAppParams) => {
 
-  const { 
-    GraphQlCreator, 
-    graphqlHandler,
-    treeify, 
-    SocketRouterCreator, 
-    SocketListenerCreator, 
-    RouterCreator,  
-    PathCreator,
-    stringify,
-    fs,
-    populateObjectWithTreeUtil,
-    makeExecutableSchema, 
-    graphiqlExpress, 
-    graphqlExpress, 
-    bodyParser,
-    populateSocketRoutersUtil, 
-    populateSubAppsUtil, 
-    populateRoutersUtil, 
-    EventEmitter,
-    checkSubRouters,
-    socketMiddlewareHandler,
-    http, 
-    print, 
-    os,
-    CreateNewObjOf,
-    AssignHandler,
-    CreateObjectArray,
-    CreateArray,
-    CreateSwagger,
-    PrettyPrint,
-    EventsCreator,
-    GetObjProps,
-    Listen,
-    urlUtil,
-    handleNestedRoutersUtil,
-    populateParamsUtil,
-    populateQueryUtil,
-    populateUrlOptions,
-    io,
-    Promise,
-    SubscriptionServer, 
-    execute, 
-    subscribe, 
-    PubSub,
-    mergeSchemas, 
-    makeRemoteExecutableSchema,
-    getIntrospectSchema,
-    fetch,
-    introspectSchema,
-    createHttpLink
-  } = BlizAppParams
-
-  const _version              = packgeJson.version
-  const _Instance             = {}
-  const _loggerEntity         = {sockets: {}, http: {}}
-  const _middleWares          = []
-  const _socketMiddlewares    = []
-  const _routersObject        = {}
-  const _socketRoutersObject  = {}
-  const _injected             = {}
-  const _useSockets           = {enabled: false, delimiter: ':'}
-  const _useGraphql           = {
-    enabled: false, 
+  const _internal = {
+    _version: BlizAppParams.packgeJson.version,
+    _Instance: {},
+    _injected: {},
+    _options: {},
+    _loggerEntity: {sockets: {}, http: {}}
+  }
+  const _useSockets = {
+    useSockets: false, 
+    delimiter: ':',
+    _socketRoutersObject: {},
+    _socketMiddlewares: [],
+    _socketSubApps: []
+  }
+  const _useGraphql = {
+    useGraphql: false, 
     graphqlRoute:'/graphql', 
     graphiqlRoute: '/graphiql', 
     _graphQlRemoteEndpoints: [],
     _graphQlExecutableSchema: null,
+    _graphQlSchemas: {},
+    _graphQlEnums: [],
     subscriptionsEndpoint: '/subscriptions',
     useGraphiql: true,
     logger: {log: e => console.log(`Error from graphql: `, e)},
@@ -180,57 +141,46 @@ const BlizApp = (BlizAppParams) => {
       defaultMaxAge: 5
     }
   }
-  const _useSwagger           = {enabled: false}
-  const _options              = {}
-  const _describe             = {}
-  const _graphQlSchemas       = {}
-  const _graphQlRemoteEndpoints = []
-  const _graphQlEnums         = []
-  const _createHandler        = CreateHandler.bind(this, { request, response , Promise, defaultHandler, midHandler, superStructObject, urlUtil, handleNestedRoutersUtil, populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, _useSwagger })
-  const _subApps              = []
-  const _socketSubApps        = []
+
+  const _useHttp = {
+    useSwagger: false,
+    _middleWares: [],
+    _routersObject: {},
+    _describe: {},
+    _subApps: []
+  }
 
   const _appData = {
-    _version,
-    _loggerEntity,
-    _middleWares,
-    _socketMiddlewares,
-    _routersObject,
-    _socketRoutersObject,
-    _injected,
     _useSockets,
     _useGraphql,
-    _useSwagger,
-    _options,
-    _describe,
-    _graphQlSchemas,
-    _graphQlEnums,
-    _subApps,
-    _socketSubApps
+    _useHttp
   }
+
+  const _createHandler = CreateHandler.bind(this, { ...BlizAppParams, ..._useHttp })
+  const { _Instance, _options, _injected, _loggerEntity, _version } = _internal
 
   return Object.assign(
     _Instance,
-    CreateNewObjOf({name: 'GraphQlSchema', obj: GraphQlCreator}),
-    CreateNewObjOf({name: 'SocketRouter', obj: SocketRouterCreator, dependencies: {treeify}}),
-    CreateNewObjOf({name: 'SocketListener', obj: SocketListenerCreator, dependencies: {treeify}}),
-    CreateNewObjOf({name: 'Router', obj: RouterCreator, dependencies: {treeify}}),
-    CreateNewObjOf({name: 'Path', obj: PathCreator, dependencies: {treeify}}),
-    AssignHandler({name: 'sockets', obj: _useSockets, chainLink: _Instance, override: true}),
-    AssignHandler({name: 'graphql', obj: _useGraphql, chainLink: _Instance, override: true}),
-    AssignHandler({name: 'describe', obj: _describe, chainLink: _Instance, override: true}),
-    AssignHandler({name: 'options', obj: _options, chainLink: _Instance, override: true}),
-    AssignHandler({name: 'inject', obj: _injected, chainLink: _Instance, override: true}),
-    CreateObjectArray({name: 'middleware', arr: _middleWares, chainLink: _Instance}),
-    CreateObjectArray({name: 'socketMiddleware', arr: _socketMiddlewares, chainLink: _Instance}),
-    CreateArray({name: 'subApp', arr: _subApps, chainLink: _Instance}),
-    CreateArray({name: 'enum', arr: _graphQlEnums, chainLink: _Instance}),
-    CreateSwagger({swaggerObject: _useSwagger, dependencies:{yamlCreator: stringify, chainLink: _Instance, fs}}),
-    PrettyPrint({httpObject: _routersObject, socketsObject: _socketRoutersObject, chainLink: _Instance, dependencies: {treeify, _useSockets, _loggerEntity, populateObjectWithTreeUtil}}),
-    RegisterRouters({_graphQlSchemas, _useGraphql, _graphQlEnums, _injected, makeExecutableSchema, graphiqlExpress, graphqlExpress, bodyParser, populateRoutersUtil, _socketSubApps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
-    EventsCreator(EventEmitter),
-    GetObjProps(_appData),
-    Listen({_createHandler, Promise, introspectSchema, createHttpLink, fetch, mergeSchemas, makeRemoteExecutableSchema, getIntrospectSchema, SubscriptionServer, execute, subscribe, PubSub, _version, os, print, makeExecutableSchema, bodyParser, graphiqlExpress, graphqlExpress, _graphQlEnums, _graphQlSchemas, graphqlHandler, io, _Instance, _useGraphql, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version, socketHandler})
+    BlizAppParams.CreateNewObjOf({name: 'GraphQlSchema', obj: GraphQlCreator}),
+    BlizAppParams.CreateNewObjOf({name: 'SocketRouter', obj: SocketRouterCreator, dependencies: {...BlizAppParams}}),
+    BlizAppParams.CreateNewObjOf({name: 'SocketListener', obj: SocketListenerCreator, dependencies: {...BlizAppParams}}),
+    BlizAppParams.CreateNewObjOf({name: 'Router', obj: RouterCreator, dependencies: {...BlizAppParams}}),
+    BlizAppParams.CreateNewObjOf({name: 'Path', obj: PathCreator, dependencies: {...BlizAppParams}}),
+    BlizAppParams.AssignHandler({name: 'sockets', obj: _useSockets, chainLink: _Instance, override: true}),
+    BlizAppParams.AssignHandler({name: 'graphql', obj: _useGraphql, chainLink: _Instance, override: true}),
+    BlizAppParams.AssignHandler({name: 'describe', obj: _useHttp._describe, chainLink: _Instance, override: true}),
+    BlizAppParams.AssignHandler({name: 'options', obj: _options, chainLink: _Instance, override: true}),
+    BlizAppParams.AssignHandler({name: 'inject', obj: _injected, chainLink: _Instance, override: true}),
+    BlizAppParams.CreateObjectArray({name: 'middleware', arr: _useHttp._middleWares, chainLink: _Instance}),
+    BlizAppParams.CreateObjectArray({name: 'socketMiddleware', arr: _useSockets._socketMiddlewares, chainLink: _Instance}),
+    BlizAppParams.CreateArray({name: 'subApp', arr: _useHttp._subApps, chainLink: _Instance}),
+    BlizAppParams.CreateArray({name: 'enum', arr: _useGraphql._graphQlEnums, chainLink: _Instance}),
+    BlizAppParams.CreateSwagger({..._appData, ...BlizAppParams, _Instance}),
+    BlizAppParams.PrettyPrint({..._appData, ...BlizAppParams, _Instance, _loggerEntity}),
+    BlizAppParams.RegisterRouters({..._appData, ...BlizAppParams, _Instance}),
+    BlizAppParams.EventsCreator(BlizAppParams.EventEmitter),
+    BlizAppParams.GetObjProps(_appData),
+    BlizAppParams.Listen({_createHandler, ..._appData, ...BlizAppParams, _Instance, _version, _injected})
   )
 }
 

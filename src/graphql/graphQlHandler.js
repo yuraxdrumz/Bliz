@@ -1,9 +1,34 @@
-export default async function graphQlHandler ({schemas, server, args, enums, _useGraphql, _Instance, _injected, dependencies: {makeExecutableSchema, SubscriptionServer, Promise, introspectSchema, createHttpLink, fetch, mergeSchemas, makeRemoteExecutableSchema, getIntrospectSchema, execute, subscribe, PubSub, _version, os, print, bodyParser, graphiqlExpress, graphqlExpress}}) {
-  
-  let pubsub = _useGraphql.pubsub || new PubSub
+export default async function graphQlHandler ({
+  server, 
+  args,
+  _useGraphql,
+  _internal,
+  PubSub,
+  makeExecutableSchema,
+  getIntrospectSchema,
+  createHttpLink,
+  fetch, 
+  introspectSchema, 
+  makeRemoteExecutableSchema,
+  mergeSchemas,
+  bodyParser,
+  graphiqlExpress,
+  graphqlExpress,
+  SubscriptionServer,
+  os,
+  print,
+  execute,
+  subscribe,
+  Promise,
+  _injected,
+  _Instance,
+  _version
+}) {
   let executableSchema = null
-
-  let finalGraphQlOptionsObject = {
+  const enums = _useGraphql._graphQlEnums
+  const schemas = _useGraphql._graphQlSchemas.schemas
+  const pubsub = _useGraphql.pubsub || new PubSub()
+  const finalGraphQlOptionsObject = {
     schema: executableSchema,
     logger: _useGraphql.logger,
     context: Object.assign({}, _injected, {pubsub}),
@@ -11,7 +36,6 @@ export default async function graphQlHandler ({schemas, server, args, enums, _us
     cacheControl: _useGraphql.cacheControl,
     schemaDirectives: _useGraphql.schemaDirectives
   }
-
   if(_useGraphql._graphQlRemoteEndpoints.length === 0){    
     if(_useGraphql._graphQlExecutableSchema){
       executableSchema = _useGraphql._graphQlExecutableSchema

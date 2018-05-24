@@ -19,6 +19,6 @@ app
     },
     servers:[{url:'sadadsadads', description:'asdadsdssdaasd'}]
   })
-  .swagger({absoluteFilePath: path.resolve('./swagger.yaml')})
+  .swagger({useSwagger: true,absoluteFilePath: path.resolve('./swagger.yaml')})
   .middleware(bodyParser.json())
   .listen(4000)

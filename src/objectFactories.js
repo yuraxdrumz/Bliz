@@ -1,24 +1,20 @@
-const { pathDescribe, mainDescribe, schemas } = require('./http/openApi')
 // receive an http and a handler and return a listen func
-const Listen = ({_createHandler, Promise, introspectSchema, _graphQlRemoteEndpoints, createHttpLink, fetch, mergeSchemas, makeRemoteExecutableSchema, getIntrospectSchema, _graphQlFragments, _version, SubscriptionServer, execute, subscribe, PubSub, os, print, makeExecutableSchema, bodyParser, graphiqlExpress, graphqlExpress, _graphQlEnums, _graphQlSchemas, graphqlHandler, io, checkSubRouters, _useGraphql, _useSockets, socketHandler, handleNestedSocketRoutersUtil, _socketRoutersObject, socketMiddlewareHandler, _injected, _Instance, _socketMiddlewares, http}) => ({
-  createServer:(...args)=>{
+const Listen = (dependencies) => ({
+  createServer: (...args) => {
+    const { http: { createServer }, _createHandler } = dependencies
     const { handler } = _createHandler()
-    const server = http.createServer(handler)
+    const server = createServer(handler)
     return server
   },
-  // listen: (...args) => {
-  //   const { handler } = handlerFactory()
-  //   const server = http.createServer(handler)
-  //   return server.listen.apply(server, args)
-  // },
   listen: (...args) => {
+    const { http: { createServer }, io, socketHandler, graphqlHandler, _createHandler, _useSockets, _version, _useGraphql, _Instance, print, os } = dependencies
     const { handler } = _createHandler()
-    const server = http.createServer(handler)
-    if(_useSockets.enabled){
+    const server = createServer(handler)
+    if (_useSockets.useSockets) {
       _useSockets.io = io
-      return socketHandler({_useSockets, _Instance, server, _version, args, os, _socketRoutersObject, _socketMiddlewares, _injected, socketMiddlewareHandler, checkSubRouters, print})
-    } else if (_useGraphql.enabled){
-      return graphqlHandler({schemas: _graphQlSchemas.schemas, enums: _graphQlEnums, server, _useGraphql, _Instance, _injected, args, _graphQlRemoteEndpoints, dependencies: { makeExecutableSchema, Promise, SubscriptionServer, execute, subscribe, PubSub, introspectSchema, createHttpLink, fetch, mergeSchemas, makeRemoteExecutableSchema, getIntrospectSchema, _version, os, print, bodyParser, graphiqlExpress, graphqlExpress }})
+      return socketHandler({server, args, ...dependencies})
+    } else if (_useGraphql.useGraphql){
+      return graphqlHandler({server, args, ...dependencies})
     } 
     else {
       _Instance.events.emit('log')
@@ -61,14 +57,14 @@ const Cluster = ({_version}) => ({
 })
 
 // pretty print all app routes
-const PrettyPrint = ({httpObject, socketsObject, chainLink, dependencies: {treeify, _useSockets, _loggerEntity, populateObjectWithTreeUtil}}) => ({
+const PrettyPrint = ({_useHttp, _useSockets, _Instance, _loggerEntity, populateObjectWithTreeUtil, treeify}) => ({
   prettyPrint: (logger = console.log) =>{
-    chainLink.events.once('log', ()=>setImmediate(()=>{
-      populateObjectWithTreeUtil(httpObject, ['get','post','put','del'], _loggerEntity.http)
-      populateObjectWithTreeUtil(socketsObject, ['event'], _loggerEntity.sockets, _useSockets.delimiter)
+    _Instance.events.once('log', ()=> setImmediate(()=>{
+      populateObjectWithTreeUtil(_useHttp._routersObject, ['get','post','put','del'], _loggerEntity.http)
+      populateObjectWithTreeUtil(_useSockets._socketRoutersObject, ['event'], _loggerEntity.sockets, _useSockets.delimiter)
       logger(treeify.asTree(_loggerEntity))
     }, 0))
-    return chainLink
+    return _Instance
   }
 })
 
@@ -82,12 +78,12 @@ const Method = (name, object, chainLink) => ({
 })
 
 // create swagger yaml
-const CreateSwagger = ({swaggerObject, dependencies: {yamlCreator, chainLink, fs}}) => ({
+const CreateSwagger = ({_useHttp, _Instance, stringify, mainDescribe, _describe, pathDescribe, schemas, fs }) => ({
   swagger: (swaggerOptions) => {
-    swaggerObject.enabled = true
     let yaml = ''
-    const {_routersObject, _describe } = chainLink.getObjProps()
-    yaml += yamlCreator(mainDescribe(_describe))
+    _useHttp.swagger = true
+    const { _routersObject, _describe } = _useHttp
+    yaml += stringify(mainDescribe(_describe))
     const routersKeys = Object.keys(_routersObject)
     const mainPathsObject = {paths: {}}
     const schemasObject = []
@@ -123,15 +119,15 @@ const CreateSwagger = ({swaggerObject, dependencies: {yamlCreator, chainLink, fs
           Object.assign(mainPathsObject.paths, pathDescribe(fullObj))
         }
       }
-      yaml += yamlCreator(mainPathsObject)
-      yaml += yamlCreator(schemas(schemasObject))
+      yaml += stringify(mainPathsObject)
+      yaml += stringify(schemas(schemasObject))
       // console.log(yaml)
       // console.log(swaggerOptions)
       if (swaggerOptions && swaggerOptions.absoluteFilePath) {
         fs.writeFileSync(swaggerOptions.absoluteFilePath, yaml, 'utf8')
       }
     }
-    return chainLink
+    return _Instance
   }
 })
 

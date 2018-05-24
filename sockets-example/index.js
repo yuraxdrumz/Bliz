@@ -3,7 +3,7 @@ import prefixRouter from './prefix.router'
 const app = Bliz()
 
 app
-  .sockets({enabled: true, delimiter: ':'})
+  .sockets({useSockets: true, delimiter: ':'})
   .registerSocketRouters(prefixRouter(app))
   .prettyPrint()
   .inject({
