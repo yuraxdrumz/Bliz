@@ -1,12 +1,7 @@
 export default async function graphQlHandler ({schemas, server, args, enums, _useGraphql, _Instance, _injected, dependencies: {makeExecutableSchema, SubscriptionServer, introspectSchema, createHttpLink, fetch, mergeSchemas, makeRemoteExecutableSchema, getIntrospectSchema, execute, subscribe, PubSub, _version, os, print, bodyParser, graphiqlExpress, graphqlExpress}}) {
-  let pubsub = null
-  let executableSchema
-
-  if(_useGraphql.pubsub){
-    pubsub = _useGraphql.pubsub
-  } else {
-    pubsub = new PubSub();
-  }
+  
+  let pubsub = _useGraphql.pubsub || new PubSub
+  let executableSchema = null
 
   let finalGraphQlOptionsObject = {
     schema: executableSchema,
@@ -16,46 +11,45 @@ export default async function graphQlHandler ({schemas, server, args, enums, _us
     cacheControl: _useGraphql.cacheControl,
     schemaDirectives: _useGraphql.schemaDirectives
   }
-  if(_useGraphql._graphQlRemoteEndpoints.length === 0){
-    let Query = `type Query{\n`
-    let Mutation = `type Mutation{\n`
-    let Subscription = `type Subscription{\n`
-    let Types = ``
-    let Enums = ``
-    let resolvers = {Query: {}, Mutation: {}, Subscription: {}}
-    enums.map(Enum => {
-      Enums += `enum ${Enum.name}{\n${Enum.options.map(option => `\t${option}\n`).join('')}}`
-    })
-    schemas.map(schema => {
-      const schemaProps = schema.getObjProps()
-      Query += `\t${schemaProps.query}\n`
-      Mutation += `\t${schemaProps.mutation}\n`
-      Subscription += `\t${schemaProps.subscription}\n`
-      Types += `${schemaProps.type}\n`
-      if (schemaProps.resolver) {
-        const { Query, Mutation, Subscription, ...props } = schemaProps.resolver
-        if(Query){
-          Object.assign(resolvers.Query, Query)
-        }
-        if(Mutation){
-          Object.assign(resolvers.Mutation, Mutation(pubsub))
-        }
-        if(Subscription){
-          Object.assign(resolvers.Subscription, Subscription(pubsub))
-        }
-        Object.assign(resolvers, props)
-      }
-    })
-    Query += '}'
-    Mutation += '}'
-    Subscription += '}'
-    const typeDefs = `${Enums}\n${Types}\n${Query}\n${Mutation}\n${Subscription}`
 
-    finalGraphQlOptionsObject.rootValue = resolvers
-    
+  if(_useGraphql._graphQlRemoteEndpoints.length === 0){    
     if(_useGraphql._graphQlExecutableSchema){
       executableSchema = _useGraphql._graphQlExecutableSchema
     } else {
+      let Query = `type Query{\n`
+      let Mutation = `type Mutation{\n`
+      let Subscription = `type Subscription{\n`
+      let Types = ``
+      let Enums = ``
+      let resolvers = {Query: {}, Mutation: {}, Subscription: {}}
+      enums.map(Enum => {
+        Enums += `enum ${Enum.name}{\n${Enum.options.map(option => `\t${option}\n`).join('')}}`
+      })
+      schemas.map(schema => {
+        const schemaProps = schema.getObjProps()
+        Query += `\t${schemaProps.query}\n`
+        Mutation += `\t${schemaProps.mutation}\n`
+        Subscription += `\t${schemaProps.subscription}\n`
+        Types += `${schemaProps.type}\n`
+        if (schemaProps.resolver) {
+          const { Query, Mutation, Subscription, ...props } = schemaProps.resolver
+          if(Query){
+            Object.assign(resolvers.Query, Query)
+          }
+          if(Mutation){
+            Object.assign(resolvers.Mutation, Mutation(pubsub))
+          }
+          if(Subscription){
+            Object.assign(resolvers.Subscription, Subscription(pubsub))
+          }
+          Object.assign(resolvers, props)
+        }
+      })
+      Query += '}'
+      Mutation += '}'
+      Subscription += '}'
+      const typeDefs = `${Enums}\n${Types}\n${Query}\n${Mutation}\n${Subscription}`
+      finalGraphQlOptionsObject.rootValue = resolvers
       executableSchema = makeExecutableSchema({typeDefs, resolvers})
       _useGraphql._graphQlExecutableSchema = makeExecutableSchema({typeDefs, resolvers})
     }
@@ -65,7 +59,7 @@ export default async function graphQlHandler ({schemas, server, args, enums, _us
     executableSchema = mergeSchemas({ schemas: executableSchema })
     _useGraphql._graphQlExecutableSchema = executableSchema
   }
-  process.nextTick(()=>_Instance.events.emit('log'))
+  _Instance.events.emit('log')
   const router = _Instance.createRouter('/').middleware(bodyParser.json())
   if(_useGraphql.useGraphiql){
     const graphiqlRoute = _Instance.createPath(_useGraphql.graphiqlRoute).handler(graphiqlExpress({ endpointURL: _useGraphql.graphqlRoute, subscriptionsEndpoint: `ws://localhost:${args[0]}${_useGraphql.subscriptionsEndpoint}` }))

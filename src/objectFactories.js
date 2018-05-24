@@ -63,11 +63,11 @@ const Cluster = ({_version}) => ({
 // pretty print all app routes
 const PrettyPrint = ({httpObject, socketsObject, chainLink, dependencies: {treeify, _useSockets, _loggerEntity, populateObjectWithTreeUtil}}) => ({
   prettyPrint: (logger = console.log) =>{
-    chainLink.events.once('log', ()=>{
+    chainLink.events.once('log', ()=>setImmediate(()=>{
       populateObjectWithTreeUtil(httpObject, ['get','post','put','del'], _loggerEntity.http)
       populateObjectWithTreeUtil(socketsObject, ['event'], _loggerEntity.sockets, _useSockets.delimiter)
       logger(treeify.asTree(_loggerEntity))
-    })
+    }, 0))
     return chainLink
   }
 })
