@@ -1,6 +1,6 @@
 
 
-const socketHandler = ({_useSockets, server, _version, args, os, _socketRoutersObject, _injected, _socketMiddlewares, socketMiddlewareHandler, checkSubRouters, print}) => {
+const socketHandler = ({_useSockets, _Instance, server, _version, args, os, _socketRoutersObject, _injected, _socketMiddlewares, socketMiddlewareHandler, checkSubRouters, print}) => {
     const injectedIo = _useSockets.io(server)
     if(args.length > 1){
       server.listen.apply(server, args)
@@ -65,6 +65,7 @@ const socketHandler = ({_useSockets, server, _version, args, os, _socketRoutersO
       })
 
     })
+    _Instance.events.emit('log')
     return injectedIo
 }
 

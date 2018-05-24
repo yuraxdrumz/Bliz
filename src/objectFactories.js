@@ -1,6 +1,6 @@
 const { pathDescribe, mainDescribe, schemas } = require('./http/openApi')
 // receive an http and a handler and return a listen func
-const Listen = ({_createHandler, _graphQlFragments, _version, SubscriptionServer, execute, subscribe, PubSub, os, print, makeExecutableSchema, bodyParser, graphiqlExpress, graphqlExpress, _graphQlEnums, _graphQlSchemas, graphqlHandler, io, checkSubRouters, _useGraphql, _useSockets, socketHandler, handleNestedSocketRoutersUtil, _socketRoutersObject, socketMiddlewareHandler, _injected, _Instance, _socketMiddlewares, http}) => ({
+const Listen = ({_createHandler, introspectSchema, _graphQlRemoteEndpoints, createHttpLink, fetch, mergeSchemas, makeRemoteExecutableSchema, getIntrospectSchema, _graphQlFragments, _version, SubscriptionServer, execute, subscribe, PubSub, os, print, makeExecutableSchema, bodyParser, graphiqlExpress, graphqlExpress, _graphQlEnums, _graphQlSchemas, graphqlHandler, io, checkSubRouters, _useGraphql, _useSockets, socketHandler, handleNestedSocketRoutersUtil, _socketRoutersObject, socketMiddlewareHandler, _injected, _Instance, _socketMiddlewares, http}) => ({
   createServer:(...args)=>{
     const { handler } = _createHandler()
     const server = http.createServer(handler)
@@ -16,11 +16,12 @@ const Listen = ({_createHandler, _graphQlFragments, _version, SubscriptionServer
     const server = http.createServer(handler)
     if(_useSockets.enabled){
       _useSockets.io = io
-      return socketHandler({_useSockets, server, _version, args, os, _socketRoutersObject, _socketMiddlewares, _injected, socketMiddlewareHandler, checkSubRouters, print})
+      return socketHandler({_useSockets, _Instance, server, _version, args, os, _socketRoutersObject, _socketMiddlewares, _injected, socketMiddlewareHandler, checkSubRouters, print})
     } else if (_useGraphql.enabled){
-      return graphqlHandler({schemas: _graphQlSchemas.schemas, fragments: _graphQlFragments, enums: _graphQlEnums, server, _useGraphql, _Instance, _injected, args, dependencies: { makeExecutableSchema, SubscriptionServer, execute, subscribe, PubSub, _version, os, print, bodyParser, graphiqlExpress, graphqlExpress }})
+      return graphqlHandler({schemas: _graphQlSchemas.schemas, enums: _graphQlEnums, server, _useGraphql, _Instance, _injected, args, _graphQlRemoteEndpoints, dependencies: { makeExecutableSchema, SubscriptionServer, execute, subscribe, PubSub, introspectSchema, createHttpLink, fetch, mergeSchemas, makeRemoteExecutableSchema, getIntrospectSchema, _version, os, print, bodyParser, graphiqlExpress, graphqlExpress }})
     } 
     else {
+      _Instance.events.emit('log')
       if (args.length > 1) {
         return server.listen.apply(server, args)
       } else {
@@ -62,7 +63,7 @@ const Cluster = ({_version}) => ({
 // pretty print all app routes
 const PrettyPrint = ({httpObject, socketsObject, chainLink, dependencies: {treeify, _useSockets, _loggerEntity, populateObjectWithTreeUtil}}) => ({
   prettyPrint: (logger = console.log) =>{
-    process.nextTick(()=>{
+    chainLink.events.once('log', ()=>{
       populateObjectWithTreeUtil(httpObject, ['get','post','put','del'], _loggerEntity.http)
       populateObjectWithTreeUtil(socketsObject, ['event'], _loggerEntity.sockets, _useSockets.delimiter)
       logger(treeify.asTree(_loggerEntity))

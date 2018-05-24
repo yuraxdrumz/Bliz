@@ -1,4 +1,3 @@
-import logger from './logger'
 
 // check url, split by /, return split url and method to lower case
 function urlUtil(url, methodUpperCase){
@@ -12,6 +11,23 @@ function urlUtil(url, methodUpperCase){
     method,
     splitRest
   }
+}
+
+const getIntrospectSchema = (createHttpLink, fetch, introspectSchema, makeRemoteExecutableSchema) => async (url) => {
+  // Create a link to a GraphQL instance by passing fetch instance and url
+  const makeDatabaseServiceLink = () => createHttpLink({
+    uri: url,
+    fetch
+  });
+
+  // Fetch our schema
+  const databaseServiceSchemaDefinition = await introspectSchema(makeDatabaseServiceLink());
+
+  // make an executable schema
+  return makeRemoteExecutableSchema({
+    schema: databaseServiceSchemaDefinition,
+    link: makeDatabaseServiceLink()
+  })
 }
 
 const populateObjectWithTreeUtil = (entity, options, objectToAddTo, delimiter) => {
@@ -223,5 +239,6 @@ export {
   populateQueryUtil,
   populateParamsUtil,
   populateSocketRoutersUtil,
-  checkSubRouters
+  checkSubRouters,
+  getIntrospectSchema
 }

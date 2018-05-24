@@ -14,15 +14,17 @@ import socketHandler from './sockets/socketHandler'
 import GraphQlCreator from './graphql/graphQlSchema'
 import graphqlHandler from './graphql/graphQlHandler'
 import { graphqlExpress, graphiqlExpress } from './apolloServer/main'
-import { makeExecutableSchema } from 'graphql-tools'
+import { makeExecutableSchema, mergeSchemas, makeRemoteExecutableSchema, introspectSchema } from 'graphql-tools'
+import { getIntrospectSchema } from './utils'
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
 import { PubSub } from 'graphql-subscriptions';
+import fetch from 'node-fetch'
+import { createHttpLink } from 'apollo-link-http'
 
 import * as factories from './objectFactories'
 import * as utils from './utils'
 import RegisterRouters from './registerRouters'
-
 import bodyParser from 'body-parser'
 import http from 'http'
 import fs from 'fs'
@@ -53,7 +55,13 @@ const graphqlDependencies = {
   SubscriptionServer, 
   execute, 
   subscribe, 
-  PubSub
+  PubSub,
+  mergeSchemas, 
+  makeRemoteExecutableSchema,
+  getIntrospectSchema,
+  fetch,
+  introspectSchema,
+  createHttpLink
 }
 
 const socketDependencies = {
@@ -139,22 +147,29 @@ const BlizApp = (BlizAppParams) => {
     SubscriptionServer, 
     execute, 
     subscribe, 
-    PubSub
+    PubSub,
+    mergeSchemas, 
+    makeRemoteExecutableSchema,
+    getIntrospectSchema,
+    fetch,
+    introspectSchema,
+    createHttpLink
   } = BlizAppParams
 
-  const _version             = packgeJson.version
-  const _Instance            = {}
-  const _loggerEntity        = {sockets: {}, http: {}}
-  const _middleWares         = []
-  const _socketMiddlewares   = []
-  const _routersObject       = {}
-  const _socketRoutersObject = {}
-  const _injected            = {}
-  const _useSockets          = {enabled: false, delimiter: ':'}
-  const _useGraphql          = {
+  const _version              = packgeJson.version
+  const _Instance             = {}
+  const _loggerEntity         = {sockets: {}, http: {}}
+  const _middleWares          = []
+  const _socketMiddlewares    = []
+  const _routersObject        = {}
+  const _socketRoutersObject  = {}
+  const _injected             = {}
+  const _useSockets           = {enabled: false, delimiter: ':'}
+  const _useGraphql           = {
     enabled: false, 
     graphqlRoute:'/graphql', 
     graphiqlRoute: '/graphiql', 
+    _graphQlRemoteEndpoints: [],
     _graphQlExecutableSchema: null,
     subscriptionsEndpoint: '/subscriptions',
     useGraphiql: true,
@@ -165,14 +180,15 @@ const BlizApp = (BlizAppParams) => {
       defaultMaxAge: 5
     }
   }
-  const _useSwagger          = {enabled: false}
-  const _options             = {}
-  const _describe            = {}
-  const _graphQlSchemas      = {}
-  const _graphQlEnums        = []
-  const _createHandler       = CreateHandler.bind(this, { request, response , Promise, defaultHandler, midHandler, superStructObject, urlUtil, handleNestedRoutersUtil, populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, _useSwagger })
-  const _subApps = []
-  const _socketSubApps = []
+  const _useSwagger           = {enabled: false}
+  const _options              = {}
+  const _describe             = {}
+  const _graphQlSchemas       = {}
+  const _graphQlRemoteEndpoints = []
+  const _graphQlEnums         = []
+  const _createHandler        = CreateHandler.bind(this, { request, response , Promise, defaultHandler, midHandler, superStructObject, urlUtil, handleNestedRoutersUtil, populateParamsUtil, populateQueryUtil, populateUrlOptions, _middleWares, _routersObject, _injected, _Instance, _useSwagger })
+  const _subApps              = []
+  const _socketSubApps        = []
 
   const _appData = {
     _version,
@@ -214,7 +230,7 @@ const BlizApp = (BlizAppParams) => {
     RegisterRouters({_graphQlSchemas, _useGraphql, _graphQlEnums, _injected, makeExecutableSchema, graphiqlExpress, graphqlExpress, bodyParser, populateRoutersUtil, _socketSubApps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
     GetObjProps(_appData),
-    Listen({_createHandler, SubscriptionServer, execute, subscribe, PubSub, _version, os, print, makeExecutableSchema, bodyParser, graphiqlExpress, graphqlExpress, _graphQlEnums, _graphQlSchemas, graphqlHandler, io, _Instance, _useGraphql, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version, socketHandler})
+    Listen({_createHandler, introspectSchema, createHttpLink, fetch, mergeSchemas, makeRemoteExecutableSchema, getIntrospectSchema, SubscriptionServer, execute, subscribe, PubSub, _version, os, print, makeExecutableSchema, bodyParser, graphiqlExpress, graphqlExpress, _graphQlEnums, _graphQlSchemas, graphqlHandler, io, _Instance, _useGraphql, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version, socketHandler})
   )
 }
 

@@ -17,7 +17,8 @@ const RegisterRouters = ({
   _routersObject, 
   _socketRoutersObject, 
   _subApps, 
-  _Instance
+  _Instance,
+  _graphQlRemoteEndpoints
 }) => ({
   registerRouters: (...routers) => {
     // populate subApps object with sub apps passed
@@ -35,7 +36,20 @@ const RegisterRouters = ({
     return _Instance
   },
   registerGraphQlSchemas: (...schemas) => {
-    Object.assign(_graphQlSchemas, {schemas})
+    if(_useGraphql._graphQlRemoteEndpoints.length > 0){
+      throw new Error('you may only registerGraphQlSchemas or registerRemoteGraphQlSchemas, not either')
+    } else {
+      Object.assign(_graphQlSchemas, {schemas})
+    }
+    return _Instance
+  },
+  registerRemoteGraphQlSchemas: (...endpoints) => {
+    if(Object.keys(_graphQlSchemas).length > 0){
+      throw new Error('you may only registerGraphQlSchemas or registerRemoteGraphQlSchemas, not either')
+    }else{
+      _useGraphql._graphQlRemoteEndpoints = endpoints
+      // console.log(endpoints)
+    }
     return _Instance
   }
 })
