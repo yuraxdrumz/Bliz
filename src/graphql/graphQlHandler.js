@@ -1,4 +1,4 @@
-export default function graphQlHandler ({schemas, server, args, enums, _useGraphql, _Instance, _injected, dependencies: {makeExecutableSchema, SubscriptionServer, execute, subscribe, PubSub, _version, os, print, bodyParser, graphiqlExpress, graphqlExpress}}) {
+export default function graphQlHandler ({schemas, fragments, server, args, enums, _useGraphql, _Instance, _injected, dependencies: {makeExecutableSchema, SubscriptionServer, execute, subscribe, PubSub, _version, os, print, bodyParser, graphiqlExpress, graphqlExpress}}) {
   let pubsub = null
   if(_useGraphql.pubsub){
     pubsub = _useGraphql.pubsub
@@ -10,13 +10,9 @@ export default function graphQlHandler ({schemas, server, args, enums, _useGraph
   let Subscription = `type Subscription{\n`
   let Types = ``
   let Enums = ``
-  let resolvers = {Query: {}, Mutation: {}, Subscription:{}}
+  let resolvers = {Query: {}, Mutation: {}, Subscription: {}}
   enums.map(Enum => {
-    if (Enum.includes('enum')) {
-      Enums += `${Enum}\n`
-    } else {
-      Enums += `enum ${Enum}\n`
-    }
+    Enums += `enum ${Enum.name}{\n${Enum.options.map(option => `\t${option}\n`).join('')}}`
   })
   schemas.map(schema => {
     const schemaProps = schema.getObjProps()
@@ -44,20 +40,23 @@ export default function graphQlHandler ({schemas, server, args, enums, _useGraph
   const typeDefs = `${Enums}\n${Types}\n${Query}\n${Mutation}\n${Subscription}`
   const executableSchema = makeExecutableSchema({typeDefs, resolvers})
   _useGraphql._graphQlExecutableSchema = executableSchema
-  const graphiqlRoute = _Instance.createPath(_useGraphql.graphiqlRoute).handler(graphiqlExpress({ endpointURL: _useGraphql.graphqlRoute, subscriptionsEndpoint: `ws://localhost:${args[0]}/subscriptions` }))
+  const router = _Instance.createRouter('/').middleware(bodyParser.json())
+  if(_useGraphql.useGraphiql){
+    const graphiqlRoute = _Instance.createPath(_useGraphql.graphiqlRoute).handler(graphiqlExpress({ endpointURL: _useGraphql.graphqlRoute, subscriptionsEndpoint: `ws://localhost:${args[0]}/${_useGraphql.subscriptionsEndpoint}` }))
+    router.get(graphiqlRoute)
+  }
   const graphqlRoute = _Instance
   .createPath(_useGraphql.graphqlRoute)
   .handler(graphqlExpress({
     schema: executableSchema,
     rootValue: resolvers,
-    logger:{ log: e => console.log(`Error from graphql: `, e)},
+    logger: _useGraphql.logger,
     context: Object.assign({}, _injected, {pubsub}),
-    tracing: true,
-    cacheControl: {
-      defaultMaxAge: 5
-    }
+    tracing: _useGraphql.tracing,
+    cacheControl: _useGraphql.cacheControl,
+    schemaDirectives: _useGraphql.schemaDirectives
   }))
-  const router = _Instance.createRouter('/').get(graphqlRoute).post(graphqlRoute).get(graphiqlRoute).middleware(bodyParser.json())
+  router.get(graphqlRoute).post(graphqlRoute)
   _Instance.registerRouters(router)
 
   if(args.length > 1){
@@ -68,7 +67,7 @@ export default function graphQlHandler ({schemas, server, args, enums, _useGraph
       schema: executableSchema
     }, {
       server: server,
-      path: '/subscriptions'
+      path: _useGraphql.subscriptionsEndpoint
     });
     return server
   } else {
@@ -87,7 +86,7 @@ export default function graphQlHandler ({schemas, server, args, enums, _useGraph
       schema: executableSchema
     }, {
       server: server,
-      path: '/subscriptions'
+      path: _useGraphql.subscriptionsEndpoint
     });
     return server
   }

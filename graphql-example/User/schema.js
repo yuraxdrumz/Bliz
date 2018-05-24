@@ -2,7 +2,7 @@ const schema = `
 type User {
   first_name: String!
   last_name: String!
-  height: String
+  height: Height
   posts: [Post]
 }
 input newUser {

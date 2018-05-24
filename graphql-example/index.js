@@ -8,7 +8,5 @@ app
     .prettyPrint()
     .graphql({enabled: true})
     .registerGraphQlSchemas(UserSchema(app), PostSchema(app))
-    .inject({
-        UserModel: {}
-    })
+    .enum({name:'Height', options:['tall', 'short', 'average']})
     .listen(4000)

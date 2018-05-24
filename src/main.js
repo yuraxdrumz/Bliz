@@ -151,7 +151,20 @@ const BlizApp = (BlizAppParams) => {
   const _socketRoutersObject = {}
   const _injected            = {}
   const _useSockets          = {enabled: false, delimiter: ':'}
-  const _useGraphql          = {enabled: false, graphqlRoute:'/graphql', graphiqlRoute: '/graphiql', _graphQlExecutableSchema: null}
+  const _useGraphql          = {
+    enabled: false, 
+    graphqlRoute:'/graphql', 
+    graphiqlRoute: '/graphiql', 
+    _graphQlExecutableSchema: null,
+    subscriptionsEndpoint: '/subscriptions',
+    useGraphiql: true,
+    logger: {log: e => console.log(`Error from graphql: `, e)},
+    schemaDirectives: {},
+    tracing: true,
+    cacheControl: {
+      defaultMaxAge: 5
+    }
+  }
   const _useSwagger          = {enabled: false}
   const _options             = {}
   const _describe            = {}
