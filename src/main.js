@@ -15,6 +15,9 @@ import GraphQlCreator from './graphql/graphQlSchema'
 import graphqlHandler from './graphql/graphQlHandler'
 import { graphqlExpress, graphiqlExpress } from './apolloServer/main'
 import { makeExecutableSchema } from 'graphql-tools'
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { execute, subscribe } from 'graphql';
+import { PubSub } from 'graphql-subscriptions';
 
 import * as factories from './objectFactories'
 import * as utils from './utils'
@@ -46,7 +49,11 @@ const graphqlDependencies = {
   GraphQlCreator,
   graphqlExpress,
   graphiqlExpress,
-  graphqlHandler
+  graphqlHandler,
+  SubscriptionServer, 
+  execute, 
+  subscribe, 
+  PubSub
 }
 
 const socketDependencies = {
@@ -128,7 +135,11 @@ const BlizApp = (BlizAppParams) => {
     populateQueryUtil,
     populateUrlOptions,
     io,
-    Promise
+    Promise,
+    SubscriptionServer, 
+    execute, 
+    subscribe, 
+    PubSub
   } = BlizAppParams
 
   const _version             = packgeJson.version
@@ -190,7 +201,7 @@ const BlizApp = (BlizAppParams) => {
     RegisterRouters({_graphQlSchemas, _useGraphql, _graphQlEnums, _injected, makeExecutableSchema, graphiqlExpress, graphqlExpress, bodyParser, populateRoutersUtil, _socketSubApps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
     GetObjProps(_appData),
-    Listen({_createHandler, _version, os, print, makeExecutableSchema, bodyParser, graphiqlExpress, graphqlExpress, _graphQlEnums, _graphQlSchemas, graphqlHandler, io, _Instance, _useGraphql, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version, socketHandler})
+    Listen({_createHandler, SubscriptionServer, execute, subscribe, PubSub, _version, os, print, makeExecutableSchema, bodyParser, graphiqlExpress, graphqlExpress, _graphQlEnums, _graphQlSchemas, graphqlHandler, io, _Instance, _useGraphql, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version, socketHandler})
   )
 }
 

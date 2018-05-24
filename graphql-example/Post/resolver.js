@@ -15,7 +15,7 @@ const resolver = {
           return post.data
       }
   },
-  Mutation: (pubsub) => ({
+  Mutation:(pubsub)=>({
     Post(obj, args, context, info){
         pubsub.publish('POST_ADDED', {postAdded: args.input});
         return {...args.input}

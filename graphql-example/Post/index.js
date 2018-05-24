@@ -6,9 +6,11 @@ export default function PostSchema (app) {
   .createGraphQlSchema(postSchema)
   .resolver(postResolver)
   .resolver({
-    Subscription: (pubsub) => ({
-      postAdded: {  // create a channelAdded subscription resolver function.
-        subscribe: () => pubsub.asyncIterator('POST_ADDED')  // subscribe to changes in a topic
+    Subscription:(pubsub)=> ({
+      postAdded: {
+        subscribe:()=>{
+          return pubsub.asyncIterator('POST_ADDED')
+        }
       }
     })
   })

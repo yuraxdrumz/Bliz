@@ -15,7 +15,7 @@ const resolver = {
           return [{name:'post', id:1, data:'data'}]
       }
   },
-  Mutation: (pubsub) => ({
+  Mutation:(pubsub)=>({
       createUser(root, { input }, context){
           return input
       },

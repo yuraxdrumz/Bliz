@@ -1,9 +1,10 @@
-import { SubscriptionServer } from 'subscriptions-transport-ws';
-import { execute, subscribe } from 'graphql';
-import { PubSub } from 'graphql-subscriptions';
-
-export default function graphQlHandler ({schemas, server, args, enums, _useGraphql, _Instance, _injected, dependencies: {makeExecutableSchema, _version, os, print, bodyParser, graphiqlExpress, graphqlExpress}}) {
-  const pubsub = new PubSub();
+export default function graphQlHandler ({schemas, server, args, enums, _useGraphql, _Instance, _injected, dependencies: {makeExecutableSchema, SubscriptionServer, execute, subscribe, PubSub, _version, os, print, bodyParser, graphiqlExpress, graphqlExpress}}) {
+  let pubsub = null
+  if(_useGraphql.pubsub){
+    pubsub = _useGraphql.pubsub
+  } else {
+    pubsub = new PubSub();
+  }
   let Query = `type Query{\n`
   let Mutation = `type Mutation{\n`
   let Subscription = `type Subscription{\n`
@@ -50,7 +51,7 @@ export default function graphQlHandler ({schemas, server, args, enums, _useGraph
     schema: executableSchema,
     rootValue: resolvers,
     logger:{ log: e => console.log(`Error from graphql: `, e)},
-    context: _injected,
+    context: Object.assign({}, _injected, {pubsub}),
     tracing: true,
     cacheControl: {
       defaultMaxAge: 5
