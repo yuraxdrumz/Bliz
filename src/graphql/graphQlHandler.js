@@ -1,4 +1,4 @@
-export default async function graphQlHandler ({schemas, server, args, enums, _useGraphql, _Instance, _injected, dependencies: {makeExecutableSchema, SubscriptionServer, introspectSchema, createHttpLink, fetch, mergeSchemas, makeRemoteExecutableSchema, getIntrospectSchema, execute, subscribe, PubSub, _version, os, print, bodyParser, graphiqlExpress, graphqlExpress}}) {
+export default async function graphQlHandler ({schemas, server, args, enums, _useGraphql, _Instance, _injected, dependencies: {makeExecutableSchema, SubscriptionServer, Promise, introspectSchema, createHttpLink, fetch, mergeSchemas, makeRemoteExecutableSchema, getIntrospectSchema, execute, subscribe, PubSub, _version, os, print, bodyParser, graphiqlExpress, graphqlExpress}}) {
   
   let pubsub = _useGraphql.pubsub || new PubSub
   let executableSchema = null
@@ -55,11 +55,21 @@ export default async function graphQlHandler ({schemas, server, args, enums, _us
     }
   } else {
     const getIntrospectSchemaWithParams = getIntrospectSchema(createHttpLink, fetch, introspectSchema, makeRemoteExecutableSchema)
-    executableSchema = await Promise.all(_useGraphql._graphQlRemoteEndpoints.map(ep => getIntrospectSchemaWithParams(ep)))
+
+    if(_useGraphql.allowPartialRemoteSchema){
+      executableSchema = await Promise.map(_useGraphql._graphQlRemoteEndpoints, async ep => {
+        try{
+          return await getIntrospectSchemaWithParams(ep)
+        }catch(e){
+          _useGraphql.logger.log(e)
+        }
+      }).filter(item=> item !== undefined)
+    } else {
+      executableSchema = await Promise.all(_useGraphql._graphQlRemoteEndpoints.map(ep=>getIntrospectSchemaWithParams(ep)))
+    }
     executableSchema = mergeSchemas({ schemas: executableSchema })
     _useGraphql._graphQlExecutableSchema = executableSchema
   }
-  _Instance.events.emit('log')
   const router = _Instance.createRouter('/').middleware(bodyParser.json())
   if(_useGraphql.useGraphiql){
     const graphiqlRoute = _Instance.createPath(_useGraphql.graphiqlRoute).handler(graphiqlExpress({ endpointURL: _useGraphql.graphqlRoute, subscriptionsEndpoint: `ws://localhost:${args[0]}${_useGraphql.subscriptionsEndpoint}` }))
@@ -71,6 +81,7 @@ export default async function graphQlHandler ({schemas, server, args, enums, _us
   .handler(graphqlExpress(finalGraphQlOptionsObject))
   router.get(graphqlRoute).post(graphqlRoute)
   _Instance.registerRouters(router)
+  _Instance.events.emit('log')
   if(args.length > 1){
     const server = server.listen.apply(server, args)
     SubscriptionServer.create({

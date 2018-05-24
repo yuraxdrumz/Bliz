@@ -230,7 +230,7 @@ const BlizApp = (BlizAppParams) => {
     RegisterRouters({_graphQlSchemas, _useGraphql, _graphQlEnums, _injected, makeExecutableSchema, graphiqlExpress, graphqlExpress, bodyParser, populateRoutersUtil, _socketSubApps, _useSockets, populateSocketRoutersUtil, populateSubAppsUtil, _middleWares, _routersObject, _socketRoutersObject, _subApps, _Instance}),
     EventsCreator(EventEmitter),
     GetObjProps(_appData),
-    Listen({_createHandler, introspectSchema, createHttpLink, fetch, mergeSchemas, makeRemoteExecutableSchema, getIntrospectSchema, SubscriptionServer, execute, subscribe, PubSub, _version, os, print, makeExecutableSchema, bodyParser, graphiqlExpress, graphqlExpress, _graphQlEnums, _graphQlSchemas, graphqlHandler, io, _Instance, _useGraphql, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version, socketHandler})
+    Listen({_createHandler, Promise, introspectSchema, createHttpLink, fetch, mergeSchemas, makeRemoteExecutableSchema, getIntrospectSchema, SubscriptionServer, execute, subscribe, PubSub, _version, os, print, makeExecutableSchema, bodyParser, graphiqlExpress, graphqlExpress, _graphQlEnums, _graphQlSchemas, graphqlHandler, io, _Instance, _useGraphql, checkSubRouters, _useSockets, _socketRoutersObject, socketMiddlewareHandler, _injected, _socketMiddlewares, http, print, os, _version, socketHandler})
   )
 }
 
