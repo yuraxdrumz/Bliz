@@ -38,8 +38,13 @@ export default function graphQlHandler ({schemas, fragments, server, args, enums
   Mutation += '}'
   Subscription += '}'
   const typeDefs = `${Enums}\n${Types}\n${Query}\n${Mutation}\n${Subscription}`
-  const executableSchema = makeExecutableSchema({typeDefs, resolvers})
-  _useGraphql._graphQlExecutableSchema = executableSchema
+  let executableSchema
+  if(_useGraphql._graphQlExecutableSchema){
+    executableSchema = _useGraphql._graphQlExecutableSchema
+  } else {
+    executableSchema = makeExecutableSchema({typeDefs, resolvers})
+    _useGraphql._graphQlExecutableSchema = executableSchema
+  }
   const router = _Instance.createRouter('/').middleware(bodyParser.json())
   if(_useGraphql.useGraphiql){
     const graphiqlRoute = _Instance.createPath(_useGraphql.graphiqlRoute).handler(graphiqlExpress({ endpointURL: _useGraphql.graphqlRoute, subscriptionsEndpoint: `ws://localhost:${args[0]}/${_useGraphql.subscriptionsEndpoint}` }))

@@ -8,8 +8,6 @@
     "start": "webpack --progress --colors --watch"
   },
   "devDependencies": {
-    "@types/fibers": "0.0.30",
-    "@types/graphql": "^0.13.1",
     "babel-core": "^6.25.0",
     "babel-loader": "^7.1.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
@@ -19,8 +17,6 @@
     "export-loader": "^1.0.34",
     "jest": "^21.2.1",
     "source-map-support": "^0.4.15",
-    "ts-loader": "^3.5.0",
-    "typescript": "^2.8.3",
     "webpack": "^3.0.0",
     "webpack-node-server-plugin": "^0.2.1"
   },
@@ -35,7 +31,6 @@
     "body-parser": "^1.18.2",
     "etag": "^1.8.1",
     "eventemitter2": "^4.1.2",
-    "express": "^4.16.3",
     "graphql": "^0.13.2",
     "graphql-extensions": "0.0.10",
     "graphql-subscriptions": "^0.5.8",
