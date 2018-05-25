@@ -1,7 +1,7 @@
 const resolver = {
   Query:{
       User(obj, args, context, info){
-          return {first_name:'Yura', last_name:'Khomyakov', height:11}
+          return {first_name:'Yura', last_name:'Khomyakov', height: "tall", role: 'User'}
       }
   },
   User:{
@@ -10,6 +10,9 @@ const resolver = {
       },
       last_name(user, args, context, info){
           return user.last_name
+      },
+      role(user){
+          return user.role
       },
       posts(user, args, context, info){
           return [{name:'post', id:1, data:'data'}]

@@ -30,6 +30,7 @@ export default async function graphQlHandler ({
   _version
 }) {
   let executableSchema = null
+  const directives = _useGraphql._graphQlDirectives
   const enums = _useGraphql._graphQlEnums
   const schemas = _useGraphql._graphQlSchemas.schemas
   const pubsub = _useGraphql.pubsub || new PubSub()
@@ -39,12 +40,14 @@ export default async function graphQlHandler ({
     context: Object.assign({}, _injected, {pubsub}),
     tracing: _useGraphql.tracing,
     cacheControl: _useGraphql.cacheControl,
-    schemaDirectives: _useGraphql.schemaDirectives
+    directiveResolvers: _useGraphql.directiveResolvers
   }
+
   if(_useGraphql._graphQlRemoteEndpoints.length === 0){    
     if(_useGraphql._graphQlExecutableSchema){
       executableSchema = _useGraphql._graphQlExecutableSchema
     } else {
+      let Directives = ``
       let Query = `type Query{\n`
       let Mutation = `type Mutation{\n`
       let Subscription = `type Subscription{\n`
@@ -52,7 +55,10 @@ export default async function graphQlHandler ({
       let Enums = ``
       let resolvers = {Query: {}, Mutation: {}, Subscription: {}}
       enums.map(Enum => {
-        Enums += `enum ${Enum.name}{\n${Enum.options.map(option => `\t${option}\n`).join('')}}`
+        Enums += `enum ${Enum.name}{\n${Enum.options.map(option => `\t${option}\n`).join('')}}\n`
+      })
+      directives.map(dir=>{
+        Directives += dir.includes('directive') ? `${dir}\n` : `directive ${dir}\n`
       })
       schemas.map(schema => {
         const schemaProps = schema.getObjProps()
@@ -77,10 +83,11 @@ export default async function graphQlHandler ({
       Query += '}'
       Mutation += '}'
       Subscription += '}'
-      const typeDefs = `${Enums}\n${Types}\n${Query}\n${Mutation}\n${Subscription}`
+      const typeDefs = `${Directives}\n${Enums}\n${Types}\n${Query}\n${Mutation}\n${Subscription}`
+      console.log(typeDefs)
       finalGraphQlOptionsObject.rootValue = resolvers
-      executableSchema = makeExecutableSchema({typeDefs, resolvers})
-      _useGraphql._graphQlExecutableSchema = makeExecutableSchema({typeDefs, resolvers})
+      executableSchema = makeExecutableSchema({typeDefs, resolvers, directiveResolvers: _useGraphql.directiveResolvers})
+      _useGraphql._graphQlExecutableSchema = executableSchema
     }
   } else {
     const getIntrospectSchemaWithParams = getIntrospectSchema({HttpLink, fetch, SubscriptionClient, ws, getMainDefinition, split, introspectSchema, makeRemoteExecutableSchema})
