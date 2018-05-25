@@ -13,6 +13,7 @@ fs.readdirSync('node_modules')
   })
 
 module.exports = {
+  devtool: 'sourcemap',
   target: 'node',
   entry: { main: ['babel-polyfill','./graphql-example/index.js'] },
   output: {
