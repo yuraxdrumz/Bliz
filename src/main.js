@@ -144,7 +144,7 @@ const BlizApp = (BlizAppParams) => {
     subscriptionsEndpoint: '/subscriptions',
     useGraphiql: true,
     logger: {log: e => console.log(`Error from graphql: `, e)},
-    schemaDirectives: {},
+    directiveResolvers: {},
     tracing: true,
     cacheControl: {
       defaultMaxAge: 5

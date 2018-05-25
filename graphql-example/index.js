@@ -17,6 +17,5 @@ app
 .registerGraphQlSchemas(UserSchema(app), PostSchema(app))
 .enum({name: 'Height', options: ['tall', 'short', 'average']})
 .enum({name: 'Role', options: ['Admin', 'User']})
-.directive(`@isAuthenticated on QUERY | FIELD`)
 .directive(`@hasRole(role: Role) on QUERY | FIELD`)
 .listen(4000)

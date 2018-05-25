@@ -31,6 +31,9 @@ export default async function graphQlHandler ({
 }) {
   let executableSchema = null
   const directives = _useGraphql._graphQlDirectives
+  if(directives.length !== Object.keys(_useGraphql.directiveResolvers).length){
+    throw new Error(`Directive resolvers registered does not match directive declarations`)
+  }
   const enums = _useGraphql._graphQlEnums
   const schemas = _useGraphql._graphQlSchemas.schemas
   const pubsub = _useGraphql.pubsub || new PubSub()
@@ -84,7 +87,6 @@ export default async function graphQlHandler ({
       Mutation += '}'
       Subscription += '}'
       const typeDefs = `${Directives}\n${Enums}\n${Types}\n${Query}\n${Mutation}\n${Subscription}`
-      console.log(typeDefs)
       finalGraphQlOptionsObject.rootValue = resolvers
       executableSchema = makeExecutableSchema({typeDefs, resolvers, directiveResolvers: _useGraphql.directiveResolvers})
       _useGraphql._graphQlExecutableSchema = executableSchema
