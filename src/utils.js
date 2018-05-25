@@ -13,45 +13,46 @@ function urlUtil(url, methodUpperCase){
   }
 }
 
-// export const getIntrospectSchema = (createHttpLink, fetch, introspectSchema, makeRemoteExecutableSchema) => async (uri, subUri) => {
-//   const httpLink = new HttpLink({ uri, fetch });
-//   const wsLink = new SubscriptionClient(subUri,{
-//       reconnect: true
-//   }, ws);
+const getIntrospectSchema = ({HttpLink, SubscriptionClient, fetch, ws, getMainDefinition, split, introspectSchema, makeRemoteExecutableSchema}) => async (remoteSchema) => {
+  const httpLink = new HttpLink({ uri: remoteSchema.url, fetch })
+  const wsLink = new SubscriptionClient(remoteSchema.ws, {
+    reconnect: true
+  }, ws)
 
-//   const link = split(
-//       ({query}) => {
-//           const {kind, operation} = getMainDefinition(query);
-//           return kind === 'OperationDefinition' && operation === 'subscription'
-//       },
-//       wsLink,
-//       httpLink,
-//   );
-//   const schema = await introspectSchema(httpLink);
+  const link = split(
+    ({query}) => {
+      const {kind, operation} = getMainDefinition(query)
+      return kind === 'OperationDefinition' && operation === 'subscription'
+    },
+    wsLink,
+    httpLink
+  )
+  const schema = await introspectSchema(httpLink)
 
-//   const executableSchema = makeRemoteExecutableSchema({
-//       schema,
-//       link,
-//   });
-//   return executableSchema;
-// }
-
-const getIntrospectSchema = (createHttpLink, fetch, introspectSchema, makeRemoteExecutableSchema) => async (url) => {
-  // Create a link to a GraphQL instance by passing fetch instance and url
-  const makeDatabaseServiceLink = () => createHttpLink({
-    uri: url,
-    fetch
-  });
-
-  // Fetch our schema
-  const databaseServiceSchemaDefinition = await introspectSchema(makeDatabaseServiceLink());
-
-  // make an executable schema
-  return makeRemoteExecutableSchema({
-    schema: databaseServiceSchemaDefinition,
-    link: makeDatabaseServiceLink()
+  const executableSchema = makeRemoteExecutableSchema({
+    schema,
+    link
   })
+
+  return executableSchema
 }
+
+// const getIntrospectSchema = (createHttpLink, fetch, introspectSchema, makeRemoteExecutableSchema) => async (url) => {
+//   // Create a link to a GraphQL instance by passing fetch instance and url
+//   const makeDatabaseServiceLink = () => createHttpLink({
+//     uri: url,
+//     fetch
+//   });
+
+//   // Fetch our schema
+//   const databaseServiceSchemaDefinition = await introspectSchema(makeDatabaseServiceLink());
+
+//   // make an executable schema
+//   return makeRemoteExecutableSchema({
+//     schema: databaseServiceSchemaDefinition,
+//     link: makeDatabaseServiceLink()
+//   })
+// }
 
 const populateObjectWithTreeUtil = (entity, options, objectToAddTo, delimiter) => {
   const keysOfEntity = Object.keys(entity)

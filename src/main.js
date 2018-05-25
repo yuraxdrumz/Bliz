@@ -16,11 +16,14 @@ import graphqlHandler from './graphql/graphQlHandler'
 import { graphqlExpress, graphiqlExpress } from './apolloServer/main'
 import { makeExecutableSchema, mergeSchemas, makeRemoteExecutableSchema, introspectSchema } from 'graphql-tools'
 import { getIntrospectSchema } from './utils'
-import { SubscriptionServer } from 'subscriptions-transport-ws';
+import ws from 'ws'
+import {split} from 'apollo-client-preset'
+import {getMainDefinition} from 'apollo-utilities'
+import { SubscriptionServer, SubscriptionClient } from 'subscriptions-transport-ws';
 import { execute, subscribe } from 'graphql';
 import { PubSub } from 'graphql-subscriptions';
 import fetch from 'node-fetch'
-import { createHttpLink } from 'apollo-link-http'
+import { createHttpLink, HttpLink } from 'apollo-link-http'
 
 import * as factories from './objectFactories'
 import * as utils from './utils'
@@ -65,7 +68,12 @@ const graphqlDependencies = {
   getIntrospectSchema,
   fetch,
   introspectSchema,
-  createHttpLink
+  createHttpLink,
+  HttpLink,
+  SubscriptionClient, 
+  ws, 
+  getMainDefinition, 
+  split
 }
 
 const socketDependencies = {

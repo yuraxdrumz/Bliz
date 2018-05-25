@@ -7,6 +7,7 @@ export default async function graphQlHandler ({
   makeExecutableSchema,
   getIntrospectSchema,
   createHttpLink,
+  HttpLink,
   fetch, 
   introspectSchema, 
   makeRemoteExecutableSchema,
@@ -15,6 +16,10 @@ export default async function graphQlHandler ({
   graphiqlExpress,
   graphqlExpress,
   SubscriptionServer,
+  SubscriptionClient, 
+  ws, 
+  getMainDefinition, 
+  split,
   os,
   print,
   execute,
@@ -78,7 +83,7 @@ export default async function graphQlHandler ({
       _useGraphql._graphQlExecutableSchema = makeExecutableSchema({typeDefs, resolvers})
     }
   } else {
-    const getIntrospectSchemaWithParams = getIntrospectSchema(createHttpLink, fetch, introspectSchema, makeRemoteExecutableSchema)
+    const getIntrospectSchemaWithParams = getIntrospectSchema({HttpLink, fetch, SubscriptionClient, ws, getMainDefinition, split, introspectSchema, makeRemoteExecutableSchema})
 
     if(_useGraphql.allowPartialRemoteSchema){
       executableSchema = await Promise.map(_useGraphql._graphQlRemoteEndpoints, async ep => {
@@ -89,7 +94,7 @@ export default async function graphQlHandler ({
         }
       }).filter(item=> item !== undefined)
     } else {
-      executableSchema = await Promise.all(_useGraphql._graphQlRemoteEndpoints.map(ep=>getIntrospectSchemaWithParams(ep)))
+      executableSchema = await Promise.all(_useGraphql._graphQlRemoteEndpoints.map(ep => getIntrospectSchemaWithParams(ep)))
     }
     executableSchema = mergeSchemas({ schemas: executableSchema })
     _useGraphql._graphQlExecutableSchema = executableSchema
