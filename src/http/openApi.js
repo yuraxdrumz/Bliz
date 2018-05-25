@@ -79,15 +79,16 @@ const pathStruct = (pathName, methodName) => struct({
 
 // assign nested object properties
 const assign = (obj, keyPath, value) => {
-  lastKeyIndex = keyPath.length-1;
+  let lastKeyIndex = keyPath.length-1;
   for (let i = 0; i < lastKeyIndex; ++ i) {
-    key = keyPath[i];
+    let key = keyPath[i];
     if (!(key in obj))
       obj[key] = {}
     obj = obj[key];
   }
   obj[keyPath[lastKeyIndex]] = value;
 }
+
 
 // recurse on structs and populate object according to struct received
 const getNested = (struct, map = {}) => {

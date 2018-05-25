@@ -5,5 +5,5 @@ export {
   LogStep,
   LogAction
 } from './runQuery'
-export { runHttpQuery, HttpQueryRequest, HttpQueryError } from './runHttpQuery'
-export { default as GraphQLOptions, resolveGraphqlOptions } from './graphqlOptions'
+export { runHttpQuery, HttpQueryError } from './runHttpQuery'
+export { resolveGraphqlOptions } from './graphqlOptions'
