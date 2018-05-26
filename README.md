@@ -280,7 +280,7 @@ app
  })
 .listen(6000)
 ```
-Head over to http://localhost:6000 and you will see all you schemas in one.
+Head over to http://localhost:6000 and you will see all your schemas in one.
 [Back to top](#table-of-contents)
 
 # Notes
@@ -299,7 +299,7 @@ If you decide to contribute, first of all thanks!
 steps:
  - clone project
  - npm install
- - create a seperate branch for you ideas or features
+ - create a seperate branch for your ideas or features
  - run prettier
  - submit a pull request
 
