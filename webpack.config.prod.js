@@ -13,20 +13,19 @@ fs.readdirSync('node_modules')
   })
 
 module.exports = {
-  devtool: 'sourcemap',
+  mode: 'production',
+  devtool: 'cheap-source-map',
   target: 'node',
-  entry: { main: ['babel-polyfill','./examples/graphql-example/index.js'] },
+  entry: { main: ['babel-polyfill','./src/main.js'] },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js'
+    filename: '[name].bundle.js',
+    libraryTarget: 'umd'
   },
   externals: nodeModules,
   plugins: [
-    new WebpackNodeServerPlugin({retries: 0}),
-    new webpack.BannerPlugin({
-      banner: 'require("source-map-support").install();',
-      raw: true,
-      entryOnly: false
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production')
     })
   ],
   module: {

@@ -13,12 +13,13 @@ fs.readdirSync('node_modules')
   })
 
 module.exports = {
-  devtool: 'sourcemap',
+  devtool: 'source-map',
+  entry: ['babel-polyfill','./index.js'],
   target: 'node',
-  entry: { main: ['babel-polyfill','./examples/graphql-example/index.js'] },
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js'
+    path: path.join(__dirname, 'dist'),
+    filename: 'backend.js',
+    libraryTarget: 'commonjs2'
   },
   externals: nodeModules,
   plugins: [
@@ -34,10 +35,15 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: "babel-loader"
+        loader: 'babel-loader',
+        options: {
+          presets: [['es2015', {modules: false}]],
+          plugins: ["transform-object-rest-spread"]
         }
       }
     ]
-  }
-};
+  },
+  resolve: {
+    extensions: [ '.tsx', '.ts', '.js' ]
+  },
+}

@@ -3,22 +3,19 @@ import etag from 'etag'
 
 const res = Object.create(http.ServerResponse.prototype)
 
-res.status = function(status){
+res.status = function(status) {
   this.statusCode = status
   return this
 }
 
-res.addHeader = function(header, value){
-  this.setHeader(header, value)
-  return this
-}
-
-
-res.json = function(data){
-  this.addHeader('Content-Type','application/json')
-  this.addHeader('X-Powered-By', 'Bliz')
+res.json = function(data) {
+  // console.log(this.req.headers)
+  this.setHeader('Content-Type', 'application/json')
+  this.setHeader('X-Powered-By', 'Bliz')
   const stringified = JSON.stringify(data, null, 3)
-  this.addHeader('ETag', etag(stringified))
+  const generatedEtag = etag(stringified)
+  // console.log(generatedEtag, this.req.headers.etag)
+  this.setHeader('ETag', generatedEtag)
   this.end(stringified)
 }
 
