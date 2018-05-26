@@ -1,11 +1,13 @@
 {
   "name": "Bliz",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A fast, declarative framework for writing web servers, no taradiddles",
-  "main": "server.js",
+  "main": "./dist/main.bundle.js",
   "scripts": {
+    "prettier": "prettier --write src/**/*.js",
     "test": "jest",
-    "start": "webpack --mode development --watch"
+    "start": "webpack --mode development --watch",
+    "build": "webpack -p --progress --config=webpack.config.prod.js --mode production"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",
@@ -14,14 +16,25 @@
     "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.7.0",
     "jest": "^21.2.1",
+    "prettier": "1.12.1",
     "source-map-support": "^0.4.15",
     "webpack": "^4.8.3",
     "webpack-cli": "^2.1.4",
     "webpack-node-server-plugin": "^0.2.1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "http",
+    "server",
+    "express-like",
+    "web",
+    "sockets",
+    "graphql",
+    "declarative",
+    "simple"
+  ],
+  "repository": "yuraxdrumz/Bliz",
+  "author": "Yuri Khomyakov",
+  "license": "MIT",
   "dependencies": {
     "apollo-cache-control": "^0.1.1",
     "apollo-client-preset": "^1.0.8",

@@ -1,6 +1,6 @@
-import { struct } from '../src/main'
+import { struct } from '../../src/main'
 
-const haimSchema = struct({
+const bodySchema = struct({
   name: 'string',
   last_name: 'string',
   address: 'string?'
@@ -8,7 +8,7 @@ const haimSchema = struct({
 
 export const paramSchema = struct({
   param: 'string?',
-  haim: haimSchema
+  body: bodySchema
 })
 export const statusSchema = struct({
   status: 'string'

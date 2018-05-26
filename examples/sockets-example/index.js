@@ -1,4 +1,4 @@
-import Bliz from '../src/main'
+import Bliz from '../../src/main'
 import prefixRouter from './prefix.router'
 const app = Bliz()
 

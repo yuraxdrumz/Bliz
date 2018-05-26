@@ -1,12 +1,13 @@
 import {
-    CreateObjectArray,
-    CreateArray,
-    AssignHandler,
-    GetObjProps,
-    Method
+  CreateObjectArray,
+  CreateArray,
+  AssignHandler,
+  GetObjProps,
+  Method
 } from '../objectFactories'
-  
-const SocketRouterCreator = base => {
+
+// socket router creator
+const SocketRouterCreator = (base) => {
   const _RouterReturn = {}
   const routerData = {
     base,
@@ -18,11 +19,15 @@ const SocketRouterCreator = base => {
   return Object.assign(
     _RouterReturn,
     Method('event', routerData, _RouterReturn),
-    AssignHandler({name: 'routerErrorHandler', obj: routerData, chainLink: _RouterReturn}),
-    CreateObjectArray({name: 'middleware', arr: routerData.middleWareArr, chainLink: _RouterReturn}),
-    CreateArray({name: 'socketSubRouter', arr: routerData.subRouters, chainLink: _RouterReturn}),
+    AssignHandler({ name: 'routerErrorHandler', obj: routerData, chainLink: _RouterReturn }),
+    CreateObjectArray({
+      name: 'middleware',
+      arr: routerData.middleWareArr,
+      chainLink: _RouterReturn
+    }),
+    CreateArray({ name: 'socketSubRouter', arr: routerData.subRouters, chainLink: _RouterReturn }),
     GetObjProps(routerData)
   )
 }
-  
+
 export default SocketRouterCreator

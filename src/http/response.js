@@ -3,14 +3,14 @@ import etag from 'etag'
 
 const res = Object.create(http.ServerResponse.prototype)
 
-res.status = function(status){
+res.status = function(status) {
   this.statusCode = status
   return this
 }
 
-res.json = function(data){
+res.json = function(data) {
   // console.log(this.req.headers)
-  this.setHeader('Content-Type','application/json')
+  this.setHeader('Content-Type', 'application/json')
   this.setHeader('X-Powered-By', 'Bliz')
   const stringified = JSON.stringify(data, null, 3)
   const generatedEtag = etag(stringified)

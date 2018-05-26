@@ -1,4 +1,4 @@
-import Bliz from '../src/main'
+import Bliz from '../../src/main'
 import bodyParser from 'body-parser'
 import path from 'path'
 import slashRouter from './slash.router'

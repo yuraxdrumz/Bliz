@@ -1,5 +1,5 @@
-const { struct } = require('superstruct')
-const { stringify } = require('json-to-pretty-yaml')
+import { struct } from 'superstruct'
+import { assign } from '../utils'
 
 const contactStruct = struct({
   name: 'string?',
@@ -34,9 +34,18 @@ const mainDescribeStruct = struct({
 })
 
 // mainDescribe block
-const mainDescribe = ({title, version, description, termsOfService, contact, license, servers, security}) => {
+const mainDescribe = ({
+  title,
+  version,
+  description,
+  termsOfService,
+  contact,
+  license,
+  servers,
+  security
+}) => {
   const validJson = {
-    openapi: "3.0.0",
+    openapi: '3.0.0',
     security,
     info: {
       title,
@@ -51,15 +60,6 @@ const mainDescribe = ({title, version, description, termsOfService, contact, lic
   return mainDescribeStruct(validJson)
 }
 
-
-
-const parameterStruct = struct({
-  name: 'string',
-  in: struct.enum(['query', 'path']),
-  description: 'string',
-  required: 'boolean?',
-})
-
 const singlePathMetaData = struct({
   tags: ['string'],
   description: 'string',
@@ -69,76 +69,70 @@ const singlePathMetaData = struct({
   responses: 'object?'
 })
 
-const methodStruct = methodName => struct({
-  [methodName === 'del' ? 'delete' : methodName]: singlePathMetaData
-})
+const methodStruct = (methodName) =>
+  struct({
+    [methodName === 'del' ? 'delete' : methodName]: singlePathMetaData
+  })
 
-const pathStruct = (pathName, methodName) => struct({
-  [pathName]: methodStruct(methodName)
-})
-
-// assign nested object properties
-const assign = (obj, keyPath, value) => {
-  let lastKeyIndex = keyPath.length-1;
-  for (let i = 0; i < lastKeyIndex; ++ i) {
-    let key = keyPath[i];
-    if (!(key in obj))
-      obj[key] = {}
-    obj = obj[key];
-  }
-  obj[keyPath[lastKeyIndex]] = value;
-}
-
+const pathStruct = (pathName, methodName) =>
+  struct({
+    [pathName]: methodStruct(methodName)
+  })
 
 // recurse on structs and populate object according to struct received
 const getNested = (struct, map = {}) => {
   const schema = (struct.schema && struct.schema.schema) || struct.schema
   const keys = Object.keys(schema)
-  for(let key of keys){
+  for (let key of keys) {
     // console.log(key, schema[key])
-    if(schema[key].kind && schema[key].kind === 'object'){
+    if (schema[key].kind && schema[key].kind === 'object') {
       const result = getNested(schema[key], {})
       assign(map, [key, 'type'], 'object')
       assign(map, [key, 'properties'], result)
       // assign(map, [key], result)
-    } else if (schema[key].kind && schema[key].kind === 'list'){
+    } else if (schema[key].kind && schema[key].kind === 'list') {
       // console.log(`schema[key]`, schema[key].type)
       assign(map, [key, 'type'], 'array')
-      let type = schema[key].type.replace(/\[|\]/g,'')
+      let type = schema[key].type.replace(/\[|\]/g, '')
       assign(map, [key, 'items', 'type'], type.replace('?', ''))
-    } else if(schema[key].kind && schema[key].kind === 'enum'){
+    } else if (schema[key].kind && schema[key].kind === 'enum') {
       assign(map, [key, 'type'], 'string')
-      assign(map, [key, 'enum'], schema[key].type.split('|').map(item=>item.replace(/\"/g, '').replace(/\s/g, '')))
-    } else if(schema[key].kind && schema[key].kind === 'scalar'){
+      assign(
+        map,
+        [key, 'enum'],
+        schema[key].type.split('|').map((item) => item.replace(/\"/g, '').replace(/\s/g, ''))
+      )
+    } else if (schema[key].kind && schema[key].kind === 'scalar') {
       assign(map, [key], schema[key].type)
-    }else if(schema[key].kind && schema[key].kind === 'dict'){
+    } else if (schema[key].kind && schema[key].kind === 'dict') {
       assign(map, [key, 'type'], 'object')
       const type = schema[key].type.replace(/dict\<|\>/g, '')
       assign(map, [key, 'type'], type.substring(type.indexOf(',') + 1))
-    }else if(schema[key].kind && schema[key].kind === 'function'){
-    
-    }else if(schema[key].kind && schema[key].kind === 'instance'){
-    
-    }else if(schema[key].kind && schema[key].kind === 'interface'){
-    
-    }else if(schema[key].kind && schema[key].kind === 'intersection'){
-      const types = schema[key].type.split('&').map(item=>item.replace(/\s/g, '')).map(item=> 'type: '+item)
+    } else if (schema[key].kind && schema[key].kind === 'function') {
+    } else if (schema[key].kind && schema[key].kind === 'instance') {
+    } else if (schema[key].kind && schema[key].kind === 'interface') {
+    } else if (schema[key].kind && schema[key].kind === 'intersection') {
+      const types = schema[key].type
+        .split('&')
+        .map((item) => item.replace(/\s/g, ''))
+        .map((item) => 'type: ' + item)
       assign(map, [key, 'allOf'], types)
-    }else if(schema[key].kind && schema[key].kind === 'literal'){
+    } else if (schema[key].kind && schema[key].kind === 'literal') {
       // const types = schema[key].type.replace(/literal:|\s/g, '')
       // assign(map, [key, 'type'], types)
-    }else if(schema[key].kind && schema[key].kind === 'lazy'){
-
-    } else if(schema[key].kind && schema[key].kind === 'tuple'){
-
-    }else if(schema[key].kind && schema[key].kind === 'union'){
-      const types = schema[key].type.split('|').map(item=>item.replace(/\s/g, '')).map(item=> 'type: '+item)
+    } else if (schema[key].kind && schema[key].kind === 'lazy') {
+    } else if (schema[key].kind && schema[key].kind === 'tuple') {
+    } else if (schema[key].kind && schema[key].kind === 'union') {
+      const types = schema[key].type
+        .split('|')
+        .map((item) => item.replace(/\s/g, ''))
+        .map((item) => 'type: ' + item)
       assign(map, [key, 'anyOf'], types)
-    }else {
+    } else {
       // console.log(key, schema[key])
       // console.log(`assigning type array`, key, schema[key])
       assign(map, [key, 'type'], schema[key].replace('?', ''))
-      if(schema[key] === 'array'){
+      if (schema[key] === 'array') {
         assign(map, [key, 'items', 'type'], 'object')
       }
     }
@@ -150,12 +144,15 @@ const getNested = (struct, map = {}) => {
 // add request schema based on path, method and request object
 const addRequest = (request, path, method) => {
   // console.log(`REQUEST: `, request)
-  if(!request) return
+  if (!request) return
   return {
-    content:{
-      [request.contentType || 'application/json']:{
-        schema:{
-          $ref:`#/components/schemas/${path.replace(/\//g, '').replace(/-/,'').replace(/[{|}]/g,'')}-body-${method}`
+    content: {
+      [request.contentType || 'application/json']: {
+        schema: {
+          $ref: `#/components/schemas/${path
+            .replace(/\//g, '')
+            .replace(/-/, '')
+            .replace(/[{|}]/g, '')}-body-${method}`
         }
       }
     }
@@ -165,13 +162,16 @@ const addRequest = (request, path, method) => {
 // build response object
 const responseBuilder = (responses, path, method) => {
   const responseObject = {}
-  for(let resp of responses){
+  for (let resp of responses) {
     responseObject[resp.status] = {
       description: `${resp.status}`,
-      content:{
-        [resp.contentType || 'application/json']:{
+      content: {
+        [resp.contentType || 'application/json']: {
           schema: {
-            $ref: `#/components/schemas/${path.replace(/\//g, '').replace(/-/,'').replace(/[{|}]/g,'')}-${resp.status}-${method}`
+            $ref: `#/components/schemas/${path
+              .replace(/\//g, '')
+              .replace(/-/, '')
+              .replace(/[{|}]/g, '')}-${resp.status}-${method}`
           }
         }
       }
@@ -181,38 +181,47 @@ const responseBuilder = (responses, path, method) => {
 }
 
 // describe path based on data received
-const pathDescribe = ({path, method, tags, description, summary, incoming, requestBody, outgoing}) => {
+const pathDescribe = ({
+  path,
+  method,
+  tags,
+  description,
+  summary,
+  incoming,
+  requestBody,
+  outgoing
+}) => {
   // console.log(Object.keys(requests[0].schema.schema))
   const myRegexp = /(:.+?)([\/]|$)/g
-  const swaggerPath = path.replace(myRegexp, function(...args){
+  const swaggerPath = path.replace(myRegexp, function(...args) {
     return args[0].replace(args[1], `{${args[1].replace(':', '')}}`)
   })
-  const bodyRequests = incoming.filter(request=>request.in === 'body')
-  const parametersRequests = incoming.filter(request=>['path', 'query'].includes(request.in))
+  const bodyRequests = incoming.filter((request) => request.in === 'body')
+  const parametersRequests = incoming.filter((request) => ['path', 'query'].includes(request.in))
   const injectedPathWithParams = pathStruct(swaggerPath, method)
-  const parametersToInject = parametersRequests.map(request=>{
-    // const all 
-    const arrayToConcat = []
-    const map = getNested(request, {})
-    const keys = Object.keys(map)
-    for(let key of keys){
-      const obj = {}
-      obj.name = key
-      obj.in = request.in
-      obj.required = !map[key]['type'].includes('?')
-      obj.schema = {}
-      obj.schema.type = map[key]['type'].replace('?', '')
-      arrayToConcat.push(obj)
-    }
-    return arrayToConcat
-  
-  
-    // console.log(objectToReturn)
-  }).reduce((prev,curr)=>prev.concat(curr),[])
+  const parametersToInject = parametersRequests
+    .map((request) => {
+      // const all
+      const arrayToConcat = []
+      const map = getNested(request, {})
+      const keys = Object.keys(map)
+      for (let key of keys) {
+        const obj = {}
+        obj.name = key
+        obj.in = request.in
+        obj.required = !map[key]['type'].includes('?')
+        obj.schema = {}
+        obj.schema.type = map[key]['type'].replace('?', '')
+        arrayToConcat.push(obj)
+      }
+      return arrayToConcat
+      // console.log(objectToReturn)
+    })
+    .reduce((prev, curr) => prev.concat(curr), [])
 
   const jsonWithParams = {
-    [swaggerPath]:{
-      [method === 'del' ? 'delete' : method]:{
+    [swaggerPath]: {
+      [method === 'del' ? 'delete' : method]: {
         tags,
         description,
         summary,
@@ -228,21 +237,15 @@ const pathDescribe = ({path, method, tags, description, summary, incoming, reque
 // schema builder according to describe.requests object and describe.responses
 const schemas = (schemas, securitySchemes) => {
   const schemasObject = {}
-  for(let sc of schemas){
+  for (let sc of schemas) {
     const data = getNested(sc)
     schemasObject[sc.name] = data[Object.keys(data)[0]]
   }
   return {
-    components:{
+    components: {
       securitySchemes,
-      schemas:schemasObject
+      schemas: schemasObject
     }
   }
 }
-
-
-module.exports = {
-  pathDescribe,
-  schemas,
-  mainDescribe
-}
+export { pathDescribe, schemas, mainDescribe }

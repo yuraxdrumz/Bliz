@@ -1,85 +1,66 @@
-import {
-  parse,
-  getOperationAST,
-  DocumentNode,
-  formatError,
-  ExecutionResult,
-} from 'graphql';
-import { runQuery } from './runQuery';
-import {
-  default as GraphQLOptions,
-  resolveGraphqlOptions,
-} from './graphqlOptions';
+import { parse, getOperationAST, DocumentNode, formatError, ExecutionResult } from 'graphql'
+import { runQuery } from './runQuery'
+import { default as GraphQLOptions, resolveGraphqlOptions } from './graphqlOptions'
 
 export class HttpQueryError extends Error {
-
   constructor(statusCode, message, isGraphQLError = false, headers) {
-    super(message);
-    this.name = 'HttpQueryError';
-    this.statusCode = statusCode;
-    this.isGraphQLError = isGraphQLError;
-    this.headers = headers;
+    super(message)
+    this.name = 'HttpQueryError'
+    this.statusCode = statusCode
+    this.isGraphQLError = isGraphQLError
+    this.headers = headers
   }
 }
 
 function isQueryOperation(query, operationName) {
-  const operationAST = getOperationAST(query, operationName);
-  return operationAST.operation === 'query';
+  const operationAST = getOperationAST(query, operationName)
+  return operationAST.operation === 'query'
 }
 
-export async function runHttpQuery( handlerArguments, request ) {
-  let isGetRequest = false;
-  let optionsObject;
+export async function runHttpQuery(handlerArguments, request) {
+  let isGetRequest = false
+  let optionsObject
 
   try {
-    optionsObject = await resolveGraphqlOptions(
-      request.options,
-      ...handlerArguments,
-    );
+    optionsObject = await resolveGraphqlOptions(request.options, ...handlerArguments)
   } catch (e) {
-    throw new HttpQueryError(500, e.message);
+    throw new HttpQueryError(500, e.message)
   }
-  const formatErrorFn = optionsObject.formatError || formatError;
-  let requestPayload;
+  const formatErrorFn = optionsObject.formatError || formatError
+  let requestPayload
   switch (request.method) {
     case 'POST':
       if (!request.query || Object.keys(request.query).length === 0) {
         throw new HttpQueryError(
           500,
-          'POST body missing. Did you forget use body-parser middleware?',
-        );
+          'POST body missing. Did you forget use body-parser middleware?'
+        )
       }
-      requestPayload = request.query;
-      break;
+      requestPayload = request.query
+      break
     case 'GET':
       if (!request.query || Object.keys(request.query).length === 0) {
-        throw new HttpQueryError(400, 'GET query missing.');
+        throw new HttpQueryError(400, 'GET query missing.')
       }
 
-      isGetRequest = true;
-      requestPayload = request.query;
-      break;
+      isGetRequest = true
+      requestPayload = request.query
+      break
 
     default:
-      throw new HttpQueryError(
-        405,
-        'Apollo Server supports only GET/POST requests.',
-        false,
-        {
-          Allow: 'GET, POST',
-        },
-      );
+      throw new HttpQueryError(405, 'Apollo Server supports only GET/POST requests.', false, {
+        Allow: 'GET, POST'
+      })
   }
 
-  let isBatch = true;
+  let isBatch = true
   // TODO: do something different here if the body is an array.
   // Throw an error if body isn't either array or object.
   if (!Array.isArray(requestPayload)) {
-    isBatch = false;
-    requestPayload = [requestPayload];
+    isBatch = false
+    requestPayload = [requestPayload]
   }
-  const requests = requestPayload.map(requestParams => {
-
+  const requests = requestPayload.map((requestParams) => {
     try {
       let query = requestParams.query
       let extensions = requestParams.extensions
@@ -88,9 +69,9 @@ export async function runHttpQuery( handlerArguments, request ) {
         // requests they get parsed as part of parsing the larger body they're
         // inside.)
         try {
-          extensions = JSON.parse(extensions);
+          extensions = JSON.parse(extensions)
         } catch (error) {
-          throw new HttpQueryError(400, 'Extensions are invalid JSON.');
+          throw new HttpQueryError(400, 'Extensions are invalid JSON.')
         }
       }
 
@@ -106,15 +87,15 @@ export async function runHttpQuery( handlerArguments, request ) {
           JSON.stringify({
             errors: [
               {
-                message: 'PersistedQueryNotSupported',
-              },
-            ],
+                message: 'PersistedQueryNotSupported'
+              }
+            ]
           }),
           true,
           {
-            'Content-Type': 'application/json',
-          },
-        );
+            'Content-Type': 'application/json'
+          }
+        )
       }
 
       if (isGetRequest) {
@@ -126,46 +107,38 @@ export async function runHttpQuery( handlerArguments, request ) {
           //     not do this. Also, for a GET request, query really shouldn't
           //     ever be anything other than a string or undefined, so this
           //     set of conditionals doesn't quite make sense.
-          query = parse(query);
+          query = parse(query)
         } else if (!query) {
           // Note that we've already thrown a different error if it looks like APQ.
-          throw new HttpQueryError(400, 'Must provide query string.');
+          throw new HttpQueryError(400, 'Must provide query string.')
         }
 
         if (!isQueryOperation(query, requestParams.operationName)) {
-          throw new HttpQueryError(
-            405,
-            `GET supports only query operation`,
-            false,
-            {
-              Allow: 'POST',
-            },
-          );
+          throw new HttpQueryError(405, `GET supports only query operation`, false, {
+            Allow: 'POST'
+          })
         }
       }
 
-      const operationName = requestParams.operationName;
+      const operationName = requestParams.operationName
 
-      let variables = requestParams.variables;
+      let variables = requestParams.variables
       if (typeof variables === 'string') {
         try {
           // XXX Really we should only do this for GET requests, but for
           // compatibility reasons we'll keep doing this at least for now for
           // broken clients that ship variables in a string for no good reason.
-          variables = JSON.parse(variables);
+          variables = JSON.parse(variables)
         } catch (error) {
-          throw new HttpQueryError(400, 'Variables are invalid JSON.');
+          throw new HttpQueryError(400, 'Variables are invalid JSON.')
         }
       }
 
-      let context = optionsObject.context || {};
+      let context = optionsObject.context || {}
       if (typeof context === 'function') {
-        context = context();
+        context = context()
       } else if (isBatch) {
-        context = Object.assign(
-          Object.create(Object.getPrototypeOf(context)),
-          context,
-        );
+        context = Object.assign(Object.create(Object.getPrototypeOf(context)), context)
       }
       let params = {
         schema: optionsObject.schema,
@@ -182,33 +155,33 @@ export async function runHttpQuery( handlerArguments, request ) {
         debug: optionsObject.debug,
         tracing: optionsObject.tracing,
         cacheControl: optionsObject.cacheControl
-      };
+      }
 
       if (optionsObject.formatParams) {
-        params = optionsObject.formatParams(params);
+        params = optionsObject.formatParams(params)
       }
-      return runQuery(params);
+      return runQuery(params)
     } catch (e) {
       // Populate any HttpQueryError to our handler which should
       // convert it to Http Error.
       if (e.name === 'HttpQueryError') {
-        return Promise.reject(e);
+        return Promise.reject(e)
       }
 
-      return Promise.resolve({ errors: [formatErrorFn(e)] });
+      return Promise.resolve({ errors: [formatErrorFn(e)] })
     }
-  });
-  const responses = await Promise.all(requests);
+  })
+  const responses = await Promise.all(requests)
 
   if (!isBatch) {
-    const gqlResponse = responses[0];
+    const gqlResponse = responses[0]
     if (gqlResponse.errors && typeof gqlResponse.data === 'undefined') {
       throw new HttpQueryError(400, JSON.stringify(gqlResponse), true, {
-        'Content-Type': 'application/json',
-      });
+        'Content-Type': 'application/json'
+      })
     }
-    return JSON.stringify(gqlResponse);
+    return JSON.stringify(gqlResponse)
   }
 
-  return JSON.stringify(responses);
+  return JSON.stringify(responses)
 }

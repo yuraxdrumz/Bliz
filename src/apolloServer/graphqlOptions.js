@@ -1,5 +1,4 @@
-
-export async function resolveGraphqlOptions (options, ...args) {
+export async function resolveGraphqlOptions(options, ...args) {
   if (typeof options === 'function') {
     try {
       return await options(...args)

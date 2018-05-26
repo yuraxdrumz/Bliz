@@ -1,4 +1,6 @@
 ﻿# Bliz ![Bliz](http://i63.tinypic.com/2cp5nye.png)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+
   A fast, declarative framework for writing web servers, no taradiddles.
   Bliz allows you to write fast web servers with the blink of an eye, wether it is an http server, web sockets or graphql. Bliz supports the following features:
   
