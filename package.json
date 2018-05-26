@@ -1,5 +1,5 @@
 {
-  "name": "Bliz",
+  "name": "bliz",
   "version": "0.1.0",
   "description": "A fast, declarative framework for writing web servers, no taradiddles",
   "main": "./dist/main.bundle.js",

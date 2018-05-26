@@ -15,6 +15,13 @@ const resolver = {
           return post.data
       }
   },
+    Subscription:(pubsub)=> ({
+        postAdded: {
+        subscribe:()=>{
+            return pubsub.asyncIterator('POST_ADDED')
+        }
+        }
+    }),
   Mutation:(pubsub)=>({
     Post(obj, args, context, info){
         pubsub.publish('POST_ADDED', {postAdded: args.input});
