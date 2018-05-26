@@ -1,9 +1,9 @@
 {
   "name": "bliz",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "bugs": {
-    "url" : "https://github.com/yuraxdrumz/Bliz/issues", 
-    "email" : "yurik1776@gmail.com"
+    "url": "https://github.com/yuraxdrumz/Bliz/issues",
+    "email": "yurik1776@gmail.com"
   },
   "homepage": "https://github.com/yuraxdrumz/Bliz#readme",
   "description": "A fast, declarative framework for writing web servers, no taradiddles",
@@ -17,6 +17,7 @@
   "devDependencies": {
     "babel-core": "^6.25.0",
     "babel-loader": "^7.1.1",
+    "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.7.0",
@@ -39,7 +40,7 @@
   ],
   "repository": "yuraxdrumz/Bliz",
   "author": "Yuri Khomyakov",
-  "license": "MIT License",
+  "license": "MIT",
   "dependencies": {
     "apollo-cache-control": "^0.1.1",
     "apollo-client-preset": "^1.0.8",

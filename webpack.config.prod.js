@@ -16,7 +16,7 @@ module.exports = {
   mode: 'production',
   devtool: 'cheap-source-map',
   target: 'node',
-  entry: { main: ['babel-polyfill','./src/main.js'] },
+  entry: { main: './src/main.js' },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].bundle.js',

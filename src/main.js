@@ -1,4 +1,5 @@
 // package json
+import 'babel-polyfill'
 import packgeJson from '../package.json'
 
 // http dependencies

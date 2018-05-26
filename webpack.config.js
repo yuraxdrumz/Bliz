@@ -15,7 +15,7 @@ fs.readdirSync('node_modules')
 module.exports = {
   devtool: 'sourcemap',
   target: 'node',
-  entry: { main: ['babel-polyfill','./examples/http-example/index.js'] },
+  entry: { main: './examples/http-example/index.js' },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js'
