@@ -65,7 +65,7 @@ yarn add bliz
 ```javascript 
 import Bliz from 'bliz'
 or
-const Bliz = require('bliz)
+const Bliz = require('bliz')
 
 const app = Bliz()
 ```
