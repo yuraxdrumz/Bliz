@@ -1,6 +1,11 @@
 {
   "name": "bliz",
   "version": "0.1.0",
+  "bugs": {
+    "url" : "https://github.com/yuraxdrumz/Bliz/issues", 
+    "email" : "yurik1776@gmail.com"
+  },
+  "homepage": "https://github.com/yuraxdrumz/Bliz#readme",
   "description": "A fast, declarative framework for writing web servers, no taradiddles",
   "main": "./dist/main.bundle.js",
   "scripts": {
@@ -34,7 +39,7 @@
   ],
   "repository": "yuraxdrumz/Bliz",
   "author": "Yuri Khomyakov",
-  "license": "MIT",
+  "license": "MIT License",
   "dependencies": {
     "apollo-cache-control": "^0.1.1",
     "apollo-client-preset": "^1.0.8",
