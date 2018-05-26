@@ -1,6 +1,7 @@
 /node_modules
 /build
-/dist
 .idea
 test_server.js
 swagger.yaml
+yarn.lock
+yarn-error.log
