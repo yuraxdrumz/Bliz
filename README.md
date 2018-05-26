@@ -278,7 +278,7 @@ app
 	url:'http://localhost:5000/graphql',
 	ws:  'ws://localhost:5000/subscriptions'
  })
-.listen(5000)
+.listen(6000)
 ```
 Head over to http://localhost:6000 and you will see all you schemas in one.
 [Back to top](#table-of-contents)
