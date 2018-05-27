@@ -22,7 +22,8 @@ import {
   makeExecutableSchema,
   mergeSchemas,
   makeRemoteExecutableSchema,
-  introspectSchema
+  introspectSchema,
+  SchemaDirectiveVisitor
 } from 'graphql-tools'
 import { getIntrospectSchema } from './utils'
 import ws from 'ws'
@@ -287,4 +288,4 @@ const BlizCreator = () => {
 
 // expose factory and superstruct for validation, request + response for extending http req and res
 export default BlizCreator
-export { request, response, struct, superstruct, StructError }
+export { request, response, struct, superstruct, StructError, SchemaDirectiveVisitor }
