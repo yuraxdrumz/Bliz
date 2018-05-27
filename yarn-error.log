@@ -1,17 +1,30 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\Yurasya\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add -D rimraf
+  /usr/bin/node /usr/bin/yarn
 
 PATH: 
-  C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Skype\Phone\;C:\Program Files (x86)\MSBuild\14.0\Bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Git\cmd;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files (x86)\Microsoft SDKs\TypeScript\1.0\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Go\bin;C:\Program Files\PuTTY\;C:\Program Files\nodejs\;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Skype\Phone\;C:\Program Files (x86)\MSBuild\14.0\Bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Git\cmd;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files (x86)\Microsoft SDKs\TypeScript\1.0\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\nodejs\;C:\Go\bin;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Skype\Phone\;C:\Program Files (x86)\MSBuild\14.0\Bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Git\cmd;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit;C:\Program Files\MongoDB\Server\3.2\bin;C:\MediacenterJS\bin\ffmpeg;D:\Program Files\Microsoft VS Code\bin;C:\Users\Yurasya\AppData\Roaming\npm
+  /home/yurik/bin:/home/yurik/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 
 Yarn version: 
-  1.3.2
+  1.7.0
 
 Node version: 
-  8.11.2
+  6.12.0
 
 Platform: 
-  win32 x64
+  linux x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/@types/graphql/-/graphql-0.12.6.tgz: Request failed "500 Internal Server Error"
+      at ResponseError.ExtendableBuiltin (/usr/lib/node_modules/yarn/lib/cli.js:218:66)
+      at new ResponseError (/usr/lib/node_modules/yarn/lib/cli.js:324:124)
+      at Request.<anonymous> (/usr/lib/node_modules/yarn/lib/cli.js:62463:26)
+      at emitOne (events.js:96:13)
+      at Request.emit (events.js:188:7)
+      at Request.module.exports.Request.onRequestResponse (/usr/lib/node_modules/yarn/lib/cli.js:135561:10)
+      at emitOne (events.js:96:13)
+      at ClientRequest.emit (events.js:188:7)
+      at HTTPParser.parserOnIncomingClient (_http_client.js:474:21)
+      at HTTPParser.parserOnHeadersComplete (_http_common.js:99:23)
 
 npm manifest: 
   {
@@ -38,6 +51,7 @@ npm manifest:
       "babel-preset-env": "^1.7.0",
       "jest": "^21.2.1",
       "prettier": "1.12.1",
+      "rimraf": "^2.6.2",
       "source-map-support": "^0.4.15",
       "webpack": "^4.8.3",
       "webpack-cli": "^2.1.4",
@@ -57,13 +71,13 @@ npm manifest:
     "author": "Yuri Khomyakov",
     "license": "MIT",
     "dependencies": {
-      "babel-polyfill": "^6.26.0",
       "apollo-cache-control": "^0.1.1",
       "apollo-client-preset": "^1.0.8",
       "apollo-link-http": "^1.5.4",
       "apollo-server-module-graphiql": "^1.3.4",
       "apollo-tracing": "^0.1.4",
       "apollo-utilities": "^1.0.12",
+      "babel-polyfill": "^6.26.0",
       "bluebird": "^3.5.1",
       "body-parser": "^1.18.3",
       "etag": "^1.8.1",
@@ -6429,16 +6443,3 @@ Lockfile:
   zen-observable@^0.8.0:
     version "0.8.8"
     resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.8.8.tgz#1ea93995bf098754a58215a1e0a7309e5749ec42"
-
-Trace: 
-  Error: http://registry.npmjs.org/rimraf: Too many requests. Try again later
-      at Request.params.callback [as _callback] (C:\Users\Yurasya\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:62098:18)
-      at Request.self.callback (C:\Users\Yurasya\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:123085:22)
-      at emitTwo (events.js:126:13)
-      at Request.emit (events.js:214:7)
-      at Request.<anonymous> (C:\Users\Yurasya\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:124068:10)
-      at emitOne (events.js:116:13)
-      at Request.emit (events.js:211:7)
-      at IncomingMessage.<anonymous> (C:\Users\Yurasya\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:123988:12)
-      at Object.onceWrapper (events.js:313:30)
-      at emitNone (events.js:111:20)

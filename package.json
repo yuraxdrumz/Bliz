@@ -1,13 +1,13 @@
 {
   "name": "bliz",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "bugs": {
     "url": "https://github.com/yuraxdrumz/Bliz/issues",
     "email": "yurik1776@gmail.com"
   },
   "homepage": "https://github.com/yuraxdrumz/Bliz#readme",
   "description": "A fast, declarative framework for writing web servers, no taradiddles",
-  "main": "./dist/main.bundle.js",
+  "main": "./dist/bundle.js",
   "scripts": {
     "prettier": "prettier --write src/**/*.js",
     "test": "jest",
