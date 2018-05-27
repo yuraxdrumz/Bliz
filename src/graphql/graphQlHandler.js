@@ -103,6 +103,16 @@ export default async function graphQlHandler({
           Object.assign(resolvers, props)
         }
       })
+      if (Object.keys(resolvers.Query).length === 0) {
+        delete resolvers.Query
+      }
+      if (Object.keys(resolvers.Mutation).length === 0) {
+        delete resolvers.Mutation
+      }
+      if (Object.keys(resolvers.Subscription).length === 0) {
+        delete resolvers.Subscription
+      }
+      console.log(resolvers)
       Query += '}'
       Mutation += '}'
       Subscription += '}'
