@@ -28,14 +28,19 @@ export default async function graphQlHandler({
   Promise,
   _injected,
   _Instance,
-  _version
+  _version,
+  SchemaDirectiveVisitor,
+  GraphQLScalarType, 
+  GraphQLNonNull,
+  defaultFieldResolver,
+  GraphQLString
 }) {
   // init executableSchema, if directives length !== to their resolvers, throw error
   let executableSchema = null
   const directives = _useGraphql._graphQlDirectives
-  if (directives.length !== Object.keys(_useGraphql.directiveResolvers).length) {
-    throw new Error(`Directive resolvers registered does not match directive declarations`)
-  }
+  // if (directives.length !== Object.keys(_useGraphql.directiveResolvers).length) {
+  //   throw new Error(`Directive resolvers registered does not match directive declarations`)
+  // }
   const enums = _useGraphql._graphQlEnums
   const schemas = _useGraphql._graphQlSchemas.schemas
   // use default pubsub for subscriptions if one is not passed
@@ -137,9 +142,50 @@ export default async function graphQlHandler({
       finalGraphQlOptionsObject.rootValue = resolvers
       executableSchema = makeExecutableSchema({
         typeDefs,
-        resolvers,
-        directiveResolvers: _useGraphql.directiveResolvers
+        resolvers
+        // directiveResolvers: _useGraphql.directiveResolvers
       })
+
+      SchemaDirectiveVisitor.visitSchemaDirectives(executableSchema, {
+        rest: class extends SchemaDirectiveVisitor {
+          visitInputFieldDefinition (field) {
+            this.wrapType(field)
+          }     
+          visitFieldDefinition (field, details) {
+            console.log(`visiting field definition with`, field, details)
+            this.wrapType(field)
+          }
+          visitInputObject (field) {
+            console.log(`inside visit input object`)
+            this.wrapType(field)
+          }
+          visitObject (field ){
+            console.log(`inside visit object`)
+            this.wrapType(field)
+          }
+          wrapType(field) {
+            const { resolve = defaultFieldResolver } = field
+            const fields = field.getFields()
+            const keys = Object.keys(fields)
+            for(let key of keys){
+              console.log(fields[key])
+              fields[key].resolve = async function (
+                source,
+                args,
+                context,
+                info
+              ) {
+                const isValid = await resolve.call(this, source, args, context, info)
+                console.log(`isValid`, args, isValid)
+                return 'reerer'
+                
+              } 
+            }
+          
+          }
+        }
+      })
+
       _useGraphql._graphQlExecutableSchema = executableSchema
     }
   } else {

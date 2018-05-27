@@ -6,7 +6,7 @@ type User {
   height: Height
   posts: [Post] @hasRole(role: Admin)
 }
-input newUser {
+input newUser @rest {
   first_name: String!
   last_name: String!
   height: String!
