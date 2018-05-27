@@ -63,9 +63,11 @@ yarn add bliz
 
 # Usage
 ```javascript 
+// if youre using es6 modules
 import Bliz from 'bliz'
 or
-const Bliz = require('bliz')
+// if youre not using es2016 modules
+const Bliz = require('bliz').default
 
 const app = Bliz()
 ```

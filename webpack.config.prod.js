@@ -19,7 +19,7 @@ module.exports = {
   entry: { main: './src/main.js' },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].bundle.js',
+    filename: 'bundle.js',
     libraryTarget: 'umd'
   },
   externals: nodeModules,

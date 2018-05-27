@@ -1,51 +1,71 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\Yurasya\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add apollo-client-preset apollo-link-ws
+  C:\Program Files\nodejs\node.exe C:\Users\Yurasya\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add -D rimraf
 
 PATH: 
-  C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Skype\Phone\;C:\Program Files (x86)\MSBuild\14.0\Bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Git\cmd;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files (x86)\Microsoft SDKs\TypeScript\1.0\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\nodejs\;C:\Go\bin;C:\Program Files\PuTTY\;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Skype\Phone\;C:\Program Files (x86)\MSBuild\14.0\Bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Git\cmd;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files (x86)\Microsoft SDKs\TypeScript\1.0\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\nodejs\;C:\Go\bin;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Skype\Phone\;C:\Program Files (x86)\MSBuild\14.0\Bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Git\cmd;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit;C:\Users\Yurasya\AppData\Roaming\npm;C:\Program Files\MongoDB\Server\3.2\bin;C:\MediacenterJS\bin\ffmpeg;D:\Program Files\Microsoft VS Code\bin
+  C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Skype\Phone\;C:\Program Files (x86)\MSBuild\14.0\Bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Git\cmd;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files (x86)\Microsoft SDKs\TypeScript\1.0\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Go\bin;C:\Program Files\PuTTY\;C:\Program Files\nodejs\;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Skype\Phone\;C:\Program Files (x86)\MSBuild\14.0\Bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Git\cmd;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files (x86)\Microsoft SDKs\TypeScript\1.0\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\nodejs\;C:\Go\bin;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Skype\Phone\;C:\Program Files (x86)\MSBuild\14.0\Bin;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Git\cmd;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit;C:\Program Files\MongoDB\Server\3.2\bin;C:\MediacenterJS\bin\ffmpeg;D:\Program Files\Microsoft VS Code\bin;C:\Users\Yurasya\AppData\Roaming\npm
 
 Yarn version: 
   1.3.2
 
 Node version: 
-  7.8.0
+  8.11.2
 
 Platform: 
   win32 x64
 
 npm manifest: 
   {
-    "name": "Bliz",
-    "version": "0.0.1",
+    "name": "bliz",
+    "version": "0.1.8",
+    "bugs": {
+      "url": "https://github.com/yuraxdrumz/Bliz/issues",
+      "email": "yurik1776@gmail.com"
+    },
+    "homepage": "https://github.com/yuraxdrumz/Bliz#readme",
     "description": "A fast, declarative framework for writing web servers, no taradiddles",
-    "main": "server.js",
+    "main": "./dist/main.bundle.js",
     "scripts": {
+      "prettier": "prettier --write src/**/*.js",
       "test": "jest",
-      "start": "webpack --mode development --watch"
+      "start": "rimraf ./dist && webpack --mode development --watch",
+      "build": "rimraf ./dist && webpack -p --progress --config=webpack.config.prod.js --mode production"
     },
     "devDependencies": {
       "babel-core": "^6.25.0",
       "babel-loader": "^7.1.1",
+      "babel-plugin-add-module-exports": "^0.2.1",
       "babel-plugin-transform-object-rest-spread": "^6.26.0",
-      "babel-polyfill": "^6.23.0",
       "babel-preset-env": "^1.7.0",
       "jest": "^21.2.1",
+      "prettier": "1.12.1",
       "source-map-support": "^0.4.15",
       "webpack": "^4.8.3",
       "webpack-cli": "^2.1.4",
       "webpack-node-server-plugin": "^0.2.1"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
+    "keywords": [
+      "http",
+      "server",
+      "express-like",
+      "web",
+      "sockets",
+      "graphql",
+      "declarative",
+      "simple"
+    ],
+    "repository": "yuraxdrumz/Bliz",
+    "author": "Yuri Khomyakov",
+    "license": "MIT",
     "dependencies": {
+      "babel-polyfill": "^6.26.0",
       "apollo-cache-control": "^0.1.1",
+      "apollo-client-preset": "^1.0.8",
       "apollo-link-http": "^1.5.4",
       "apollo-server-module-graphiql": "^1.3.4",
       "apollo-tracing": "^0.1.4",
       "apollo-utilities": "^1.0.12",
       "bluebird": "^3.5.1",
-      "body-parser": "^1.18.2",
+      "body-parser": "^1.18.3",
       "etag": "^1.8.1",
       "eventemitter2": "^4.1.2",
       "graphql": "^0.13.2",
@@ -55,9 +75,9 @@ npm manifest:
       "json-to-pretty-yaml": "^1.2.2",
       "node-fetch": "^2.1.2",
       "print-message": "^2.1.0",
-      "socket.io": "^2.1.0",
+      "socket.io": "^2.1.1",
       "subscriptions-transport-ws": "^0.9.9",
-      "superstruct": "^0.5.3",
+      "superstruct": "^0.5.4",
       "treeify": "^1.0.1",
       "url": "^0.11.0",
       "ws": "^5.2.0"
@@ -99,6 +119,10 @@ Lockfile:
     version "0.7.0"
     resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.7.0.tgz#9a06f4f137ee84d7df0460c1fdb1135ffa6c50fd"
   
+  "@types/async@2.0.49":
+    version "2.0.49"
+    resolved "https://registry.yarnpkg.com/@types/async/-/async-2.0.49.tgz#92e33d13f74c895cb9a7f38ba97db8431ed14bc0"
+  
   "@types/graphql@0.12.6":
     version "0.12.6"
     resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.12.6.tgz#3d619198585fcabe5f4e1adfb5cf5f3388c66c13"
@@ -106,6 +130,10 @@ Lockfile:
   "@types/node@^9.4.6":
     version "9.6.18"
     resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.18.tgz#092e13ef64c47e986802c9c45a61c1454813b31d"
+  
+  "@types/zen-observable@^0.5.3":
+    version "0.5.3"
+    resolved "https://registry.yarnpkg.com/@types/zen-observable/-/zen-observable-0.5.3.tgz#91b728599544efbb7386d8b6633693a3c2e7ade5"
   
   "@webassemblyjs/ast@1.4.3":
     version "1.4.3"
@@ -343,13 +371,57 @@ Lockfile:
     dependencies:
       graphql-extensions "^0.0.x"
   
+  apollo-cache-inmemory@^1.1.7:
+    version "1.2.1"
+    resolved "https://registry.yarnpkg.com/apollo-cache-inmemory/-/apollo-cache-inmemory-1.2.1.tgz#1f8222270aa7983eb9d2ac30057196378ab3bb01"
+    dependencies:
+      apollo-cache "^1.1.8"
+      apollo-utilities "^1.0.12"
+      graphql-anywhere "^4.1.10"
+  
+  apollo-cache@^1.1.8:
+    version "1.1.8"
+    resolved "https://registry.yarnpkg.com/apollo-cache/-/apollo-cache-1.1.8.tgz#b078d33dec876d52b5a81a325d3c254d4e362d3c"
+    dependencies:
+      apollo-utilities "^1.0.12"
+  
+  apollo-client-preset@^1.0.8:
+    version "1.0.8"
+    resolved "https://registry.yarnpkg.com/apollo-client-preset/-/apollo-client-preset-1.0.8.tgz#23bd7176849d0d815f12c648774d009b258a449e"
+    dependencies:
+      apollo-cache-inmemory "^1.1.7"
+      apollo-client "^2.2.2"
+      apollo-link "^1.0.6"
+      apollo-link-http "^1.3.1"
+      graphql-tag "^2.4.2"
+  
+  apollo-client@^2.2.2:
+    version "2.3.1"
+    resolved "https://registry.yarnpkg.com/apollo-client/-/apollo-client-2.3.1.tgz#64b204779b7e8b21f901529527a9a9c973eb7fd4"
+    dependencies:
+      "@types/zen-observable" "^0.5.3"
+      apollo-cache "^1.1.8"
+      apollo-link "^1.0.0"
+      apollo-link-dedup "^1.0.0"
+      apollo-utilities "^1.0.12"
+      symbol-observable "^1.0.2"
+      zen-observable "^0.8.0"
+    optionalDependencies:
+      "@types/async" "2.0.49"
+  
+  apollo-link-dedup@^1.0.0:
+    version "1.0.9"
+    resolved "https://registry.yarnpkg.com/apollo-link-dedup/-/apollo-link-dedup-1.0.9.tgz#3c4e4af88ef027cbddfdb857c043fd0574051dad"
+    dependencies:
+      apollo-link "^1.2.2"
+  
   apollo-link-http-common@^0.2.4:
     version "0.2.4"
     resolved "https://registry.yarnpkg.com/apollo-link-http-common/-/apollo-link-http-common-0.2.4.tgz#877603f7904dc8f70242cac61808b1f8d034b2c3"
     dependencies:
       apollo-link "^1.2.2"
   
-  apollo-link-http@^1.5.4:
+  apollo-link-http@^1.3.1, apollo-link-http@^1.5.4:
     version "1.5.4"
     resolved "https://registry.yarnpkg.com/apollo-link-http/-/apollo-link-http-1.5.4.tgz#b80b7b4b342c655b6a5614624b076a36be368f43"
     dependencies:
@@ -364,7 +436,7 @@ Lockfile:
       apollo-utilities "^1.0.0"
       zen-observable-ts "^0.8.6"
   
-  apollo-link@^1.2.2:
+  apollo-link@^1.0.0, apollo-link@^1.0.6, apollo-link@^1.2.2:
     version "1.2.2"
     resolved "https://registry.yarnpkg.com/apollo-link/-/apollo-link-1.2.2.tgz#54c84199b18ac1af8d63553a68ca389c05217a03"
     dependencies:
@@ -717,6 +789,10 @@ Lockfile:
     dependencies:
       babel-runtime "^6.22.0"
   
+  babel-plugin-add-module-exports@^0.2.1:
+    version "0.2.1"
+    resolved "https://registry.yarnpkg.com/babel-plugin-add-module-exports/-/babel-plugin-add-module-exports-0.2.1.tgz#9ae9a1f4a8dc67f0cdec4f4aeda1e43a5ff65e25"
+  
   babel-plugin-check-es2015-constants@^6.22.0:
     version "6.22.0"
     resolved "https://registry.yarnpkg.com/babel-plugin-check-es2015-constants/-/babel-plugin-check-es2015-constants-6.22.0.tgz#35157b101426fd2ffd3da3f75c7d1e91835bbf8a"
@@ -1033,7 +1109,7 @@ Lockfile:
       babel-runtime "^6.22.0"
       babel-types "^6.24.1"
   
-  babel-polyfill@^6.23.0:
+  babel-polyfill@^6.26.0:
     version "6.26.0"
     resolved "https://registry.yarnpkg.com/babel-polyfill/-/babel-polyfill-6.26.0.tgz#379937abc67d7895970adc621f284cd966cf2153"
     dependencies:
@@ -1267,7 +1343,7 @@ Lockfile:
     version "4.11.8"
     resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
   
-  body-parser@^1.18.2:
+  body-parser@^1.18.3:
     version "1.18.3"
     resolved "https://registry.yarnpkg.com/body-parser/-/body-parser-1.18.3.tgz#5b292198ffdd553b3a0f20ded0592b956955c8b4"
     dependencies:
@@ -1808,8 +1884,8 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/copy-descriptor/-/copy-descriptor-0.1.1.tgz#676f6eb3c39997c2ee1ac3a924fd6124748f578d"
   
   core-js@^2.4.0, core-js@^2.4.1, core-js@^2.5.0, core-js@^2.5.3:
-    version "2.5.6"
-    resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.5.6.tgz#0fe6d45bf3cac3ac364a9d72de7576f4eb221b9d"
+    version "2.5.7"
+    resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.5.7.tgz#f972608ff0cead68b841a16a932d0b183791814e"
   
   core-util-is@1.0.2, core-util-is@~1.0.0:
     version "1.0.2"
@@ -1942,6 +2018,10 @@ Lockfile:
   deep-extend@^0.5.1:
     version "0.5.1"
     resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.5.1.tgz#b894a9dd90d3023fbf1c55a394fb858eb2066f1f"
+  
+  deep-extend@^0.6.0:
+    version "0.6.0"
+    resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.6.0.tgz#c4fa7c95404a17a9c3e8ca7e1537312b736330ac"
   
   deep-is@~0.1.3:
     version "0.1.3"
@@ -2139,8 +2219,8 @@ Lockfile:
       tapable "^1.0.0"
   
   envinfo@^5.7.0:
-    version "5.7.0"
-    resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-5.7.0.tgz#690e5fdf30aa75dda19c0c5338d0a48a48f1e998"
+    version "5.8.1"
+    resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-5.8.1.tgz#1910c0d1dbd74ff1c6b8ca0974841a5dcf7900ca"
   
   errno@^0.1.3, errno@~0.1.7:
     version "0.1.7"
@@ -2693,6 +2773,12 @@ Lockfile:
     version "4.1.11"
     resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
   
+  graphql-anywhere@^4.1.10:
+    version "4.1.10"
+    resolved "https://registry.yarnpkg.com/graphql-anywhere/-/graphql-anywhere-4.1.10.tgz#247ada0c8d85b9d5d6b37180973442ac68ff15de"
+    dependencies:
+      apollo-utilities "^1.0.12"
+  
   graphql-extensions@0.0.10, graphql-extensions@^0.0.x, graphql-extensions@~0.0.9:
     version "0.0.10"
     resolved "https://registry.yarnpkg.com/graphql-extensions/-/graphql-extensions-0.0.10.tgz#34bdb2546d43f6a5bc89ab23c295ec0466c6843d"
@@ -2705,6 +2791,10 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/graphql-subscriptions/-/graphql-subscriptions-0.5.8.tgz#13a6143c546bce390404657dc73ca501def30aa7"
     dependencies:
       iterall "^1.2.1"
+  
+  graphql-tag@^2.4.2:
+    version "2.9.2"
+    resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.9.2.tgz#2f60a5a981375f430bf1e6e95992427dc18af686"
   
   graphql-tools@^3.0.2:
     version "3.0.2"
@@ -3650,7 +3740,7 @@ Lockfile:
     version "3.0.0"
     resolved "https://registry.yarnpkg.com/json-buffer/-/json-buffer-3.0.0.tgz#5b1f397afc75d677bde8bcfc0e47e1f9a3d9a898"
   
-  json-parse-better-errors@^1.0.1:
+  json-parse-better-errors@^1.0.1, json-parse-better-errors@^1.0.2:
     version "1.0.2"
     resolved "https://registry.yarnpkg.com/json-parse-better-errors/-/json-parse-better-errors-1.0.2.tgz#bb867cfb3450e69107c131d1c514bab3dc8bcaa9"
   
@@ -4687,7 +4777,7 @@ Lockfile:
     version "0.2.0"
     resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
   
-  prettier@^1.12.1:
+  prettier@1.12.1, prettier@^1.12.1:
     version "1.12.1"
     resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.12.1.tgz#c1ad20e803e7749faf905a409d2367e06bbe7325"
   
@@ -4820,10 +4910,10 @@ Lockfile:
       unpipe "1.0.0"
   
   rc@^1.1.7:
-    version "1.2.7"
-    resolved "https://registry.yarnpkg.com/rc/-/rc-1.2.7.tgz#8a10ca30d588d00464360372b890d06dacd02297"
+    version "1.2.8"
+    resolved "https://registry.yarnpkg.com/rc/-/rc-1.2.8.tgz#cd924bf5200a075b83c188cd6b9e211b7fc0d3ed"
     dependencies:
-      deep-extend "^0.5.1"
+      deep-extend "^0.6.0"
       ini "~1.3.0"
       minimist "^1.2.0"
       strip-json-comments "~2.0.1"
@@ -5347,7 +5437,7 @@ Lockfile:
       debug "~3.1.0"
       isarray "2.0.1"
   
-  socket.io@^2.1.0:
+  socket.io@^2.1.1:
     version "2.1.1"
     resolved "https://registry.yarnpkg.com/socket.io/-/socket.io-2.1.1.tgz#a069c5feabee3e6b214a75b40ce0652e1cfb9980"
     dependencies:
@@ -5590,7 +5680,7 @@ Lockfile:
       symbol-observable "^1.0.4"
       ws "^3.0.0"
   
-  superstruct@^0.5.3:
+  superstruct@^0.5.4:
     version "0.5.4"
     resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-0.5.4.tgz#a0772963d62e7b0c92952bf9c3b90dd7065f721f"
     dependencies:
@@ -5617,7 +5707,7 @@ Lockfile:
     version "1.0.1"
     resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.0.1.tgz#8340fc4702c3122df5d22288f88283f513d3fdd4"
   
-  symbol-observable@^1.0.4, symbol-observable@^1.1.0:
+  symbol-observable@^1.0.2, symbol-observable@^1.0.4, symbol-observable@^1.1.0:
     version "1.2.0"
     resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
   
@@ -5870,8 +5960,8 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/upath/-/upath-1.1.0.tgz#35256597e46a581db4793d0ce47fa9aebfc9fabd"
   
   uri-js@^4.2.1:
-    version "4.2.1"
-    resolved "https://registry.yarnpkg.com/uri-js/-/uri-js-4.2.1.tgz#4595a80a51f356164e22970df64c7abd6ade9850"
+    version "4.2.2"
+    resolved "https://registry.yarnpkg.com/uri-js/-/uri-js-4.2.2.tgz#94c540e1ff772956e2299507c010aea6c8838eb0"
     dependencies:
       punycode "^2.1.0"
   
@@ -6067,8 +6157,8 @@ Lockfile:
       source-map "~0.6.1"
   
   webpack@^4.8.3:
-    version "4.8.3"
-    resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.8.3.tgz#957c8e80000f9e5cc03d775e78b472d8954f4eeb"
+    version "4.9.1"
+    resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.9.1.tgz#fa7bd738b17fd7f09f37da461b2f5c16c6565f34"
     dependencies:
       "@webassemblyjs/ast" "1.4.3"
       "@webassemblyjs/wasm-edit" "1.4.3"
@@ -6080,6 +6170,7 @@ Lockfile:
       chrome-trace-event "^0.1.1"
       enhanced-resolve "^4.0.0"
       eslint-scope "^3.7.1"
+      json-parse-better-errors "^1.0.2"
       loader-runner "^2.3.0"
       loader-utils "^1.1.0"
       memory-fs "~0.4.1"
@@ -6111,8 +6202,8 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/which-module/-/which-module-2.0.0.tgz#d9ef07dce77b9902b8a3a8fa4b31c3e3f7e6e87a"
   
   which@^1.2.12, which@^1.2.14, which@^1.2.9, which@^1.3.0:
-    version "1.3.0"
-    resolved "https://registry.yarnpkg.com/which/-/which-1.3.0.tgz#ff04bdfc010ee547d780bec38e1ac1c2777d253a"
+    version "1.3.1"
+    resolved "https://registry.yarnpkg.com/which/-/which-1.3.1.tgz#a45043d54f5805316da8d62f9f50918d3da70b0a"
     dependencies:
       isexe "^2.0.0"
   
@@ -6340,7 +6431,14 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.8.8.tgz#1ea93995bf098754a58215a1e0a7309e5749ec42"
 
 Trace: 
-  Error: connect ETIMEDOUT 104.16.63.173:443
-      at Object.exports._errnoException (util.js:1034:11)
-      at exports._exceptionWithHostPort (util.js:1057:20)
-      at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1096:14)
+  Error: http://registry.npmjs.org/rimraf: Too many requests. Try again later
+      at Request.params.callback [as _callback] (C:\Users\Yurasya\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:62098:18)
+      at Request.self.callback (C:\Users\Yurasya\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:123085:22)
+      at emitTwo (events.js:126:13)
+      at Request.emit (events.js:214:7)
+      at Request.<anonymous> (C:\Users\Yurasya\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:124068:10)
+      at emitOne (events.js:116:13)
+      at Request.emit (events.js:211:7)
+      at IncomingMessage.<anonymous> (C:\Users\Yurasya\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:123988:12)
+      at Object.onceWrapper (events.js:313:30)
+      at emitNone (events.js:111:20)
