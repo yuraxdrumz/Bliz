@@ -71,10 +71,18 @@ export default async function graphQlHandler({
       })
       schemas.map((schema) => {
         const schemaProps = schema.getObjProps()
-        Query += `\t${schemaProps.query}\n`
-        Mutation += `\t${schemaProps.mutation}\n`
-        Subscription += `\t${schemaProps.subscription}\n`
-        Types += `${schemaProps.type}\n`
+        if (schemaProps.query) {
+          Query += `\t${schemaProps.query}\n`
+        }
+        if (schemaProps.mutation) {
+          Mutation += `\t${schemaProps.mutation}\n`
+        }
+        if (schemaProps.subscription) {
+          Subscription += `\t${schemaProps.subscription}\n`
+        }
+        if (schemaProps.type) {
+          Types += `${schemaProps.type}\n`
+        }
         if (schemaProps.resolver) {
           const { Query, Mutation, Subscription, ...props } = schemaProps.resolver
           if (Query) {
@@ -98,7 +106,25 @@ export default async function graphQlHandler({
       Query += '}'
       Mutation += '}'
       Subscription += '}'
-      const typeDefs = `${Directives}\n${Enums}\n${Types}\n${Query}\n${Mutation}\n${Subscription}`
+      let typeDefs = ``
+      if (Directives !== ``) {
+        typeDefs += `${Directives}\n`
+      }
+      if (Enums !== ``) {
+        typeDefs += `${Enums}\n`
+      }
+      if (Types !== ``) {
+        typeDefs += `${Types}\n`
+      }
+      if (Query !== `type Query{\n}`) {
+        typeDefs += `${Query}\n`
+      }
+      if (Mutation !== `type Mutation{\n}`) {
+        typeDefs += `${Mutation}\n`
+      }
+      if (Subscription !== `type Subscription{\n}`) {
+        typeDefs += `${Subscription}\n`
+      }
       finalGraphQlOptionsObject.rootValue = resolvers
       executableSchema = makeExecutableSchema({
         typeDefs,

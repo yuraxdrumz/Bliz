@@ -7,5 +7,5 @@ export default function PostSchema (app) {
   .resolver(postResolver)
   .query(`Post(id: Int!): Post`)
   .mutation(`Post(input: newPost): Post`)
-  .subscription(`postAdded: Post`)
+  // .subscription(`postAdded: Post`)
 }

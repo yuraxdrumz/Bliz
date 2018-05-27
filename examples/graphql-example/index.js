@@ -1,4 +1,4 @@
-const Bliz = require('../../dist/main.bundle')
+import Bliz from '../../src/main'
 
 import PostSchema from './Post'
 import UserSchema from './User'
