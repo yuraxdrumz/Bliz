@@ -112,7 +112,6 @@ export default async function graphQlHandler({
       if (Object.keys(resolvers.Subscription).length === 0) {
         delete resolvers.Subscription
       }
-      console.log(resolvers)
       Query += '}'
       Mutation += '}'
       Subscription += '}'
