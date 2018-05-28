@@ -145,47 +145,6 @@ export default async function graphQlHandler({
         resolvers
         // directiveResolvers: _useGraphql.directiveResolvers
       })
-
-      SchemaDirectiveVisitor.visitSchemaDirectives(executableSchema, {
-        rest: class extends SchemaDirectiveVisitor {
-          visitInputFieldDefinition (field) {
-            this.wrapType(field)
-          }     
-          visitFieldDefinition (field, details) {
-            console.log(`visiting field definition with`, field, details)
-            this.wrapType(field)
-          }
-          visitInputObject (field) {
-            console.log(`inside visit input object`)
-            this.wrapType(field)
-          }
-          visitObject (field ){
-            console.log(`inside visit object`)
-            this.wrapType(field)
-          }
-          wrapType(field) {
-            const { resolve = defaultFieldResolver } = field
-            const fields = field.getFields()
-            const keys = Object.keys(fields)
-            for(let key of keys){
-              console.log(fields[key])
-              fields[key].resolve = async function (
-                source,
-                args,
-                context,
-                info
-              ) {
-                const isValid = await resolve.call(this, source, args, context, info)
-                console.log(`isValid`, args, isValid)
-                return 'reerer'
-                
-              } 
-            }
-          
-          }
-        }
-      })
-
       _useGraphql._graphQlExecutableSchema = executableSchema
     }
   } else {
@@ -218,6 +177,8 @@ export default async function graphQlHandler({
     executableSchema = mergeSchemas({ schemas: executableSchema })
     _useGraphql._graphQlExecutableSchema = executableSchema
   }
+  // add directives
+  SchemaDirectiveVisitor.visitSchemaDirectives(executableSchema, Object.assign({}, _useGraphql.directiveResolvers))
   // create bliz router and add middleware and graphiql and graphql to it
   const router = _Instance.createRouter('/').middleware(bodyParser.json())
   if (_useGraphql.useGraphiql) {

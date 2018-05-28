@@ -294,4 +294,4 @@ const BlizCreator = () => {
 
 // expose factory and superstruct for validation, request + response for extending http req and res
 export default BlizCreator
-export { request, response, struct, superstruct, StructError, SchemaDirectiveVisitor }
+export { request, response, struct, superstruct, StructError, SchemaDirectiveVisitor, defaultFieldResolver }

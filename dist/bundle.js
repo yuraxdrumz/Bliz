@@ -204,7 +204,7 @@ var _resolver2 = _interopRequireDefault(_resolver);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function UserSchema(app) {
-  return app.createGraphQlSchema(_schema2.default).resolver(_resolver2.default).mutation('\n      createUser(input: newUser): User\n      deleteUser(first_name: String!): User\n  ').query('User(id: Int!): User');
+  return app.createGraphQlSchema(_schema2.default).resolver(_resolver2.default).mutation('\n      createUser(input: newUser @auth @validateNewUser @constraint(length: 3)): User\n      deleteUser(first_name: String! @match(name:"yura")): User\n  ').query('User(id: Int! ): User');
 }
 
 /***/ }),
@@ -273,9 +273,272 @@ exports.default = resolver;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var schema = "\ntype User {\n  first_name: String! @hasRole(role: User)\n  role: Role! @hasRole(role: Admin)\n  last_name: String!\n  height: Height\n  posts: [Post] @hasRole(role: Admin)\n}\ninput newUser @rest {\n  first_name: String!\n  last_name: String!\n  height: String!\n}\n";
+var schema = "\ntype User{\n  first_name: String!\n  role: Role!\n  last_name: String!\n  height: Height\n  posts: [Post]\n}\ninput newUser{\n  first_name: String!\n  last_name: String!\n  height: String!\n}\n";
 
 exports.default = schema;
+
+/***/ }),
+
+/***/ "./examples/graphql-example/directives.js":
+/*!************************************************!*\
+  !*** ./examples/graphql-example/directives.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var directiveResolvers = function directiveResolvers(SchemaDirectiveVisitor, defaultFieldResolver) {
+  return {
+    auth: function (_SchemaDirectiveVisit) {
+      _inherits(auth, _SchemaDirectiveVisit);
+
+      function auth() {
+        _classCallCheck(this, auth);
+
+        return _possibleConstructorReturn(this, (auth.__proto__ || Object.getPrototypeOf(auth)).apply(this, arguments));
+      }
+
+      _createClass(auth, [{
+        key: 'visitInputFieldDefinition',
+        value: function visitInputFieldDefinition(field, details) {
+          console.log(field);
+          this.handleAuth(field, details);
+        }
+      }, {
+        key: 'visitFieldDefinition',
+        value: function visitFieldDefinition(field, details) {
+          this.handleAuth(field, details);
+        }
+      }, {
+        key: 'visitObject',
+        value: function visitObject(type) {
+          var fields = type.getFields();
+          var fieldKeys = Object.keys(fields);
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = fieldKeys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var key = _step.value;
+
+              this.handleAuth(fields[key]);
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
+        }
+      }, {
+        key: 'visitInputObject',
+        value: function visitInputObject(type) {
+          var fields = type.getFields();
+          var fieldKeys = Object.keys(fields);
+          var _iteratorNormalCompletion2 = true;
+          var _didIteratorError2 = false;
+          var _iteratorError2 = undefined;
+
+          try {
+            for (var _iterator2 = fieldKeys[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              var key = _step2.value;
+
+              this.handleAuth(fields[key]);
+            }
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                _iterator2.return();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
+            }
+          }
+        }
+      }, {
+        key: 'visitArgumentDefinition',
+        value: function visitArgumentDefinition(field, object) {
+          this.handleAuth(object.field);
+        }
+      }, {
+        key: 'handleAuth',
+        value: function handleAuth(field, details) {
+          var _field$resolve = field.resolve,
+              resolve = _field$resolve === undefined ? defaultFieldResolver : _field$resolve;
+
+          field.resolve = function () {
+            var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(source, args, context, info) {
+              return regeneratorRuntime.wrap(function _callee$(_context) {
+                while (1) {
+                  switch (_context.prev = _context.next) {
+                    case 0:
+                      if (context.headers.jwt) {
+                        _context.next = 4;
+                        break;
+                      }
+
+                      throw new Error('Authorization Bearer required');
+
+                    case 4:
+                      return _context.abrupt('return', resolve.apply(this, args));
+
+                    case 5:
+                    case 'end':
+                      return _context.stop();
+                  }
+                }
+              }, _callee, this);
+            }));
+
+            return function (_x, _x2, _x3, _x4) {
+              return _ref.apply(this, arguments);
+            };
+          }();
+        }
+      }]);
+
+      return auth;
+    }(SchemaDirectiveVisitor),
+    match: function (_SchemaDirectiveVisit2) {
+      _inherits(match, _SchemaDirectiveVisit2);
+
+      function match() {
+        _classCallCheck(this, match);
+
+        return _possibleConstructorReturn(this, (match.__proto__ || Object.getPrototypeOf(match)).apply(this, arguments));
+      }
+
+      _createClass(match, [{
+        key: 'visitArgumentDefinition',
+        value: function visitArgumentDefinition(field, object) {
+          this.handleAuth(object.field, this.args);
+        }
+      }, {
+        key: 'handleAuth',
+        value: function handleAuth(field, directiveArgs) {
+          var _field$resolve2 = field.resolve,
+              resolve = _field$resolve2 === undefined ? defaultFieldResolver : _field$resolve2;
+
+          field.resolve = function () {
+            var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(source, args, context, info) {
+              return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                while (1) {
+                  switch (_context2.prev = _context2.next) {
+                    case 0:
+                      if (!(args.first_name !== directiveArgs.name)) {
+                        _context2.next = 4;
+                        break;
+                      }
+
+                      throw new Error('Invalid first_name');
+
+                    case 4:
+                      return _context2.abrupt('return', resolve(source, args, context, info));
+
+                    case 5:
+                    case 'end':
+                      return _context2.stop();
+                  }
+                }
+              }, _callee2, this);
+            }));
+
+            return function (_x5, _x6, _x7, _x8) {
+              return _ref2.apply(this, arguments);
+            };
+          }();
+        }
+      }]);
+
+      return match;
+    }(SchemaDirectiveVisitor),
+    validateNewUser: function (_SchemaDirectiveVisit3) {
+      _inherits(validateNewUser, _SchemaDirectiveVisit3);
+
+      function validateNewUser() {
+        _classCallCheck(this, validateNewUser);
+
+        return _possibleConstructorReturn(this, (validateNewUser.__proto__ || Object.getPrototypeOf(validateNewUser)).apply(this, arguments));
+      }
+
+      _createClass(validateNewUser, [{
+        key: 'visitArgumentDefinition',
+        value: function visitArgumentDefinition(field, object) {
+          this.handleAuth(object.field);
+        }
+      }, {
+        key: 'handleAuth',
+        value: function handleAuth(field, details) {
+          var _field$resolve3 = field.resolve,
+              resolve = _field$resolve3 === undefined ? defaultFieldResolver : _field$resolve3;
+
+          field.resolve = function () {
+            var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(source, args, context, info) {
+              return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                while (1) {
+                  switch (_context3.prev = _context3.next) {
+                    case 0:
+                      if (!(args.first_name !== 'yura')) {
+                        _context3.next = 4;
+                        break;
+                      }
+
+                      throw new Error('Invalid first_name');
+
+                    case 4:
+                      return _context3.abrupt('return', resolve(source, args, context, info));
+
+                    case 5:
+                    case 'end':
+                      return _context3.stop();
+                  }
+                }
+              }, _callee3, this);
+            }));
+
+            return function (_x9, _x10, _x11, _x12) {
+              return _ref3.apply(this, arguments);
+            };
+          }();
+        }
+      }]);
+
+      return validateNewUser;
+    }(SchemaDirectiveVisitor)
+  };
+};
+
+exports.default = directiveResolvers;
 
 /***/ }),
 
@@ -301,15 +564,15 @@ var _User = __webpack_require__(/*! ./User */ "./examples/graphql-example/User/i
 
 var _User2 = _interopRequireDefault(_User);
 
+var _directives = __webpack_require__(/*! ./directives */ "./examples/graphql-example/directives.js");
+
+var _directives2 = _interopRequireDefault(_directives);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var app = (0, _main2.default)();
 
-app.prettyPrint().graphql({ useGraphql: true, allowPartialRemoteSchema: true, useGraphiql: true, tracing: true }).registerGraphQlSchemas((0, _User2.default)(app), (0, _Post2.default)(app)).enum({ name: 'Height', options: ['tall', 'short', 'average'] }).enum({ name: 'Role', options: ['Admin', 'User'] })
-// .directive(`@hasRole(role: Role) on QUERY | FIELD`)
-// .directive(`@isAuthenticated on QUERY | FIELD`)
-// .directive(`@listen(max: Int!) on OBJECT | INPUT_FIELD_DEFINITION | FIELD_DEFINITION`)
-.directive('@rest on FIELD_DEFINITION | INPUT_FIELD_DEFINITION | OBJECT | INPUT_OBJECT').listen(4000);
+app.prettyPrint().graphql({ useGraphql: true, allowPartialRemoteSchema: true, directiveResolvers: (0, _directives2.default)(_main.SchemaDirectiveVisitor, _main.defaultFieldResolver), useGraphiql: true, tracing: true }).registerGraphQlSchemas((0, _User2.default)(app), (0, _Post2.default)(app)).enum({ name: 'Height', options: ['tall', 'short', 'average'] }).enum({ name: 'Role', options: ['Admin', 'User'] }).listen(4000);
 
 /***/ }),
 
@@ -1067,22 +1330,14 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 // graphql handler, called from listen func when useGraphql is set to true
 exports.default = function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(_ref) {
-    var _this2 = this;
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(_ref) {
+    var _this = this;
 
     var server = _ref.server,
         args = _ref.args,
@@ -1121,9 +1376,9 @@ exports.default = function () {
 
     var executableSchema, directives, enums, schemas, pubsub, finalGraphQlOptionsObject, Directives, Query, Mutation, Subscription, Types, Enums, resolvers, typeDefs, getIntrospectSchemaWithParams, router, graphiqlRoute, graphqlRoute, _server;
 
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
             // init executableSchema, if directives length !== to their resolvers, throw error
             executableSchema = null;
@@ -1150,7 +1405,7 @@ exports.default = function () {
             };
 
             if (!(_useGraphql._graphQlRemoteEndpoints.length === 0)) {
-              _context3.next = 10;
+              _context2.next = 10;
               break;
             }
 
@@ -1246,110 +1501,9 @@ exports.default = function () {
                 resolvers: resolvers
                 // directiveResolvers: _useGraphql.directiveResolvers
               });
-
-              SchemaDirectiveVisitor.visitSchemaDirectives(executableSchema, {
-                rest: function (_SchemaDirectiveVisit) {
-                  _inherits(rest, _SchemaDirectiveVisit);
-
-                  function rest() {
-                    _classCallCheck(this, rest);
-
-                    return _possibleConstructorReturn(this, (rest.__proto__ || Object.getPrototypeOf(rest)).apply(this, arguments));
-                  }
-
-                  _createClass(rest, [{
-                    key: 'visitInputFieldDefinition',
-                    value: function visitInputFieldDefinition(field) {
-                      this.wrapType(field);
-                    }
-                  }, {
-                    key: 'visitFieldDefinition',
-                    value: function visitFieldDefinition(field, details) {
-                      console.log('visiting field definition with', field, details);
-                      this.wrapType(field);
-                    }
-                  }, {
-                    key: 'visitInputObject',
-                    value: function visitInputObject(field) {
-                      console.log('inside visit input object');
-                      this.wrapType(field);
-                    }
-                  }, {
-                    key: 'visitObject',
-                    value: function visitObject(field) {
-                      console.log('inside visit object');
-                      this.wrapType(field);
-                    }
-                  }, {
-                    key: 'wrapType',
-                    value: function wrapType(field) {
-                      var _field$resolve = field.resolve,
-                          resolve = _field$resolve === undefined ? defaultFieldResolver : _field$resolve;
-
-                      var fields = field.getFields();
-                      var keys = Object.keys(fields);
-                      var _iteratorNormalCompletion = true;
-                      var _didIteratorError = false;
-                      var _iteratorError = undefined;
-
-                      try {
-                        for (var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                          var key = _step.value;
-
-                          console.log(fields[key]);
-                          fields[key].resolve = function () {
-                            var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(source, args, context, info) {
-                              var isValid;
-                              return regeneratorRuntime.wrap(function _callee$(_context) {
-                                while (1) {
-                                  switch (_context.prev = _context.next) {
-                                    case 0:
-                                      _context.next = 2;
-                                      return resolve.call(this, source, args, context, info);
-
-                                    case 2:
-                                      isValid = _context.sent;
-
-                                      console.log('isValid', args, isValid);
-                                      return _context.abrupt('return', 'reerer');
-
-                                    case 5:
-                                    case 'end':
-                                      return _context.stop();
-                                  }
-                                }
-                              }, _callee, this);
-                            }));
-
-                            return function (_x2, _x3, _x4, _x5) {
-                              return _ref3.apply(this, arguments);
-                            };
-                          }();
-                        }
-                      } catch (err) {
-                        _didIteratorError = true;
-                        _iteratorError = err;
-                      } finally {
-                        try {
-                          if (!_iteratorNormalCompletion && _iterator.return) {
-                            _iterator.return();
-                          }
-                        } finally {
-                          if (_didIteratorError) {
-                            throw _iteratorError;
-                          }
-                        }
-                      }
-                    }
-                  }]);
-
-                  return rest;
-                }(SchemaDirectiveVisitor)
-              });
-
               _useGraphql._graphQlExecutableSchema = executableSchema;
             }
-            _context3.next = 22;
+            _context2.next = 22;
             break;
 
           case 10:
@@ -1366,58 +1520,58 @@ exports.default = function () {
             // if allowPartialRemoteSchema, catch all errors to allow partial schemas fetching
 
             if (!_useGraphql.allowPartialRemoteSchema) {
-              _context3.next = 17;
+              _context2.next = 17;
               break;
             }
 
-            _context3.next = 14;
+            _context2.next = 14;
             return Promise.map(_useGraphql._graphQlRemoteEndpoints, function () {
-              var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(ep) {
-                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+              var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(ep) {
+                return regeneratorRuntime.wrap(function _callee$(_context) {
                   while (1) {
-                    switch (_context2.prev = _context2.next) {
+                    switch (_context.prev = _context.next) {
                       case 0:
-                        _context2.prev = 0;
-                        _context2.next = 3;
+                        _context.prev = 0;
+                        _context.next = 3;
                         return getIntrospectSchemaWithParams(ep);
 
                       case 3:
-                        return _context2.abrupt('return', _context2.sent);
+                        return _context.abrupt('return', _context.sent);
 
                       case 6:
-                        _context2.prev = 6;
-                        _context2.t0 = _context2['catch'](0);
+                        _context.prev = 6;
+                        _context.t0 = _context['catch'](0);
 
-                        _useGraphql.logger.log(_context2.t0);
+                        _useGraphql.logger.log(_context.t0);
 
                       case 9:
                       case 'end':
-                        return _context2.stop();
+                        return _context.stop();
                     }
                   }
-                }, _callee2, _this2, [[0, 6]]);
+                }, _callee, _this, [[0, 6]]);
               }));
 
-              return function (_x6) {
-                return _ref4.apply(this, arguments);
+              return function (_x2) {
+                return _ref3.apply(this, arguments);
               };
             }()).filter(function (item) {
               return item !== undefined;
             });
 
           case 14:
-            executableSchema = _context3.sent;
-            _context3.next = 20;
+            executableSchema = _context2.sent;
+            _context2.next = 20;
             break;
 
           case 17:
-            _context3.next = 19;
+            _context2.next = 19;
             return Promise.all(_useGraphql._graphQlRemoteEndpoints.map(function (ep) {
               return getIntrospectSchemaWithParams(ep);
             }));
 
           case 19:
-            executableSchema = _context3.sent;
+            executableSchema = _context2.sent;
 
           case 20:
             // merge remote schemas
@@ -1425,6 +1579,8 @@ exports.default = function () {
             _useGraphql._graphQlExecutableSchema = executableSchema;
 
           case 22:
+            // add directives
+            SchemaDirectiveVisitor.visitSchemaDirectives(executableSchema, Object.assign({}, _useGraphql.directiveResolvers));
             // create bliz router and add middleware and graphiql and graphql to it
             router = _Instance.createRouter('/').middleware(bodyParser.json());
 
@@ -1449,7 +1605,7 @@ exports.default = function () {
             // same as http server, only add a subscription server for graphql subscriptions
 
             if (!(args.length > 1)) {
-              _context3.next = 35;
+              _context2.next = 36;
               break;
             }
 
@@ -1463,9 +1619,9 @@ exports.default = function () {
               server: _server,
               path: _useGraphql.subscriptionsEndpoint
             });
-            return _context3.abrupt('return', _server);
+            return _context2.abrupt('return', _server);
 
-          case 35:
+          case 36:
             server.listen.apply(server, [args[0], function () {
               return print(['Listening on Bliz server ' + _version + ' on port ' + args[0], 'Platform: ' + os.platform(), 'Hostname: ' + os.hostname(), 'Architecture: ' + os.arch(), 'CPU Cores: ' + os.cpus().length, 'Memory Free: ' + (os.freemem() / 1024 / 1024 / (os.totalmem() / 1024 / 1024) * 100).toFixed(0) + '%, ' + (os.freemem() / 1024 / 1024).toFixed(0) + ' MB / ' + (os.totalmem() / 1024 / 1024).toFixed(0) + ' MB']);
             }]);
@@ -1477,14 +1633,14 @@ exports.default = function () {
               server: server,
               path: _useGraphql.subscriptionsEndpoint
             });
-            return _context3.abrupt('return', server);
+            return _context2.abrupt('return', server);
 
-          case 38:
+          case 39:
           case 'end':
-            return _context3.stop();
+            return _context2.stop();
         }
       }
-    }, _callee3, this);
+    }, _callee2, this);
   }));
 
   function graphQlHandler(_x) {
@@ -2371,7 +2527,7 @@ exports.default = RouterCreator;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.SchemaDirectiveVisitor = exports.StructError = exports.superstruct = exports.struct = exports.response = exports.request = undefined;
+exports.defaultFieldResolver = exports.SchemaDirectiveVisitor = exports.StructError = exports.superstruct = exports.struct = exports.response = exports.request = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; // package json
 
@@ -2738,6 +2894,7 @@ exports.struct = _superstruct.struct;
 exports.superstruct = _superstruct.superstruct;
 exports.StructError = _superstruct.StructError;
 exports.SchemaDirectiveVisitor = _graphqlTools.SchemaDirectiveVisitor;
+exports.defaultFieldResolver = _graphql.defaultFieldResolver;
 
 /***/ }),
 
@@ -2767,22 +2924,18 @@ var midHandler = function () {
         switch (_context2.prev = _context2.next) {
           case 0:
             _loop = /*#__PURE__*/regeneratorRuntime.mark(function _loop(item) {
-              var fn, timeout, throwError, handlerPromise, data;
+              var fn, timeout, throwError;
               return regeneratorRuntime.wrap(function _loop$(_context) {
                 while (1) {
                   switch (_context.prev = _context.next) {
                     case 0:
                       fn = item.fn, timeout = item.timeout, throwError = item.throwError;
-                      handlerPromise = new Promise(function (resolve, reject) {
+                      _context.next = 3;
+                      return new Promise(function (resolve, reject) {
                         return fn(req, res, next.bind(_this, resolve, reject));
                       });
-                      _context.next = 4;
-                      return promiseTimeout(handlerPromise, timeout, throwError);
 
-                    case 4:
-                      data = _context.sent;
-
-                    case 5:
+                    case 3:
                     case 'end':
                       return _context.stop();
                   }
