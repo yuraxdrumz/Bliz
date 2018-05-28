@@ -28,14 +28,19 @@ export default async function graphQlHandler({
   Promise,
   _injected,
   _Instance,
-  _version
+  _version,
+  SchemaDirectiveVisitor,
+  GraphQLScalarType, 
+  GraphQLNonNull,
+  defaultFieldResolver,
+  GraphQLString
 }) {
   // init executableSchema, if directives length !== to their resolvers, throw error
   let executableSchema = null
   const directives = _useGraphql._graphQlDirectives
-  if (directives.length !== Object.keys(_useGraphql.directiveResolvers).length) {
-    throw new Error(`Directive resolvers registered does not match directive declarations`)
-  }
+  // if (directives.length !== Object.keys(_useGraphql.directiveResolvers).length) {
+  //   throw new Error(`Directive resolvers registered does not match directive declarations`)
+  // }
   const enums = _useGraphql._graphQlEnums
   const schemas = _useGraphql._graphQlSchemas.schemas
   // use default pubsub for subscriptions if one is not passed
@@ -137,8 +142,8 @@ export default async function graphQlHandler({
       finalGraphQlOptionsObject.rootValue = resolvers
       executableSchema = makeExecutableSchema({
         typeDefs,
-        resolvers,
-        directiveResolvers: _useGraphql.directiveResolvers
+        resolvers
+        // directiveResolvers: _useGraphql.directiveResolvers
       })
       _useGraphql._graphQlExecutableSchema = executableSchema
     }
@@ -172,6 +177,8 @@ export default async function graphQlHandler({
     executableSchema = mergeSchemas({ schemas: executableSchema })
     _useGraphql._graphQlExecutableSchema = executableSchema
   }
+  // add directives
+  SchemaDirectiveVisitor.visitSchemaDirectives(executableSchema, Object.assign({}, _useGraphql.directiveResolvers))
   // create bliz router and add middleware and graphiql and graphql to it
   const router = _Instance.createRouter('/').middleware(bodyParser.json())
   if (_useGraphql.useGraphiql) {

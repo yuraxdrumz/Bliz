@@ -1,12 +1,12 @@
 const schema = `
-type User {
-  first_name: String! @hasRole(role: User)
-  role: Role! @hasRole(role: Admin)
+type User{
+  first_name: String!
+  role: Role!
   last_name: String!
   height: Height
-  posts: [Post] @hasRole(role: Admin)
+  posts: [Post]
 }
-input newUser {
+input newUser{
   first_name: String!
   last_name: String!
   height: String!

@@ -17,6 +17,7 @@ import socketHandler from './sockets/socketHandler'
 // graphql dependencies
 import GraphQlCreator from './graphql/graphQlSchema'
 import graphqlHandler from './graphql/graphQlHandler'
+import { GraphQLScalarType, GraphQLNonNull, defaultFieldResolver, GraphQLString } from 'graphql'
 import { graphqlExpress, graphiqlExpress } from './apolloServer/main'
 import {
   makeExecutableSchema,
@@ -84,7 +85,12 @@ const graphqlDependencies = {
   SubscriptionClient,
   ws,
   getMainDefinition,
-  split
+  split,
+  SchemaDirectiveVisitor,
+  GraphQLScalarType, 
+  GraphQLNonNull,
+  defaultFieldResolver,
+  GraphQLString
 }
 
 const socketDependencies = {
@@ -288,4 +294,4 @@ const BlizCreator = () => {
 
 // expose factory and superstruct for validation, request + response for extending http req and res
 export default BlizCreator
-export { request, response, struct, superstruct, StructError, SchemaDirectiveVisitor }
+export { request, response, struct, superstruct, StructError, SchemaDirectiveVisitor, defaultFieldResolver }
