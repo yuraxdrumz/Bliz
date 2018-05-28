@@ -9,11 +9,10 @@ function createHandler({
   populateParamsUtil,
   populateQueryUtil,
   populateUrlOptions,
-  _middleWares,
-  _routersObject,
   _injected,
   _Instance,
-  Promise
+  Promise,
+  _useHttp: { useSwagger, _middleWares, _routersObject, _describe }
 }) {
   // receive all middlewares from routers and apps if exist and concatanate them
   _middleWares = _middleWares.reduce((prev, curr) => prev.concat(curr), [])
@@ -80,7 +79,7 @@ function createHandler({
         await midHandler(Promise, req, res, middleWareArr)
       }
       // if validation schemes exist, execute them
-      if (describe && describe.incoming && describe.incoming.length > 0) {
+      if (useSwagger && describe && describe.incoming && describe.incoming.length > 0) {
         for (let i = 0; i < describe.incoming.length; i++) {
           let searchIn = ''
           if (describe.incoming[i].in === 'path') {
@@ -92,7 +91,7 @@ function createHandler({
         }
       }
       // call handler with req, res and injected object from app.inject
-      if (describe && describe.incoming && describe.incoming.length > 0) {
+      if (useSwagger && describe && describe.outgoing && describe.outgoing.length > 0) {
         const statusObject = {}
         for (let schema of describe.outgoing) {
           statusObject[schema.status] = schema.schema

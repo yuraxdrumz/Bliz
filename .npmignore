@@ -1,0 +1,11 @@
+src
+examples
+.prettierrc
+CONTRIBUTING.md
+LICENSE.txt
+swagger.yaml
+webpack.config.js
+webpack.config.prod.js
+yarn-error.log
+.gitignore
+__tests__

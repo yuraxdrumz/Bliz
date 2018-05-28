@@ -1,7 +1,6 @@
 const webpack = require('webpack')
 const path = require('path')
 const fs = require('fs')
-const WebpackNodeServerPlugin = require('webpack-node-server-plugin')
 
 let nodeModules = {}
 fs.readdirSync('node_modules')

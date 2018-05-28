@@ -30,7 +30,7 @@ export default async function graphQlHandler({
   _Instance,
   _version,
   SchemaDirectiveVisitor,
-  GraphQLScalarType, 
+  GraphQLScalarType,
   GraphQLNonNull,
   defaultFieldResolver,
   GraphQLString
@@ -178,7 +178,10 @@ export default async function graphQlHandler({
     _useGraphql._graphQlExecutableSchema = executableSchema
   }
   // add directives
-  SchemaDirectiveVisitor.visitSchemaDirectives(executableSchema, Object.assign({}, _useGraphql.directiveResolvers))
+  SchemaDirectiveVisitor.visitSchemaDirectives(
+    executableSchema,
+    Object.assign({}, _useGraphql.directiveResolvers)
+  )
   // create bliz router and add middleware and graphiql and graphql to it
   const router = _Instance.createRouter('/').middleware(bodyParser.json())
   if (_useGraphql.useGraphiql) {

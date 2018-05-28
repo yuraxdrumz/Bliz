@@ -87,7 +87,7 @@ const graphqlDependencies = {
   getMainDefinition,
   split,
   SchemaDirectiveVisitor,
-  GraphQLScalarType, 
+  GraphQLScalarType,
   GraphQLNonNull,
   defaultFieldResolver,
   GraphQLString
@@ -192,7 +192,7 @@ const BlizApp = (BlizAppParams) => {
   }
 
   // binding all data and dependencies to the http handler
-  const _createHandler = CreateHandler.bind(this, { ...BlizAppParams, ..._useHttp })
+  const _createHandler = CreateHandler.bind(this, { ...BlizAppParams, _useHttp })
   // destructuring for passing to allow chaining on methods
   const { _Instance, _options, _injected, _loggerEntity, _version } = _internal
 
@@ -294,4 +294,12 @@ const BlizCreator = () => {
 
 // expose factory and superstruct for validation, request + response for extending http req and res
 export default BlizCreator
-export { request, response, struct, superstruct, StructError, SchemaDirectiveVisitor, defaultFieldResolver }
+export {
+  request,
+  response,
+  struct,
+  superstruct,
+  StructError,
+  SchemaDirectiveVisitor,
+  defaultFieldResolver
+}
