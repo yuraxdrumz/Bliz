@@ -1,3 +1,4 @@
+
 const resolver = {
   Query:{
       Post(obj, args, context, info){
@@ -15,11 +16,11 @@ const resolver = {
           return post.data
       }
   },
-    Subscription:(pubsub)=> ({
+    Subscription:(pubsub, withFilter)=> ({
         postAdded: {
-        subscribe:()=>{
-            return pubsub.asyncIterator('POST_ADDED')
-        }
+            subscribe: withFilter(() => pubsub.asyncIterator('POST_ADDED'), (payload, variables) => {
+                return payload.postAdded.id === variables.id
+             }),
         }
     }),
   Mutation:(pubsub)=>({

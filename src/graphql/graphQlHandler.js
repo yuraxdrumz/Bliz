@@ -33,7 +33,8 @@ export default async function graphQlHandler({
   GraphQLScalarType,
   GraphQLNonNull,
   defaultFieldResolver,
-  GraphQLString
+  GraphQLString,
+  withFilter
 }) {
   // init executableSchema, if directives length !== to their resolvers, throw error
   let executableSchema = null
@@ -96,13 +97,13 @@ export default async function graphQlHandler({
           if (Mutation) {
             Object.assign(
               resolvers.Mutation,
-              typeof Mutation === 'function' ? Mutation(pubsub) : Mutation
+              typeof Mutation === 'function' ? Mutation(pubsub, withFilter) : Mutation
             )
           }
           if (Subscription) {
             Object.assign(
               resolvers.Subscription,
-              typeof Subscription === 'function' ? Subscription(pubsub) : Subscription
+              typeof Subscription === 'function' ? Subscription(pubsub, withFilter) : Subscription
             )
           }
           Object.assign(resolvers, props)

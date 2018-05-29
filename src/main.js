@@ -32,7 +32,7 @@ import { split } from 'apollo-client-preset'
 import { getMainDefinition } from 'apollo-utilities'
 import { SubscriptionServer, SubscriptionClient } from 'subscriptions-transport-ws'
 import { execute, subscribe } from 'graphql'
-import { PubSub } from 'graphql-subscriptions'
+import { PubSub, withFilter } from 'graphql-subscriptions'
 import fetch from 'node-fetch'
 import { createHttpLink, HttpLink } from 'apollo-link-http'
 
@@ -90,7 +90,8 @@ const graphqlDependencies = {
   GraphQLScalarType,
   GraphQLNonNull,
   defaultFieldResolver,
-  GraphQLString
+  GraphQLString,
+  withFilter
 }
 
 const socketDependencies = {
