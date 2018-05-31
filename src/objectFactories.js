@@ -152,6 +152,7 @@ const CreateSwagger = ({
         for (let path of paths) {
           const fullPath = router.base + path
           const describe = router[method][path].getObjProps().describe
+          console.log(router[method][path].getObjProps())
           const responseObjectsForSchema = describe.incoming.filter(
             (request) => request.in === 'body'
           )
@@ -187,8 +188,8 @@ const CreateSwagger = ({
       yaml += stringify(mainPathsObject)
       yaml += stringify(schemas(schemasObject))
       // console.log(yaml)
-      // console.log(swaggerOptions)
       if (swaggerOptions && swaggerOptions.absoluteFilePath) {
+        console.log(`writing swagger to ${swaggerOptions.absoluteFilePath}`)
         fs.writeFileSync(swaggerOptions.absoluteFilePath, yaml, 'utf8')
       }
     }
