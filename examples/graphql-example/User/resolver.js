@@ -19,8 +19,8 @@ const resolver = {
       }
   },
   Mutation:(pubsub)=>({
-      createUser(root, { input }, context){
-          return input
+      createUser(root, args, context){
+          return args.input
       },
       deleteUser(root, args, context){
           return {first_name: args.first_name, last_name: 'whatever'}

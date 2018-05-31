@@ -8,4 +8,5 @@ webpack.config.js
 webpack.config.prod.js
 yarn-error.log
 .gitignore
+.babelrc
 __tests__

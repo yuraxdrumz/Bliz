@@ -5,13 +5,12 @@ import UserSchema from './User'
 import directiveResolvers from './directives'
 const app = Bliz()
 
-const auth = (root, args, context, info) => {
-    if(!context.headers.jwt){
-        throw new Error('not authorized!')
+const firstNameValidator = ({ directiveArgs, resolve, source, args, context, info }) => {
+    if(directiveArgs.name !== args.input.first_name){
+        throw new Error('name not valid')
+    } else {
+        return resolve(source, args, context, info)
     }
-}
-const firstNameValidator = (root, args, context, info) => {
-    throw new Error('not valid first name')
 }
 
 app
@@ -20,6 +19,5 @@ app
 .registerGraphQlSchemas(UserSchema(app), PostSchema(app))
 .enum({name: 'Height', options: ['tall', 'short', 'average']})
 .enum({name: 'Role', options: ['Admin', 'User']})
-.directive({name: 'custom', fn: auth})
 .directive({name: 'firstNameValidator', fn: firstNameValidator})
 .listen(4001)
