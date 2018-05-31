@@ -1,6 +1,6 @@
 
 # Bliz ![Bliz](http://i63.tinypic.com/2cp5nye.png)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Generic badge](https://img.shields.io/badge/Contributions-Welcome-green.svg)](https://shields.io/) ![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Generic badge](https://img.shields.io/badge/Contributions-Welcome-green.svg)](https://shields.io/) ![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg) [![npm version](https://badge.fury.io/js/bliz.svg)](https://badge.fury.io/js/bliz) [![NSP Status](https://nodesecurity.io/orgs/bliz/projects/0fa5f9b9-4ee9-478f-8c34-e42603297ccf/badge)](https://nodesecurity.io/orgs/bliz/projects/0fa5f9b9-4ee9-478f-8c34-e42603297ccf)
 
 
 
