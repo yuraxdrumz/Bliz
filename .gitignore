@@ -6,3 +6,4 @@ swagger.yaml
 yarn.lock
 yarn-error.log
 dist
+package-lock.json
