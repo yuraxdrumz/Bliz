@@ -130,7 +130,6 @@ const getNested = (struct, map = {}) => {
       assign(map, [key, 'anyOf'], types)
     } else {
       // console.log(key, schema[key])
-      // console.log(`assigning type array`, key, schema[key])
       assign(map, [key, 'type'], schema[key].replace('?', ''))
       if (schema[key] === 'array') {
         assign(map, [key, 'items', 'type'], 'object')

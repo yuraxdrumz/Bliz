@@ -34,6 +34,7 @@ import { SubscriptionServer, SubscriptionClient } from 'subscriptions-transport-
 import { execute, subscribe } from 'graphql'
 import { PubSub, withFilter } from 'graphql-subscriptions'
 import fetch from 'node-fetch'
+import { createDirective } from './graphql/graphQlDirectives'
 import { createHttpLink, HttpLink } from 'apollo-link-http'
 
 // app dependencies
@@ -91,7 +92,8 @@ const graphqlDependencies = {
   GraphQLNonNull,
   defaultFieldResolver,
   GraphQLString,
-  withFilter
+  withFilter,
+  createDirective
 }
 
 const socketDependencies = {
@@ -160,6 +162,7 @@ const BlizApp = (BlizAppParams) => {
   // graphql config object
   const _useGraphql = {
     useGraphql: false,
+    _graphqlInterface: [],
     graphqlRoute: '/graphql',
     graphiqlRoute: '/graphiql',
     _graphQlRemoteEndpoints: [],
@@ -261,10 +264,16 @@ const BlizApp = (BlizAppParams) => {
       arr: _useSockets._socketMiddlewares,
       chainLink: _Instance
     }),
+    
     BlizAppParams.CreateArray({ name: 'subApp', arr: _useHttp._subApps, chainLink: _Instance }),
     BlizAppParams.CreateArray({
       name: 'enum',
       arr: _useGraphql._graphQlEnums,
+      chainLink: _Instance
+    }),
+    BlizAppParams.CreateArray({
+      name: 'interface',
+      arr: _useGraphql._graphqlInterface,
       chainLink: _Instance
     }),
     BlizAppParams.CreateArray({
@@ -287,6 +296,7 @@ const BlizApp = (BlizAppParams) => {
     })
   )
 }
+
 
 // exposed factory to create a new instance
 const BlizCreator = () => {
