@@ -14,10 +14,11 @@ const firstNameValidator = ({ directiveArgs, resolve, source, args, context, inf
 
 app
 .prettyPrint()
-.graphql({useGraphql: true, allowPartialRemoteSchema: true, useGraphiql: true, tracing: true})
+.graphql({useGraphql: true, useGraphiql: true, tracing: true})
 .registerGraphQlSchemas(UserSchema(app), PostSchema(app))
 .enum({name: 'Height', options: ['tall', 'short', 'average']})
 .enum({name: 'Role', options: ['Admin', 'User']})
 .directive({name: 'firstNameValidator', fn: firstNameValidator})
 .union({name: 'TextSearchResult', types: ['User', 'Post']})
+.interface({name: 'Car', fields: ['wheels: String!']})
 .listen(4001)

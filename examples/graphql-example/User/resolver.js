@@ -9,6 +9,11 @@ const resolver = {
       return Math.random() > 0.5 ? 'User' : 'Post'
     },
   },
+  Car:{
+    __resolveType(obj, context, info){
+      return Math.random() > 0.5 ? 'User' : 'Post'
+    },
+  },
   User:{
       first_name(user, args, context, info){
           return user.first_name

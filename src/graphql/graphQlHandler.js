@@ -39,6 +39,7 @@ export default async function graphQlHandler({
 }) {
   // init executableSchema, if directives length !== to their resolvers, throw error
   let executableSchema = null
+  const interfaces = _useGraphql._graphqlInterfaces
   const unions = _useGraphql._graphqlUnions
   const enums = _useGraphql._graphQlEnums
   const schemas = _useGraphql._graphQlSchemas.schemas
@@ -80,6 +81,9 @@ export default async function graphQlHandler({
           }
         }, ``)
         Unions += `union ${union.name} = ${types}\n`
+      })
+      interfaces.map(Interface=>{
+        Interfaces += `interface ${Interface.name}{\n${Interface.fields.map((field) => `\t${field}\n`).join('')}}\n`
       })
       schemas.map((schema) => {
         const schemaProps = schema.getObjProps()
@@ -130,6 +134,9 @@ export default async function graphQlHandler({
       let typeDefs = ``
       if (Enums !== ``) {
         typeDefs += `${Enums}\n`
+      }
+      if(Interfaces !== ``){
+        typeDefs += `${Interfaces}\n`
       }
       if (Types !== ``) {
         typeDefs += `${Types}\n`
