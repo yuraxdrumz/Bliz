@@ -15,7 +15,7 @@ const firstNameValidator = ({ directiveArgs, resolve, source, args, context, inf
 app
 .prettyPrint()
 .graphql({useGraphql: true, useGraphiql: true, tracing: true})
-.registerGraphQlSchemas(UserSchema(app), PostSchema(app))
+.registerGraphQlSchemas(UserSchema, PostSchema)
 .enum({name: 'Height', options: ['tall', 'short', 'average']})
 .enum({name: 'Role', options: ['Admin', 'User']})
 .directive({name: 'firstNameValidator', fn: firstNameValidator})

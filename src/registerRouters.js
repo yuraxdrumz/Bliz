@@ -34,7 +34,8 @@ const RegisterRouters = ({
         'you may only registerGraphQlSchemas or registerRemoteGraphQlSchemas, not either'
       )
     } else {
-      Object.assign(_useGraphql._graphQlSchemas, { schemas })
+      const injectedSchemas = schemas.map(schema => typeof schema === 'function' ? schema(_Instance) : schema)
+      Object.assign(_useGraphql._graphQlSchemas, { schemas: injectedSchemas })
     }
     return _Instance
   },
