@@ -1,8 +1,7 @@
-import Bliz, { SchemaDirectiveVisitor, defaultFieldResolver } from '../../src/main'
+import Bliz from '../../src/main'
 
 import PostSchema from './Post'
 import UserSchema from './User'
-import directiveResolvers from './directives'
 const app = Bliz()
 
 const firstNameValidator = ({ directiveArgs, resolve, source, args, context, info }) => {
@@ -20,4 +19,5 @@ app
 .enum({name: 'Height', options: ['tall', 'short', 'average']})
 .enum({name: 'Role', options: ['Admin', 'User']})
 .directive({name: 'firstNameValidator', fn: firstNameValidator})
+.union({name: 'TextSearchResult', types: ['User', 'Post']})
 .listen(4001)

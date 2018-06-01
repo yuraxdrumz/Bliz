@@ -39,6 +39,7 @@ export default async function graphQlHandler({
 }) {
   // init executableSchema, if directives length !== to their resolvers, throw error
   let executableSchema = null
+  const unions = _useGraphql._graphqlUnions
   const enums = _useGraphql._graphQlEnums
   const schemas = _useGraphql._graphQlSchemas.schemas
   // use default pubsub for subscriptions if one is not passed
@@ -59,8 +60,8 @@ export default async function graphQlHandler({
       executableSchema = _useGraphql._graphQlExecutableSchema
     } else {
       // create schema, run on all data received and assemble a valid schema
-      let Directives = ``
-      let Interface = ``
+      let Interfaces = ``
+      let Unions = ``
       let Query = `type Query{\n`
       let Mutation = `type Mutation{\n`
       let Subscription = `type Subscription{\n`
@@ -69,6 +70,16 @@ export default async function graphQlHandler({
       let resolvers = { Query: {}, Mutation: {}, Subscription: {} }
       enums.map((Enum) => {
         Enums += `enum ${Enum.name}{\n${Enum.options.map((option) => `\t${option}\n`).join('')}}\n`
+      })
+      unions.map(union=>{
+        let types = union.types.reduce((prev,curr)=>{
+          if(union.types.length - 1 === union.types.indexOf(curr)){
+            return prev + curr
+          } else {
+            return prev += curr + ' | '
+          }
+        }, ``)
+        Unions += `union ${union.name} = ${types}\n`
       })
       schemas.map((schema) => {
         const schemaProps = schema.getObjProps()
@@ -122,6 +133,9 @@ export default async function graphQlHandler({
       }
       if (Types !== ``) {
         typeDefs += `${Types}\n`
+      }
+      if (Unions !== ``) {
+        typeDefs += `${Unions}\n`
       }
       if (Query !== `type Query{\n}`) {
         typeDefs += `${Query}\n`

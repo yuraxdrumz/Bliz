@@ -6,7 +6,7 @@ export default function UserSchema (app) {
   .resolver(userResolver)
   .mutation(`
       createUser(input: newUser @firstNameValidator(name: "yura")): User
-      deleteUser(first_name: String! @match(name:"yura")): User
+      deleteUser(first_name: String! @match(name:"yura")): TextSearchResult
   `)
   .query(`User(id: Int! ): User`)
 }

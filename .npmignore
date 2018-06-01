@@ -10,3 +10,6 @@ yarn-error.log
 .gitignore
 .babelrc
 __tests__
+yarn.lock
+yarn-error.log
+package-lock.json
