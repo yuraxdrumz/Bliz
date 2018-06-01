@@ -158,7 +158,7 @@ export default async function graphQlHandler({
         typeDefs,
         resolvers
       })
-      console.log(typeDefs)
+      // console.log(typeDefs)
       _useGraphql._graphQlExecutableSchema = executableSchema
     }
   } else {
