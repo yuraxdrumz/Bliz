@@ -82,19 +82,19 @@ export default async function graphQlHandler({
         }, ``)
         Unions += `union ${union.name} = ${types}\n`
       })
-      interfaces.map(Interface=>{
+      interfaces.map(Interface => {
         Interfaces += `interface ${Interface.name}{\n${Interface.fields.map((field) => `\t${field}\n`).join('')}}\n`
       })
       schemas.map((schema) => {
         const schemaProps = schema.getObjProps()
-        if (schemaProps.query) {
-          Query += `\t${schemaProps.query}\n`
+        if (schemaProps.query.length > 0) {
+          Query += `${schemaProps.query.map(query=> `\t${query}\n`).join('')}`
         }
-        if (schemaProps.mutation) {
-          Mutation += `\t${schemaProps.mutation}\n`
+        if (schemaProps.mutation.length > 0) {
+          Mutation += `${schemaProps.mutation.map(mutation=> `\t${mutation}\n`).join('')}`
         }
-        if (schemaProps.subscription) {
-          Subscription += `\t${schemaProps.subscription}\n`
+        if (schemaProps.subscription.length > 0) {
+          Subscription += `${schemaProps.subscription.map(subscription=> `\t${subscription}\n`).join('')}`
         }
         if (schemaProps.type) {
           Types += `${schemaProps.type}\n`
@@ -158,6 +158,7 @@ export default async function graphQlHandler({
         typeDefs,
         resolvers
       })
+      console.log(typeDefs)
       _useGraphql._graphQlExecutableSchema = executableSchema
     }
   } else {
