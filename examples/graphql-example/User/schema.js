@@ -2,6 +2,7 @@ const schema = `
 type User{
   first_name: String!
   role: Role!
+  wheels: String!
   last_name: String!
   height: Height
   posts: [Post]

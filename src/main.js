@@ -162,7 +162,8 @@ const BlizApp = (BlizAppParams) => {
   // graphql config object
   const _useGraphql = {
     useGraphql: false,
-    _graphqlInterface: [],
+    _graphqlInterfaces: [],
+    _graphqlUnions: [],
     graphqlRoute: '/graphql',
     graphiqlRoute: '/graphiql',
     _graphQlRemoteEndpoints: [],
@@ -264,7 +265,7 @@ const BlizApp = (BlizAppParams) => {
       arr: _useSockets._socketMiddlewares,
       chainLink: _Instance
     }),
-    
+
     BlizAppParams.CreateArray({ name: 'subApp', arr: _useHttp._subApps, chainLink: _Instance }),
     BlizAppParams.CreateArray({
       name: 'enum',
@@ -273,7 +274,12 @@ const BlizApp = (BlizAppParams) => {
     }),
     BlizAppParams.CreateArray({
       name: 'interface',
-      arr: _useGraphql._graphqlInterface,
+      arr: _useGraphql._graphqlInterfaces,
+      chainLink: _Instance
+    }),
+    BlizAppParams.CreateArray({
+      name: 'union',
+      arr: _useGraphql._graphqlUnions,
       chainLink: _Instance
     }),
     BlizAppParams.CreateArray({
@@ -296,7 +302,6 @@ const BlizApp = (BlizAppParams) => {
     })
   )
 }
-
 
 // exposed factory to create a new instance
 const BlizCreator = () => {

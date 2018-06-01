@@ -1,8 +1,7 @@
-import Bliz, { SchemaDirectiveVisitor, defaultFieldResolver } from '../../src/main'
+import Bliz from '../../src/main'
 
 import PostSchema from './Post'
 import UserSchema from './User'
-import directiveResolvers from './directives'
 const app = Bliz()
 
 const firstNameValidator = ({ directiveArgs, resolve, source, args, context, info }) => {
@@ -15,9 +14,11 @@ const firstNameValidator = ({ directiveArgs, resolve, source, args, context, inf
 
 app
 .prettyPrint()
-.graphql({useGraphql: true, allowPartialRemoteSchema: true, useGraphiql: true, tracing: true})
-.registerGraphQlSchemas(UserSchema(app), PostSchema(app))
+.graphql({useGraphql: true, useGraphiql: true, tracing: true})
+.registerGraphQlSchemas(UserSchema, PostSchema)
 .enum({name: 'Height', options: ['tall', 'short', 'average']})
 .enum({name: 'Role', options: ['Admin', 'User']})
 .directive({name: 'firstNameValidator', fn: firstNameValidator})
+.union({name: 'TextSearchResult', types: ['User', 'Post']})
+.interface({name: 'Car', fields: ['wheels: String!']})
 .listen(4001)

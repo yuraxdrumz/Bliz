@@ -198,10 +198,9 @@ const CreateSwagger = ({
 })
 
 // assign creator
-const AssignHandler = ({ name, obj, chainLink, override = false }) => ({
+const AssignHandler = ({ name, obj, chainLink, override = false, combineStrings = false }) => ({
   [name]: (data) => {
     override ? Object.assign(obj, data) : (obj[name] = data)
-    // console.log(`DATA AFTER: `, object, name, data)
     return chainLink
   }
 })
