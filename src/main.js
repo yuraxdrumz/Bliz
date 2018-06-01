@@ -265,7 +265,7 @@ const BlizApp = (BlizAppParams) => {
       arr: _useSockets._socketMiddlewares,
       chainLink: _Instance
     }),
-    
+
     BlizAppParams.CreateArray({ name: 'subApp', arr: _useHttp._subApps, chainLink: _Instance }),
     BlizAppParams.CreateArray({
       name: 'enum',
@@ -302,7 +302,6 @@ const BlizApp = (BlizAppParams) => {
     })
   )
 }
-
 
 // exposed factory to create a new instance
 const BlizCreator = () => {

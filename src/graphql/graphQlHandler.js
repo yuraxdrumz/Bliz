@@ -72,29 +72,33 @@ export default async function graphQlHandler({
       enums.map((Enum) => {
         Enums += `enum ${Enum.name}{\n${Enum.options.map((option) => `\t${option}\n`).join('')}}\n`
       })
-      unions.map(union=>{
-        let types = union.types.reduce((prev,curr)=>{
-          if(union.types.length - 1 === union.types.indexOf(curr)){
+      unions.map((union) => {
+        let types = union.types.reduce((prev, curr) => {
+          if (union.types.length - 1 === union.types.indexOf(curr)) {
             return prev + curr
           } else {
-            return prev += curr + ' | '
+            return (prev += curr + ' | ')
           }
         }, ``)
         Unions += `union ${union.name} = ${types}\n`
       })
-      interfaces.map(Interface => {
-        Interfaces += `interface ${Interface.name}{\n${Interface.fields.map((field) => `\t${field}\n`).join('')}}\n`
+      interfaces.map((Interface) => {
+        Interfaces += `interface ${Interface.name}{\n${Interface.fields
+          .map((field) => `\t${field}\n`)
+          .join('')}}\n`
       })
       schemas.map((schema) => {
         const schemaProps = schema.getObjProps()
         if (schemaProps.query.length > 0) {
-          Query += `${schemaProps.query.map(query=> `\t${query}\n`).join('')}`
+          Query += `${schemaProps.query.map((query) => `\t${query}\n`).join('')}`
         }
         if (schemaProps.mutation.length > 0) {
-          Mutation += `${schemaProps.mutation.map(mutation=> `\t${mutation}\n`).join('')}`
+          Mutation += `${schemaProps.mutation.map((mutation) => `\t${mutation}\n`).join('')}`
         }
         if (schemaProps.subscription.length > 0) {
-          Subscription += `${schemaProps.subscription.map(subscription=> `\t${subscription}\n`).join('')}`
+          Subscription += `${schemaProps.subscription
+            .map((subscription) => `\t${subscription}\n`)
+            .join('')}`
         }
         if (schemaProps.type) {
           Types += `${schemaProps.type}\n`
@@ -135,7 +139,7 @@ export default async function graphQlHandler({
       if (Enums !== ``) {
         typeDefs += `${Enums}\n`
       }
-      if(Interfaces !== ``){
+      if (Interfaces !== ``) {
         typeDefs += `${Interfaces}\n`
       }
       if (Types !== ``) {
