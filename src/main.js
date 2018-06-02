@@ -26,6 +26,7 @@ import {
   introspectSchema,
   SchemaDirectiveVisitor
 } from 'graphql-tools'
+import DataLoader from 'dataloader'
 import { getIntrospectSchema } from './utils'
 import ws from 'ws'
 import { split } from 'apollo-client-preset'
@@ -93,7 +94,8 @@ const graphqlDependencies = {
   defaultFieldResolver,
   GraphQLString,
   withFilter,
-  createDirective
+  createDirective,
+  DataLoader
 }
 
 const socketDependencies = {

@@ -1,6 +1,6 @@
 {
   "name": "bliz",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "bugs": {
     "url": "https://github.com/yuraxdrumz/Bliz/issues",
     "email": "yurik1776@gmail.com"
@@ -51,6 +51,7 @@
     "babel-polyfill": "^6.26.0",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.3",
+    "dataloader": "^1.4.0",
     "etag": "^1.8.1",
     "eventemitter2": "^4.1.2",
     "graphql": "^0.13.2",

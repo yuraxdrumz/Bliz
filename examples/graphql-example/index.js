@@ -20,5 +20,8 @@ app
 .enum({name: 'Role', options: ['Admin', 'User']})
 .directive({name: 'firstNameValidator', fn: firstNameValidator})
 .union({name: 'TextSearchResult', types: ['User', 'Post']})
-.interface({name: 'Car', fields: ['wheels: String!']})
+.interface({name: 'Car', fields: {wheels: 'String!'}})
+.inject({
+  findUserById: () => console.log('user from db')
+})
 .listen(4001)
