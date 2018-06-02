@@ -35,7 +35,8 @@ export default async function graphQlHandler({
   defaultFieldResolver,
   GraphQLString,
   withFilter,
-  createDirective
+  createDirective,
+  DataLoader
 }) {
   // init executableSchema, if directives length !== to their resolvers, throw error
   let executableSchema = null
@@ -83,12 +84,25 @@ export default async function graphQlHandler({
         Unions += `union ${union.name} = ${types}\n`
       })
       interfaces.map((Interface) => {
-        Interfaces += `interface ${Interface.name}{\n${Interface.fields
-          .map((field) => `\t${field}\n`)
-          .join('')}}\n`
+        let fields = Array.isArray(Interface.fields)
+        let mapper = fields ? Interface.fields : Object.keys(Interface.fields)
+        let eachValue = fields
+          ? (field) => `\t${field}\n`
+          : (field) => `\t${field + ':' + Interface.fields[field]}\n`
+        Interfaces += `interface ${Interface.name}{\n${mapper.map(eachValue).join('')}}\n`
       })
       schemas.map((schema) => {
         const schemaProps = schema.getObjProps()
+        for (let dataLoader of schemaProps.dataLoader) {
+          let fn = dataLoader.fn(finalGraphQlOptionsObject.context)
+          if (!fn) {
+            throw new Error(`Did not find function on injected, make sure to add it to app.inject`)
+          } else {
+            Object.assign(finalGraphQlOptionsObject.context, {
+              [dataLoader.name]: new DataLoader(fn)
+            })
+          }
+        }
         if (schemaProps.query.length > 0) {
           Query += `${schemaProps.query.map((query) => `\t${query}\n`).join('')}`
         }
@@ -106,7 +120,10 @@ export default async function graphQlHandler({
         if (schemaProps.resolver) {
           const { Query, Mutation, Subscription, ...props } = schemaProps.resolver
           if (Query) {
-            Object.assign(resolvers.Query, typeof Query === 'function' ? Query(pubsub) : Query)
+            Object.assign(
+              resolvers.Query,
+              typeof Query === 'function' ? Query(pubsub, withFilter) : Query
+            )
           }
           if (Mutation) {
             Object.assign(

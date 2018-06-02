@@ -9,7 +9,8 @@ const GraphQlSchemaCreator = (type) => {
     mutation: [],
     subscription: [],
     mockSchema: null,
-    query: []
+    query: [],
+    dataLoader: []
   }
   return Object.assign(
     _graphql,
@@ -18,6 +19,11 @@ const GraphQlSchemaCreator = (type) => {
       obj: _pathData.resolver,
       chainLink: _graphql,
       override: true
+    }),
+    CreateArray({
+      name: 'dataLoader',
+      arr: _pathData.dataLoader,
+      chainLink: _graphql
     }),
     AssignHandler({ name: 'mockSchema', obj: _pathData, chainLink: _graphql }),
     CreateArray({ name: 'mutation', arr: _pathData.mutation, chainLink: _graphql }),
