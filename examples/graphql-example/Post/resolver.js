@@ -16,9 +16,10 @@ const resolver = {
           return post.data
       }
   },
-    Subscription:(pubsub, withFilter)=> ({
+    Subscription:(pubsub, withFilter) => ({
         postAdded: {
-            subscribe: withFilter(() => pubsub.asyncIterator('POST_ADDED'), (payload, variables) => {
+            subscribe: withFilter(() => pubsub.asyncIterator('POST_ADDED'), (payload, variables, context) => {
+                console.log(payload, variables, context)
                 return payload.postAdded.id === variables.id
              }),
         }

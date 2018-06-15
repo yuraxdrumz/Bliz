@@ -251,7 +251,10 @@ export default async function graphQlHandler({
       {
         execute,
         subscribe,
-        schema: _useGraphql._graphQlExecutableSchema
+        schema: _useGraphql._graphQlExecutableSchema,
+        onConnect: (connectionParams, webSocket, context) => {
+          return Object.assign({}, _injected, { pubsub })
+        }
       },
       {
         server: server,
@@ -286,7 +289,10 @@ export default async function graphQlHandler({
       {
         execute,
         subscribe,
-        schema: _useGraphql._graphQlExecutableSchema
+        schema: _useGraphql._graphQlExecutableSchema,
+        onConnect: (connectionParams, webSocket, context) => {
+          return Object.assign({}, _injected, { pubsub })
+        }
       },
       {
         server: server,
